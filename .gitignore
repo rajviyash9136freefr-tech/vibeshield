@@ -1,0 +1,31 @@
+# dependencies
+node_modules/
+site/node_modules/
+api/node_modules/
+
+# build artifacts
+scanner/bin/
+scanner/vibeshield
+scanner/vibeshield.exe
+*.test
+*.out
+dist/
+site/dist/
+site/.astro/
+
+# go
+scanner/vendor/
+
+# env & secrets
+.env
+.env.*
+!.env.example
+
+# os / editor
+.DS_Store
+Thumbs.db
+*.log
+
+# test scratch
+/tmp/
+coverage/
