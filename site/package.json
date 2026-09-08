@@ -1,0 +1,31 @@
+{
+  "name": "@vibeshield/site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "VibeShield marketing site (vibeshield.dev) — Astro 5 static + Tailwind v4",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "prebuild": "node scripts/gen-og.mjs",
+    "build": "astro build",
+    "preview": "astro preview",
+    "gen:og": "node scripts/gen-og.mjs",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.4",
+    "@fontsource-variable/geist": "5.2.5",
+    "@fontsource-variable/geist-mono": "5.2.5",
+    "@fontsource-variable/inter": "5.2.5",
+    "@tailwindcss/vite": "4.1.16",
+    "astro": "5.18.2",
+    "tailwindcss": "4.1.16"
+  },
+  "devDependencies": {
+    "sharp": "0.34.4",
+    "typescript": "5.9.3"
+  }
+}
