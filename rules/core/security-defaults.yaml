@@ -1,0 +1,359 @@
+# VibeShield core pack — insecure defaults (VS-SEC-052..069)
+# 'Works on my machine' configuration AI scaffolding ships by default:
+# wide CORS, debug servers, signature-bypass JWTs, TLS verification off.
+schema: vibeshield.rules/v1
+id: core
+version: 1.0.0
+license: MIT
+rules:
+  - id: VS-SEC-014
+    category: insecure-default
+    severity: high
+    title: "Debug mode enabled in Flask app"
+    message: >-
+      LLM-generated Flask scaffolding frequently ships app.run(debug=True).
+      Debug mode exposes the interactive debugger (remote code execution
+      when reachable) and leaks environment contents in error pages.
+    fix: "Set debug from an env var: app.run(debug=os.environ.get('FLASK_DEBUG') == '1')"
+    languages: [python]
+    pattern:
+      kind: regex
+      match: 'app\.run\s*\([^)]*debug\s*=\s*True'
+      flags: [multiline]
+    paths:
+      include: ["**/*.py"]
+      exclude: ["tests/**", "**/test_*"]
+    confidence: 0.9
+    references:
+      - "https://flask.palletsprojects.com/en/stable/api/#flask.Flask.run"
+
+  - id: VS-SEC-052
+    category: insecure-default
+    severity: high
+    title: "CORS allows all origins"
+    message: >-
+      access-control-allow-origin: * and CORS(app) with no origin argument
+      are the defaults generated code reaches for to 'fix' a browser error.
+      Combined with credentials it lets any site act as the logged-in user.
+    fix: "Allow-list specific origins and avoid wildcards on credentialed endpoints"
+    languages: [javascript, typescript, python, java, go, ruby, php, csharp]
+    pattern:
+      kind: regex
+      match: '(access-control-allow-origin["\x27]?\s*[:,]\s*["\x27]\*|CORS\s*\(\s*app\s*\)|AllowAnyOrigin|allowed_origins\s*[:=]\s*["\x27]?\*)'
+      flags: [caseless]
+    paths:
+      include: ["**/*"]
+      exclude: ["**/node_modules/**", "**/*.md"]
+    confidence: 0.6
+
+  - id: VS-SEC-053
+    category: insecure-default
+    severity: high
+    title: "CORS wildcard paired with credentials allowed"
+    message: >-
+      Setting both Access-Control-Allow-Origin to * and
+      Allow-Credentials true is a spec violation browsers reject — but the
+      intent reveals the author meant every site to send cookies, which is
+      the risk pattern to catch.
+    fix: "Pin the exact origin when credentials are enabled; never combine * with credentials"
+    languages: [javascript, typescript, python, java, go, csharp]
+    pattern:
+      kind: regex
+      match: '(credentials\s*:\s*(true|True)[\s\S]{0,120}origin[\s\S]{0,40}\*|origin["\x27]?\s*:\s*["\x27]\*[\s\S]{0,120}credentials\s*[:=]\s*(true|True))'
+    paths:
+      include: ["**/*"]
+    confidence: 0.7
+
+  - id: VS-SEC-054
+    category: insecure-default
+    severity: high
+    title: "JWT signature verification disabled (alg none)"
+    message: >-
+      Generated auth code occasionally decodes tokens with
+      algorithms: ["none"] or verify=false to accept an unsigned token.
+      That removes the only thing tying a JWT's claims to a trusted issuer.
+    fix: "Pin an explicit signing algorithm and always verify the signature before trusting claims"
+    languages: [javascript, typescript, python, java, go]
+    pattern:
+      kind: regex
+      match: '(algorithms\s*:\s*\[[^\]]*["\x27]none["\x27]|verify_signature\s*=\s*False|\.verify\s*\([^)]*,\s*verify\s*=\s*False|options?\.setVerifySignature\s*\(\s*false)'
+    paths:
+      include: ["**/*"]
+    confidence: 0.85
+    references:
+      - "https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_OAuth_Cheat_Sheet.html"
+
+  - id: VS-SEC-055
+    category: insecure-default
+    severity: high
+    title: "Client-side JWT decode used to trust claims server-side"
+    message: >-
+      jwt.decode(...) — the browser helper that skips signature verification —
+      keeps appearing in server code because models confuse it with jwt.verify.
+      Payload fields from an unverified token are attacker-editable claims.
+    fix: "Verify the token with jwt.verify and a signing secret before trusting any claim"
+    languages: [javascript, typescript, python]
+    pattern:
+      kind: regex
+      match: 'jwt\.decode\s*\('
+    paths:
+      include: ["**/*.js", "**/*.ts", "**/*.py"]
+      exclude: ["**/*.test.*", "**/*.spec.*"]
+    confidence: 0.5
+
+  - id: VS-SEC-056
+    category: insecure-default
+    severity: high
+    title: "Hardcoded or weak framework session secret key"
+    message: >-
+      SECRET_KEY = "changeme" / 'dev' / a literal string is what AI scaffolds
+      emit so the app boots. A known signing key lets an attacker mint
+      forgery-proof session cookies and signed tokens.
+    fix: "Generate a random secret at deploy time and load it from an environment variable"
+    languages: [python]
+    pattern:
+      kind: regex
+      match: '(SECRET_KEY|SECRET)\s*=\s*["\x27](change(me)?|dev(elopment)?|secret|test|your[-_ ]?(secret|key)|put[-_ ]?your|replace(me)?|xxx+)[^"\x27]*["\x27]'
+      flags: [caseless]
+    paths:
+      include: ["**/*.py"]
+      exclude: ["tests/**", "**/test_*", "conftest.py"]
+    confidence: 0.8
+
+  - id: VS-SEC-057
+    category: insecure-default
+    severity: high
+    title: "TLS certificate verification disabled"
+    message: >-
+      verify=False on requests.get, or InsecureSkipVerify: true in Go http
+      clients, silences certificate errors and turns HTTPS back into
+      plaintext-with-extra-steps, open to interception.
+    fix: "Remove the flag and fix the trust store or CA bundle causing the verification error"
+    languages: [python, go, javascript, ruby]
+    pattern:
+      kind: regex
+      match: '(verify\s*=\s*False|InsecureSkipVerify\s*:\s*true|rejectUnauthorized\s*:\s*false|ssl\s*=\s*False|CURLOPT_SSL_VERIFYPEER,\s*(false|0))'
+    paths:
+      include: ["**/*"]
+      exclude: ["**/node_modules/**"]
+    confidence: 0.85
+
+  - id: VS-SEC-058
+    category: insecure-default
+    severity: medium
+    title: "Spring Boot actuator endpoints exposed without auth"
+    message: >-
+      management.endpoints.web.exposure.include=* is a frequent AI edit to
+      make a health check appear, and it also exposes /env, /heapdump, and
+      /configprops which leak secrets and internal configuration.
+    fix: "Expose only /health and /info, and protect actuator routes with authentication"
+    languages: [java, yaml]
+    pattern:
+      kind: regex
+      match: '(exposure\.include\s*[:=]\s*\*|endpoints.*web.*exposure.*include.*\*)'
+      flags: [caseless]
+    paths:
+      include: ["**/*.properties", "**/*.yml", "**/*.yaml", "**/*.java"]
+    confidence: 0.7
+
+  - id: VS-SEC-059
+    category: insecure-default
+    severity: medium
+    title: "Helmet protections disabled in an Express app"
+    message: >-
+      Generated Express setups frequently pass contentSecurityPolicy:false or
+      xframe:false into helmet, or delete() security headers, to silence a
+      warning — weakening browser defense-in-depth against clickjacking and
+      XSS with no review.
+    fix: "Keep helmet defaults and relax only a specific header with a documented reason"
+    languages: [javascript, typescript]
+    pattern:
+      kind: regex
+      match: '(contentSecurityPolicy\s*:\s*false|xframe\s*:\s*false|frame-ancestors[^;"\x27]*\*|\.remove\s*\(\s*["\x27]content-security-policy)'
+    paths:
+      include: ["**/*.js", "**/*.ts"]
+      exclude: ["**/node_modules/**"]
+    confidence: 0.6
+
+  - id: VS-SEC-060
+    category: insecure-default
+    severity: medium
+    title: "Session cookie written with default (missing) security flags"
+    message: >-
+      Session values assigned through document.cookie, or PHP setcookie()
+      calls that pass only a name and value, ship without HttpOnly/Secure —
+      generated code reaches for these shortest paths. Any XSS then reads the
+      session token directly.
+    fix: "Set HttpOnly, Secure, and SameSite explicitly; never carry session state in document.cookie"
+    languages: [javascript, typescript, php]
+    pattern:
+      kind: regex
+      match: '(document\.cookie\s*=|setcookie\s*\(\s*\$[A-Za-z_]\w*\s*,\s*[^,()]+\))'
+    paths:
+      include: ["**/*.js", "**/*.ts", "**/*.php", "**/*.html"]
+      exclude: ["**/node_modules/**", "**/*.test.*"]
+    confidence: 0.5
+
+  - id: VS-SEC-061
+    category: insecure-default
+    severity: medium
+    title: "Random module used for security-sensitive tokens"
+    message: >-
+      Math.random(), Python random.*, and java.util.Random are not
+      cryptographically secure; AI code reaches for them to build password
+      reset tokens, API keys, and session IDs whose predictability is a
+      direct account-takeover path.
+    fix: "Use a CSPRNG: crypto.randomBytes / secrets.token_urlsafe / SecureRandom"
+    languages: [javascript, typescript, python, java, ruby, php, go]
+    pattern:
+      kind: regex
+      match: '((Math\.random\s*\(|random\.(random|choice|randint|shuffle)|new\s+Random\s*\(|array_rand\s*\()[^;]*(token|secret|salt|nonce|password|otp|key)|reset[_-]?token[^;]{0,40}(Math\.random|random\.))'
+    paths:
+      include: ["**/*"]
+      exclude: ["**/node_modules/**", "**/*.test.*", "**/test_*"]
+    confidence: 0.6
+
+  - id: VS-SEC-062
+    category: insecure-default
+    severity: medium
+    title: "Verbose error details returned to the client"
+    message: >-
+      Returning stack traces and exception messages to the browser — Flask
+      PROPAGATE_EXCEPTIONS, Express err.stack, or Debug=true equivalents —
+      discloses file paths, library versions, and query text to attackers.
+    fix: "Log detailed errors server-side and return a generic error response to clients"
+    languages: [javascript, typescript, python, ruby, php]
+    pattern:
+      kind: regex
+      match: '(res\.(json|send)\s*\([^)]*err\.stack|return\s+\{\s*error\s*:\s*str\(|PROPAGATE_EXCEPTIONS\s*=\s*True|render_template_string[^)]*traceback)'
+      flags: [caseless]
+    paths:
+      include: ["**/*"]
+    confidence: 0.4
+
+  - id: VS-SEC-063
+    category: insecure-default
+    severity: high
+    title: "Server binds to all interfaces in a dev/debug config"
+    message: >-
+      host="0.0.0.0" with debug or an admin/dev server exposes a
+      locally-intended tool to the whole network. AI scaffolds copy the
+      bind-all line from Docker examples without the network isolation.
+    fix: "Bind debug and admin servers to 127.0.0.1 and front production with a hardened WSGI/ASGI server"
+    languages: [python, generic]
+    pattern:
+      kind: regex
+      match: '(app\.run\s*\([^)]*host\s*=\s*["\x27]0\.0\.0\.0|run_server[^)]*0\.0\.0\.0|manage\.py[^)]*--insecure)'
+    paths:
+      include: ["**/*.py"]
+      exclude: ["tests/**", "**/test_*"]
+    confidence: 0.7
+
+  - id: VS-SEC-064
+    category: insecure-default
+    severity: high
+    title: "Django DEBUG=True committed in settings"
+    message: >-
+      Django's project generator ships DEBUG=True and AI scaffolds rarely
+      flip it. Debug mode renders full tracebacks with settings (including
+      SECRET_KEY context) into error pages.
+    fix: "Set DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True' and default it off"
+    languages: [python]
+    pattern:
+      kind: regex
+      match: '^\s*DEBUG\s*=\s*True'
+    paths:
+      include: ["**/settings*.py", "**/settings/*.py", "**/*.py"]
+      exclude: ["tests/**", "**/test_*"]
+    confidence: 0.85
+
+  - id: VS-SEC-065
+    category: insecure-default
+    severity: high
+    title: "allow_origins=[\"*\"] on a credentialed CORS config"
+    message: >-
+      FastAPI/CORSMiddleware with allow_origins=["*"] and
+      allow_credentials=True is a configuration AI emits to clear a CORS
+      error, and it lets arbitrary origins make authenticated cross-site
+      requests.
+    fix: "List exact trusted origins and never combine wildcard with allow_credentials=True"
+    languages: [python]
+    pattern:
+      kind: regex
+      match: 'allow_origins\s*=\s*\[\s*["\x27]\*["\x27]\s*\]'
+    paths:
+      include: ["**/*.py"]
+    confidence: 0.75
+
+  - id: VS-SEC-066
+    category: insecure-default
+    severity: medium
+    title: "Weak or fixed salt used in a password hash"
+    message: >-
+      Hashing passwords with a constant salt (salt="static", or the username
+      as salt) defeats rainbow-table protection across all users at once and
+      appears when AI code hand-rolls hashing instead of using a KDF.
+    fix: "Let bcrypt/argon2/scrypt generate and store a per-password salt automatically"
+    languages: [python, javascript, java, php, ruby]
+    pattern:
+      kind: regex
+      match: 'salt\s*=\s*["\x27][^"\x27]{1,24}["\x27]'
+      flags: [caseless]
+    paths:
+      include: ["**/*"]
+    confidence: 0.5
+
+  - id: VS-SEC-067
+    category: insecure-default
+    severity: medium
+    title: "Directory listing/autoindex enabled on a web server"
+    message: >-
+      Generated nginx/Apache config sometimes enables autoindex/Options
+      +Indexes to make static assets 'findable,' exposing backup files, .git,
+      and config that should never be listed.
+    fix: "Disable autoindex/Options Indexes except for explicitly intended public directories"
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: '(autoindex\s+on|Options[^\n]*\+Indexes)'
+      flags: [caseless]
+    paths:
+      include: ["**/*.conf", "**/nginx*", "**/*.yaml", "**/*.yml"]
+    confidence: 0.7
+
+  - id: VS-SEC-068
+    category: insecure-default
+    severity: medium
+    title: "Default or hardcoded administrative credentials"
+    message: >-
+      admin/admin, password='admin', and default DB passwords seeded in
+      docker-compose or bootstrap scripts are how generated services boot
+      quickly and how deployments get breached slowly.
+    fix: "Require an operator-provided credential at first boot and fail closed if absent"
+    languages: [generic, yaml]
+    pattern:
+      kind: regex
+      match: '(PASSWORD|PASSWD|ADMIN_PASSWORD|DEFAULT_PASSWORD)\s*[=:]\s*["\x27]?(admin|password|123456|root|changeme|test(ing)?)["\x27]?\s*$'
+      flags: [caseless]
+    paths:
+      include: ["**/*"]
+      exclude: ["**/*.test.*", "**/node_modules/**", "**/*_test.go"]
+    confidence: 0.5
+
+  - id: VS-SEC-069
+    category: insecure-default
+    severity: medium
+    title: "Permissions wide open on chmod or file mode"
+    message: >-
+      os.chmod(path, 0o777) and mode: 0777 appear in AI code resolving a
+      'permission denied' error locally, then world-writable files or scripts
+      ship to the server where other users can modify them.
+    fix: "Use the least permissive mode that works (e.g. 0600 for secrets, 0755 for binaries)"
+    languages: [python, javascript, generic]
+    pattern:
+      kind: regex
+      match: 'chmod[^0-9]{0,20}0?o?7[0-7]7|mode\s*[=:]\s*["\x27]?0?o?777'
+      flags: [caseless]
+    paths:
+      include: ["**/*"]
+    confidence: 0.7

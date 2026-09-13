@@ -1,0 +1,456 @@
+schema: vibeshield.rules/v1
+id: core
+version: 1.0.0
+license: MIT
+# VS-LIC-001..024 — license patterns for AI-generated code.
+# Focus: copyleft text that survives model "header stripping" (PRD §2.1 row 4),
+# unfilled or missing license declarations in scaffolds, and mixed-license
+# dependency notes left in manifests. Absence of a LICENSE file cannot be
+# expressed in line-regex (structural kind is reserved for v1.1), so these
+# rules use presence proxies.
+rules:
+  - id: VS-LIC-001
+    category: license-missing
+    severity: medium
+    title: "GPL license text referenced inside a source file"
+    message: >-
+      Models frequently paste snippets whose GPL header survives into the
+      source file while the LICENSE context is lost. A GPL reference in code
+      signals third-party copyleft text whose terms now apply to the file.
+    fix: "Confirm the snippet's origin and license; if it is GPL, either adopt the copyleft terms project-wide or rewrite the logic independently."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: 'GNU General Public License|\bGPL\b|\bGPLv?[23]\b|\bGPL-[23]'
+      flags: [caseless]
+    paths:
+      exclude: ["**/LICENSE*", "**/LICENCE*", "**/COPYING*", "**/NOTICE*", "**/THIRD-PARTY*", "**/*.md", "**/docs/**", "**/vendor/**", "**/node_modules/**"]
+    confidence: 0.6
+    references:
+      - "https://www.gnu.org/licenses/gpl-3.0.html"
+  - id: VS-LIC-002
+    category: license-missing
+    severity: high
+    title: "Verbatim GPL redistribution clause in a source comment"
+    message: >-
+      The exact phrase "you can redistribute it and/or modify" is the GPL
+      warranty block, a strong signal that copyleft code was pasted in. LLM
+      output often trims such headers unevenly, leaving the operative clause
+      behind without any LICENSE file in the repo.
+    fix: "Either keep the full original header and honor its terms, or remove the copied code."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: 'free software[^\n]{0,40}redistribute|redistribute it and/or (?:freely )?modify'
+      flags: [caseless]
+    paths:
+      exclude: ["**/LICENSE*", "**/LICENCE*", "**/COPYING*", "**/NOTICE*", "**/THIRD-PARTY*", "**/*.md", "**/docs/**", "**/vendor/**", "**/node_modules/**"]
+    confidence: 0.8
+    references:
+      - "https://www.gnu.org/licenses/gpl-3.0.html"
+  - id: VS-LIC-003
+    category: license-missing
+    severity: high
+    title: "AGPL copyleft terms referenced in a source file"
+    message: >-
+      AGPL's network-use clause obligates source availability for hosted
+      services, so an AGPL header pasted into a closed-source app changes
+      deployment obligations. Models paste AGPL snippets from popular
+      server-side tooling without carrying the project-level consequences.
+    fix: "Remove the AGPL code or obtain a commercial license; do not ship AGPL-derived logic in a proprietary service."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: 'Affero|\bAGPL\b|\bAGPL-[3v]'
+      flags: [caseless]
+    paths:
+      exclude: ["**/LICENSE*", "**/LICENCE*", "**/COPYING*", "**/NOTICE*", "**/THIRD-PARTY*", "**/*.md", "**/docs/**", "**/vendor/**", "**/node_modules/**"]
+    confidence: 0.75
+    references:
+      - "https://www.gnu.org/licenses/agpl-3.0.html"
+  - id: VS-LIC-004
+    category: license-missing
+    severity: medium
+    title: "LGPL terms referenced in a source file"
+    message: >-
+      LGPL permits use but imposes linking and modification terms that AI
+      scaffolding ignores. A leftover LGPL header line means the file likely
+      derives from an LGPL library and the compliance duties were never
+      reviewed.
+    fix: "Verify linking/modification terms against the original LGPL library, or replace the snippet with a permissively licensed implementation."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: 'Lesser General Public License|\bLGPL\b|\bLGPL-[23v]'
+      flags: [caseless]
+    paths:
+      exclude: ["**/LICENSE*", "**/LICENCE*", "**/COPYING*", "**/NOTICE*", "**/THIRD-PARTY*", "**/*.md", "**/docs/**", "**/vendor/**", "**/node_modules/**"]
+    confidence: 0.7
+    references:
+      - "https://www.gnu.org/licenses/lgpl-3.0.html"
+  - id: VS-LIC-005
+    category: license-missing
+    severity: low
+    title: "BSD-style redistribution clause pasted into a source comment"
+    message: >-
+      The verbatim BSD redistribution sentence usually arrives via copy-paste
+      rather than authorship. BSD terms are permissive, but the pasted header
+      shows the code was taken from elsewhere, so attribution and the exact
+      clause variant (2-clause vs 3-clause) deserve a look.
+    fix: "Keep the copyright/attribution lines intact or move the snippet behind a proper third-party-licenses notice."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: 'Redistribution and use in source and binary forms'
+      flags: [caseless]
+    paths:
+      exclude: ["**/LICENSE*", "**/LICENCE*", "**/COPYING*", "**/NOTICE*", "**/THIRD-PARTY*", "**/*.md", "**/docs/**", "**/vendor/**", "**/node_modules/**"]
+    confidence: 0.5
+    references:
+      - "https://spdx.org/licenses/"
+  - id: VS-LIC-006
+    category: license-missing
+    severity: medium
+    title: "SPDX identifier declares a copyleft license for this file"
+    message: >-
+      SPDX headers are the machine-readable license of a file, and models
+      sometimes emit or inherit copyleft identifiers without the project
+      intending them. A GPL/AGPL/MPL SPDX tag conflicts with an MIT-licensed
+      project the same way pasted GPL text does.
+    fix: "Set the SPDX identifier to the project's actual license, or relocate the file to where the declared license applies."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: 'SPDX-License-Identifier\s*:\s*[^\n]*(?:AGPL|\bGPL|\bLGPL|MPL|EPL|CDDL)'
+      flags: [caseless]
+    confidence: 0.75
+    references:
+      - "https://reuse.software/"
+      - "https://spdx.dev/learn/handling-license-info/"
+  - id: VS-LIC-007
+    category: license-missing
+    severity: medium
+    title: "Manifest declares a copyleft license for a permissive project"
+    message: >-
+      Generated scaffolds occasionally carry a GPL/AGPL license field copied
+      from a template of another project. Package-manager metadata is what
+      downstream consumers and license scanners trust, so a stray copyleft
+      field mislicenses everything it publishes.
+    fix: "Set the manifest license field to the project's real license (e.g. \"MIT\")."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: '"(?:license|license-expression)"\s*:\s*"[^\n]*(?:GPL|AGPL|LGPL)|\blicense\s*=\s*"[^\n]*(?:GPL|AGPL|LGPL)'
+      flags: [caseless]
+    paths:
+      include: ["**/package.json", "**/pyproject.toml", "**/setup.cfg", "**/setup.py", "**/composer.json", "**/Cargo.toml", "**/*.gemspec"]
+    confidence: 0.7
+    references:
+      - "https://peps.python.org/pep-0639/"
+  - id: VS-LIC-008
+    category: license-missing
+    severity: medium
+    title: "License is unlicensed, omitted, or hidden behind a pointer"
+    message: >-
+      Scaffolds written by agents often leave license as UNLICENSED, None, or
+      "SEE LICENSE IN ..." with nothing to point at. Without a clear grant,
+      default copyright rules apply and the package is unusable for most
+      consumers.
+    fix: "Add a real LICENSE file and set the manifest license field to a standard SPDX identifier."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: '("(?:license|license-expression)"|license)\s*[:=]\s*"(UNLICENSED|NONE|None|SEE LICENSE IN [^"]*)"'
+    paths:
+      include: ["**/package.json", "**/pyproject.toml", "**/setup.cfg", "**/setup.py", "**/composer.json", "**/Cargo.toml", "**/*.gemspec"]
+    confidence: 0.7
+    references:
+      - "https://spdx.org/licenses/UNLICENSED-1.0.html"
+  - id: VS-LIC-009
+    category: license-missing
+    severity: medium
+    title: "Python metadata classifier declares a GNU-family license"
+    message: >-
+      PyPI classifiers are how the Python ecosystem reads license intent, and
+      templates from copyleft upstream projects carry GNU-family classifiers
+      into new repos unnoticed. The declared classifier then governs what
+      downstream users believe they may do with the code.
+    fix: "Replace the classifier with the project's actual license, e.g. \"License :: OSI Approved :: MIT License\"."
+    languages: [python]
+    pattern:
+      kind: regex
+      match: 'License\s*::\s*OSI Approved\s*::\s*GNU'
+      flags: [caseless]
+    paths:
+      include: ["**/setup.py", "**/setup.cfg", "**/pyproject.toml"]
+    confidence: 0.75
+    references:
+      - "https://packaging.python.org/en/latest/specifications/core-metadata/"
+  - id: VS-LIC-010
+    category: license-missing
+    severity: medium
+    title: "Gemspec declares a copyleft license"
+    message: >-
+      Ruby gem metadata copied from an existing copyleft gem gives every
+      bundler user a false (and contagious) license declaration. Agents
+      scaffold gems from memory, and memory often starts at GPL examples.
+    fix: "Set spec.license to the project's real SPDX identifier or drop the gemspec field until decided."
+    languages: [ruby]
+    pattern:
+      kind: regex
+      match: '\blicen[cs]es?\s*=(?:\[[^\]]*\]|[^,\n]+)[^\n]*(?:GPL|AGPL|LGPL|GNU)'
+      flags: [caseless]
+    paths:
+      include: ["**/*.gemspec"]
+    confidence: 0.7
+    references:
+      - "https://guides.rubygems.org/public-gem-server/"
+  - id: VS-LIC-011
+    category: license-missing
+    severity: medium
+    title: "Manifest comment records a mixed or proprietary dependency license"
+    message: >-
+      Humans leave notes like "# license: GPL" next to a dependency when
+      provenance is unclear, and models reproduce those comments without the
+      judgment that prompted them. The comment is a direct signal that the
+      dependency tree contains terms nobody reconciled.
+    fix: "Resolve the noted dependency's license before shipping, and record the decision in a licenses notice file."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: '(?:#|//)\s*licen[cs]e\s*[:=][^\n]*(?:GPL|AGPL|LGPL|proprietary|commercial|internal)'
+      flags: [caseless]
+    confidence: 0.65
+  - id: VS-LIC-012
+    category: license-missing
+    severity: medium
+    title: "Unfilled license template placeholders shipped in the repo"
+    message: >-
+      "<year> <copyright holders>" and "[yyyy]" are the blanks a license
+      template starts with, and generated commits routinely commit them
+      unfilled. A LICENSE file that is still a template grants nothing to
+      nobody and breaks every downstream license check.
+    fix: "Fill in the copyright year and holder, or replace the file with a finalized LICENSE."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: '<year>\s*<|\[yyyy\]|<name of copyright owner>|\[name of (?:copyright|author)|your (?:company|organization) here'
+      flags: [caseless]
+    confidence: 0.85
+    references:
+      - "https://choosealicense.com/"
+  - id: VS-LIC-013
+    category: license-missing
+    severity: low
+    title: "TODO comment defers a licensing or attribution decision"
+    message: >-
+      "TODO: license" marks a deferred decision that agents rarely come back
+      to before the code ships. Deferred attribution decisions compound:
+      every later snippet inherits the undecided state.
+    fix: "Decide the license now and remove the TODO; do not ship unresolved attribution questions."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: '(?://|#|/\*|\*)[^\n]*\bTODO\b[^\n]*(?:licen[cs]e|attribut|copyright)'
+      flags: [caseless]
+    confidence: 0.7
+  - id: VS-LIC-014
+    category: license-missing
+    severity: low
+    title: "Placeholder comment says a license header should be added"
+    message: >-
+      Generated files sometimes include their own instructions, such as
+      "add license header here", as a comment that never gets acted on. It
+      marks a file whose provenance and terms were on someone's mind and
+      then dropped.
+    fix: "Add the intended header or delete the placeholder comment."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: '(?://|#|\*)\s*(?:add|insert|include|fill(?:ed)? in|put)\s+(?:the\s+|your\s+)?(?:licen[cs]e|copyright|attribution|header)'
+      flags: [caseless]
+    confidence: 0.7
+  - id: VS-LIC-015
+    category: license-missing
+    severity: medium
+    title: "Attribution comment says the code was copied from another project"
+    message: >-
+      Comments like "adapted from https://github.com/..." record copy-paste
+      provenance that a license audit can otherwise never recover. Pasted
+      external code inherits its original license terms, and the comment is
+      the only surviving evidence of which ones.
+    fix: "Check the source project's license and comply: keep required notices, or reimplement if terms conflict."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: '\b(?:taken|copied|adapted|borrowed|derived|ported|based)\s+(?:from|on)\s+(?:https?://|www\.|github\.com|gitlab\.com|bitbucket\.org|stackoverflow\.com|gist\.github|sourceforge)'
+      flags: [caseless]
+    confidence: 0.5
+  - id: VS-LIC-016
+    category: license-missing
+    severity: low
+    title: "Code comment links to a Q&A site or gist (snippet provenance)"
+    message: >-
+      Stack Overflow content is CC BY-SA licensed and attribution is
+      commonly dropped when models transcribe the answer into source. A bare
+      forum link in a comment marks code whose attribution duties may be
+      unmet.
+    fix: "Credit the original answer per its license, or replace the snippet with project-specific code."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: '(?://|#|/\*|\*)[^\n]{0,60}(?:stackoverflow\.com|stackexchange\.com|gist\.github\.com)'
+      flags: [caseless]
+    paths:
+      exclude: ["**/*.md", "**/docs/**", "**/vendor/**", "**/node_modules/**"]
+    confidence: 0.4
+    references:
+      - "https://stackoverflow.com/help/licensing"
+  - id: VS-LIC-017
+    category: license-missing
+    severity: medium
+    title: "\"All rights reserved\" header found in a source file"
+    message: >-
+      That phrase belongs to proprietary headers, and pasted enterprise code
+      often drags it into open-source repos. A file marked "all rights
+      reserved" inside a permissive project is a direct licensing
+      contradiction waiting for a lawyer to notice.
+    fix: "Trace the snippet's origin; remove proprietary code or obtain permission before keeping the header."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: 'All rights reserved'
+      flags: [caseless]
+    paths:
+      exclude: ["**/LICENSE*", "**/LICENCE*", "**/COPYING*", "**/*.md", "**/docs/**", "**/vendor/**", "**/node_modules/**"]
+    confidence: 0.55
+  - id: VS-LIC-018
+    category: license-missing
+    severity: high
+    title: "Proprietary or confidentiality notice pasted into source"
+    message: >-
+      Lines such as "proprietary and confidential" or "do not distribute"
+      survive in code models have seen behind closed doors. Their presence
+      suggests code that was explicitly never licensed for redistribution is
+      now in this repo.
+    fix: "Remove the code unless written permission exists; treat the notice as evidence of an unauthorized copy."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: 'proprietary and confidential|do not (?:distribute|reproduce|copy|disclose)|internal use only|not for (?:redistribution|external (?:use|distribution))'
+      flags: [caseless]
+    paths:
+      exclude: ["**/*.md", "**/docs/**", "**/vendor/**", "**/node_modules/**"]
+    confidence: 0.6
+  - id: VS-LIC-019
+    category: license-missing
+    severity: low
+    title: "JSDoc @license tag declares a copyleft license for this file"
+    message: >-
+      A per-file @license tag that disagrees with the project's LICENSE is
+      usually a header copied in from somewhere else. Mixed license metadata
+      in the same tree defeats automated compliance checks downstream.
+    fix: "Align the @license tag with the project license, or remove it if the file is project-original."
+    languages: [javascript, typescript]
+    pattern:
+      kind: regex
+      match: '\*\s*@licen[cs]e\s+[^\n]*(?:GPL|AGPL|LGPL|MPL)'
+      flags: [caseless]
+    confidence: 0.6
+  - id: VS-LIC-020
+    category: license-missing
+    severity: medium
+    title: "POM license element declares a GNU-family license"
+    message: >-
+      Maven <licenses> blocks copied from a copyleft parent project publish a
+      contagious license on Maven Central. The field is machine-read by
+      license plugins and enterprise policy engines, so a stray GNU entry
+      has immediate downstream effect.
+    fix: "Set the pom <licenses> block to the project's actual license."
+    languages: [java]
+    pattern:
+      kind: regex
+      match: '<name>[^<]*(?:GNU|AGPL|LGPL|GPL)'
+      flags: [caseless]
+    paths:
+      include: ["**/pom.xml", "**/*.pom"]
+    confidence: 0.7
+    references:
+      - "https://maven.apache.org/pom.html"
+  - id: VS-LIC-021
+    category: license-missing
+    severity: medium
+    title: "composer.json declares a copyleft license"
+    message: >-
+      Packagist reads composer.json license metadata verbatim, so a GPL field
+      copied by a model into an MIT PHP project misrepresents every release.
+      Fixing it later requires re-tagging, so the wrong value tends to stick.
+    fix: "Correct the composer.json license array to the project's real SPDX identifier."
+    languages: [php]
+    pattern:
+      kind: regex
+      match: '"license"[^\]\n]*(?:GPL|AGPL|LGPL)'
+      flags: [caseless]
+    paths:
+      include: ["**/composer.json"]
+    confidence: 0.7
+    references:
+      - "https://getcomposer.org/doc/04-schema.md#license"
+  - id: VS-LIC-022
+    category: license-missing
+    severity: low
+    title: "csproj metadata carries a placeholder or template copyright"
+    message: >-
+      Scaffolding templates emit `<Copyright>Copyright</Copyright>` and
+      leftover Microsoft example values, and generated projects ship them
+      unchanged. Placeholder copyright fields make the package look official
+      or unlicensed, neither of which is true.
+    fix: "Set Copyright and PackageLicenseExpression to real values for this project."
+    languages: [csharp]
+    pattern:
+      kind: regex
+      match: '<Copyright>\s*(?:Copyright|\[|<|TODO|MyApp|Template)\s*<|<PackageLicenseExpression>[^<]*(?:GPL|AGPL|LGPL)'
+      flags: [caseless]
+    paths:
+      include: ["**/*.csproj", "**/*.nuspec"]
+    confidence: 0.55
+  - id: VS-LIC-023
+    category: license-missing
+    severity: medium
+    title: "Cargo.toml license field declares a copyleft license"
+    message: >-
+      crates.io displays Cargo.toml license metadata as the binding grant, so
+      a GPL/AGPL value pasted from an upstream example mislicenses the crate.
+      Cargo validates license strings, making an unnoticed template value a
+      publish-time surprise or a silent wrong answer.
+    fix: "Set the crate's license field to its actual SPDX expression (e.g. \"MIT OR Apache-2.0\")."
+    languages: [rust]
+    pattern:
+      kind: regex
+      match: '^license\s*=\s*"[^"]*(?:GPL|AGPL|LGPL)'
+      flags: [caseless]
+    paths:
+      include: ["**/Cargo.toml"]
+    confidence: 0.7
+    references:
+      - "https://doc.rust-lang.org/cargo/reference/manifest.html"
+  - id: VS-LIC-024
+    category: license-missing
+    severity: low
+    title: "Full MIT license body pasted into a source file comment"
+    message: >-
+      Models sometimes inline the entire "Permission is hereby granted" text
+      into individual files instead of a repo LICENSE. Per-file license bodies
+      multiply the number of places the license can silently drift out of
+      sync with the project.
+    fix: "Keep license text in a single repo LICENSE file; replace inlined bodies with a short SPDX header."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: 'Permission is hereby granted, free of charge'
+      flags: [caseless]
+    paths:
+      exclude: ["**/LICENSE*", "**/LICENCE*", "**/COPYING*", "**/*.md", "**/vendor/**", "**/node_modules/**"]
+    confidence: 0.55
+    references:
+      - "https://spdx.org/licenses/MIT.html"

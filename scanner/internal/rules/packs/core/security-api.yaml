@@ -1,0 +1,589 @@
+# VibeShield core pack — insecure APIs (VS-SEC-020..051)
+# Dangerous calls and unsafe data flows that AI scaffolding reproduces from
+# pre-hardening tutorial code: code execution, weak hashes, injection sinks.
+schema: vibeshield.rules/v1
+id: core
+version: 1.0.0
+license: MIT
+rules:
+  - id: VS-SEC-020
+    category: insecure-api
+    severity: critical
+    title: "eval() executes dynamically built code"
+    message: >-
+      Models reach for eval() to interpret expressions written as strings
+      because it is one line and always "works." Any value that reaches it —
+      request data, config, stored text — becomes executable code.
+    fix: "Replace eval with a parser or allow-listed operation, e.g. JSON.parse or a comparison library"
+    languages: [javascript, typescript]
+    pattern:
+      kind: regex
+      match: '\beval\s*\('
+    paths:
+      include: ["**/*.js", "**/*.jsx", "**/*.mjs", "**/*.cjs", "**/*.ts", "**/*.tsx"]
+      exclude: ["**/*.test.*", "**/*.spec.*", "tests/**", "**/node_modules/**"]
+    confidence: 0.7
+    references:
+      - "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#never_use_eval"
+
+  - id: VS-SEC-021
+    category: insecure-api
+    severity: critical
+    title: "Python eval() on a runtime-built expression"
+    message: >-
+      eval(input) patterns come straight out of beginner Python examples.
+      Python's eval runs full expressions, so crafted input escalates to
+      arbitrary code through dunder attribute access.
+    fix: "Parse the input deliberately — int()/float() for numbers, ast.literal_eval for literal data"
+    languages: [python]
+    pattern:
+      kind: regex
+      match: '\beval\s*\('
+    paths:
+      include: ["**/*.py"]
+      exclude: ["tests/**", "**/test_*", "**/conftest.py"]
+    confidence: 0.7
+
+  - id: VS-SEC-022
+    category: insecure-api
+    severity: critical
+    title: "Dynamic code execution via new Function or setTimeout string"
+    message: >-
+      Generated code sometimes hides eval behind new Function() or the
+      string forms of setTimeout/setInterval to slip past linters. They carry
+      the same arbitrary-code risk with a more innocent-looking name.
+    fix: "Pass a real function reference instead of a string and delete the dynamic path"
+    languages: [javascript, typescript]
+    pattern:
+      kind: regex
+      match: 'new\s+Function\s*\(|set(Timeout|Interval)\s*\(\s*["\x27]'
+    paths:
+      include: ["**/*.js", "**/*.jsx", "**/*.mjs", "**/*.ts", "**/*.tsx"]
+      exclude: ["**/*.test.*", "**/*.spec.*", "tests/**"]
+    confidence: 0.65
+
+  - id: VS-SEC-023
+    category: insecure-api
+    severity: critical
+    title: "Ruby eval or instance_eval on runtime data"
+    message: >-
+      instance_eval/eval show up in generated Ruby DSL glue because metaprogramming
+      examples normalize them. In a web app they turn any attacker-controlled
+      string into code running as the application user.
+    fix: "Dispatch with a public method via send only after allow-listing the method name, or restructure to plain conditionals"
+    languages: [ruby]
+    pattern:
+      kind: regex
+      match: '\b(instance_eval|eval)\s*\('
+    paths:
+      include: ["**/*.rb"]
+      exclude: ["spec/**", "test/**", "**/*_spec.rb", "**/*_test.rb"]
+    confidence: 0.6
+
+  - id: VS-SEC-024
+    category: insecure-api
+    severity: critical
+    title: "subprocess call with shell=True"
+    message: >-
+      shell=True is the default in many Python snippets AI models emit, and
+      it hands the whole command string to bash. Quoting mistakes then become
+      command injection with no escaping the developer controls.
+    fix: "Drop shell=True and pass the command as a list of arguments to subprocess.run"
+    languages: [python]
+    pattern:
+      kind: regex
+      match: 'shell\s*=\s*True'
+    paths:
+      include: ["**/*.py"]
+      exclude: ["tests/**", "**/test_*"]
+    confidence: 0.75
+    references:
+      - "https://docs.python.org/3/library/subprocess.html#security-considerations"
+
+  - id: VS-SEC-025
+    category: insecure-api
+    severity: critical
+    title: "os.system or os.popen command execution in Python"
+    message: >-
+      os.system predates the subprocess API yet keeps appearing in generated
+      scripts, with f-string or + interpolation of request data straight into
+      the command line. That is command injection by construction.
+    fix: "Use subprocess.run with an argument list and no shell, validating any user-supplied values"
+    languages: [python]
+    pattern:
+      kind: regex
+      match: 'os\.(system|popen|spawnl|spawnv)\s*\('
+    paths:
+      include: ["**/*.py"]
+      exclude: ["tests/**", "**/test_*"]
+    confidence: 0.75
+
+  - id: VS-SEC-026
+    category: insecure-api
+    severity: high
+    title: "exec() used to run file or string contents"
+    message: >-
+      Generated loaders often exec() the contents of a downloaded or
+      uploaded file to 'define' code at runtime. exec has no sandbox, so the
+      file content is a full-access code path.
+    fix: "Load structured data with json/ast or import real modules instead of exec-ing strings"
+    languages: [python]
+    pattern:
+      kind: regex
+      match: '\bexec\s*\('
+    paths:
+      include: ["**/*.py"]
+      exclude: ["tests/**", "**/test_*"]
+    confidence: 0.65
+
+  - id: VS-SEC-027
+    category: insecure-api
+    severity: critical
+    title: "Remote script piped straight into a shell"
+    message: >-
+      curl … | bash and wget … | sh lines are lifted from install docs that
+      assume a pinned, audited release. In generated setup code the URL is
+      often unfixed and transport unverified.
+    fix: "Download the artifact, verify its checksum or signature, then execute the local copy"
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: '(curl|wget)[^\n|]*\|\s*(sudo\s+)?(bash|sh|zsh|python)'
+    paths:
+      include: ["**/*"]
+      exclude: ["**/node_modules/**", ".github/workflows/**"]
+    confidence: 0.7
+
+  - id: VS-SEC-028
+    category: insecure-api
+    severity: critical
+    title: "Fetched remote code executed via eval"
+    message: >-
+      Patterns like eval(requests.get(...).text) appear when AI scaffolding
+      'loads a plugin' over HTTP. The server response — or anyone who can
+      spoof it — becomes code executed in-process.
+    fix: "Ship trusted code through your package manager; if dynamic config is needed, parse data, never execute it"
+    languages: [python]
+    pattern:
+      kind: regex
+      match: '(exec|eval)\s*\([^)]*(requests\.|urllib|httpx|http\.get)'
+    paths:
+      include: ["**/*.py"]
+    confidence: 0.9
+
+  - id: VS-SEC-029
+    category: insecure-api
+    severity: critical
+    title: "Remote script executed via Node child_process"
+    message: >-
+      child_process.exec with curl-pipes, or require of a downloaded file,
+      recreates the pipe-to-shell antipattern inside JavaScript build and
+      install scripts where no operator is watching.
+    fix: "Bundle the dependency or pin and verify it before running any fetched content"
+    languages: [javascript, typescript]
+    pattern:
+      kind: regex
+      match: '(exec|execSync)\s*\(\s*[`"\x27][^`"\x27]*(curl|wget)'
+    paths:
+      include: ["**/*.js", "**/*.mjs", "**/*.cjs", "**/*.ts"]
+    confidence: 0.85
+
+  - id: VS-SEC-030
+    category: insecure-api
+    severity: high
+    title: "MD5 or SHA-1 used to hash passwords"
+    message: >-
+      hashlib.md5/sha1 for password storage is pre-2010 boilerplate that
+      models still emit. Both are fast, so GPU cracking of a stolen table is
+      measured in minutes.
+    fix: "Hash passwords with bcrypt, scrypt, or Argon2 via a vetted library"
+    languages: [python]
+    pattern:
+      kind: regex
+      match: 'hashlib\.(md5|sha1)\s*\(([^)]*)(pass|pwd|secret|credential)'
+      flags: [caseless]
+    paths:
+      include: ["**/*.py"]
+    confidence: 0.85
+
+  - id: VS-SEC-031
+    category: insecure-api
+    severity: high
+    title: "MD5 or SHA-1 used to hash passwords in JavaScript"
+    message: >-
+      crypto.createHash('md5'|'sha1') over a password field is common in
+      generated Express auth code copied from legacy examples. Collision and
+      speed resistance are both gone.
+    fix: "Use bcrypt, argon2, or node:crypto scrypt with a per-user salt"
+    languages: [javascript, typescript]
+    pattern:
+      kind: regex
+      match: 'createHash\s*\(\s*["\x27](md5|sha1)["\x27]\s*\)[^;]*(pass|pwd|secret|credential)'
+      flags: [caseless]
+    paths:
+      include: ["**/*.js", "**/*.mjs", "**/*.cjs", "**/*.ts"]
+    confidence: 0.8
+
+  - id: VS-SEC-032
+    category: insecure-api
+    severity: high
+    title: "Weak digest used for password hashing across JVM/.NET/Ruby/PHP"
+    message: >-
+      MD5()/SHA1() digests around password values keep appearing in generated
+      auth code for Java, C#, Ruby, and PHP because older framework docs show
+      them. Fast digests make offline cracking of leaked stores trivial.
+    fix: "Switch to Argon2id or bcrypt via the platform's standard password-hashing library"
+    languages: [java, csharp, ruby, php]
+    pattern:
+      kind: regex
+      match: '(md5|sha1|MessageDigest\.getInstance\("SHA-?1"\)|MD5\.Create)[^\n]*(pass|pwd|secret)'
+      flags: [caseless]
+    paths:
+      include: ["**/*.java", "**/*.cs", "**/*.rb", "**/*.php"]
+    confidence: 0.65
+
+  - id: VS-SEC-033
+    category: insecure-api
+    severity: medium
+    title: "MD5 or SHA-1 used as an integrity hash"
+    message: >-
+      Beyond passwords, models pick md5/sha1 for artifact verification and
+      cache keys signed with secrets. Collision resistance is broken, so
+      'checksum matches' stops meaning 'untampered.'
+    fix: "Use SHA-256 or stronger for integrity checks and an HMAC for authenticity"
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: '(hashlib\.(md5|sha1)|createHash\(["\x27](md5|sha1)|md5\s*\(|sha1\s*\()'
+    paths:
+      include: ["**/*.py", "**/*.js", "**/*.ts", "**/*.php", "**/*.rb"]
+      exclude: ["**/*.test.*", "**/node_modules/**", "fixtures/**"]
+    confidence: 0.4
+
+  - id: VS-SEC-034
+    category: insecure-api
+    severity: critical
+    title: "f-string SQL query with interpolated values"
+    message: >-
+      Building SQL with Python f-strings is the single most frequent injection
+      pattern in AI-generated backend code — the model writes the query like
+      prose and adds parameters later, often never.
+    fix: "Use %s/? placeholders and your driver's parameterized execute(query, params)"
+    languages: [python]
+    pattern:
+      kind: regex
+      match: '[fr]"[^"]*\b(SELECT|INSERT INTO|UPDATE|DELETE FROM|WHERE)\b[^"]*\{'
+      flags: [caseless]
+    paths:
+      include: ["**/*.py"]
+      exclude: ["tests/**", "**/test_*", "alembic/**", "**/migrations/**"]
+    confidence: 0.75
+
+  - id: VS-SEC-035
+    category: insecure-api
+    severity: critical
+    title: "Template-literal SQL query with interpolated values in JS"
+    message: >-
+      Backtick queries embedding ${req.query...} or ${body...} appear in
+      generated Express/Knex code because template strings are the default
+      JS concatenation idiom. The interpolation is the injection.
+    fix: "Pass user values through $1-style parameters or an ORM query builder"
+    languages: [javascript, typescript]
+    pattern:
+      kind: regex
+      match: '`[^`]{0,300}\b(SELECT|INSERT INTO|UPDATE|DELETE FROM)\b[^`]*\$\{'
+      flags: [caseless]
+    paths:
+      include: ["**/*.js", "**/*.mjs", "**/*.cjs", "**/*.ts", "**/*.tsx"]
+      exclude: ["**/*.test.*", "**/*.spec.*"]
+    confidence: 0.75
+
+  - id: VS-SEC-036
+    category: insecure-api
+    severity: high
+    title: "String concatenation or %-formatting builds SQL"
+    message: >-
+      'query = "SELECT ... WHERE x = '" + value and the Python % equivalent
+      are classic AI completions for parameterized-looking code that is not
+      parameterized at all.
+    fix: "Bind every value with placeholders handled by the database driver"
+    languages: [python, javascript, typescript, ruby, php, java, go, csharp]
+    pattern:
+      kind: regex
+      match: '["\x27][^"\x27]*\b(WHERE|AND|OR)\b[^"\x27]*["\x27]\s*(\+|%|\.)\s*[A-Za-z_$@]'
+    paths:
+      include: ["**/*.py", "**/*.js", "**/*.ts", "**/*.rb", "**/*.php", "**/*.java", "**/*.go", "**/*.cs"]
+      exclude: ["**/migrations/**", "**/*.test.*"]
+    confidence: 0.55
+
+  - id: VS-SEC-037
+    category: insecure-api
+    severity: critical
+    title: "Ruby string interpolation inside SQL"
+    message: >-
+      Generated Rails code occasionally drops to where("name = '#{params[:x]}')
+      or #{...} inside execute() calls. Rails' safe interpolation exists
+      precisely because this form injects.
+    fix: "Use ?-placeholders or sanitized scope arguments: where('name = ?', params[:x])"
+    languages: [ruby]
+    pattern:
+      kind: regex
+      match: '(execute|select_all|find_by_sql|where)\s*\(?\s*["\x27][^"\x27]*(SELECT|INSERT|UPDATE|DELETE|WHERE)[^"\x27]*#\{'
+      flags: [caseless]
+    paths:
+      include: ["**/*.rb"]
+      exclude: ["spec/**", "db/migrate/**"]
+    confidence: 0.75
+
+  - id: VS-SEC-038
+    category: insecure-api
+    severity: critical
+    title: "PHP concatenates request data into SQL"
+    message: >-
+      mysql_query("... $id ...") and ...' . $_GET['id'] patterns are the
+      archetypal injection sink and still appear verbatim in AI-scaffolded
+      admin panels built from outdated tutorials.
+    fix: "Use PDO prepared statements with bound parameters for every request-derived value"
+    languages: [php]
+    pattern:
+      kind: regex
+      match: '["\x27][^"\x27]*(SELECT|INSERT|UPDATE|DELETE)[^"\x27]*(\$_(GET|POST|REQUEST)|\.[A-Za-z_$])'
+    paths:
+      include: ["**/*.php"]
+    confidence: 0.7
+
+  - id: VS-SEC-039
+    category: insecure-api
+    severity: critical
+    title: "Java concatenates request data into SQL"
+    message: >-
+      Statement.execute("SELECT ... " + request.getParameter(...)) is a
+      training-data staple. PreparedStatement exists for exactly this, but
+      concatenated variants keep shipping in generated DAO code.
+    fix: "Use PreparedStatement with ? placeholders and setXxx parameters"
+    languages: [java]
+    pattern:
+      kind: regex
+      match: '["\x27][^"\x27]*(SELECT|INSERT INTO|UPDATE|DELETE FROM)[^"\x27]*["\x27]\s*\+\s*[A-Za-z_(]'
+    paths:
+      include: ["**/*.java"]
+      exclude: ["**/*Test.java", "src/test/**"]
+    confidence: 0.65
+
+  - id: VS-SEC-040
+    category: insecure-api
+    severity: critical
+    title: "Go fmt.Sprintf builds SQL with request values"
+    message: >-
+      fmt.Sprintf("SELECT ... %s", x) passed to Query/Exec is idiomatic Go
+      that AI models write fluently — and the one formatting idiom that must
+      never touch SQL. database/sql placeholders are the fix.
+    fix: "Use ? (or $1) placeholders and pass values as Query arguments"
+    languages: [go]
+    pattern:
+      kind: regex
+      match: 'Sprintf\s*\(\s*"[^"]*(SELECT|INSERT|UPDATE|DELETE|WHERE)[^"]*%'
+      flags: [caseless]
+    paths:
+      include: ["**/*.go"]
+      exclude: ["**/*_test.go"]
+    confidence: 0.75
+
+  - id: VS-SEC-041
+    category: insecure-api
+    severity: critical
+    title: "C# string-interpolated SQL query"
+    message: >-
+      $"SELECT ... WHERE id={id}" compiles and runs, so generated ADO.NET
+      code reaches production with interpolation intact. The dollar-quote is
+      the injection.
+    fix: "Add SqlParameter entries and reference them as @name placeholders in the command text"
+    languages: [csharp]
+    pattern:
+      kind: regex
+      match: '\$"[^"]*(SELECT|INSERT INTO|UPDATE|DELETE FROM)[^"]*\{'
+      flags: [caseless]
+    paths:
+      include: ["**/*.cs"]
+      exclude: ["**/*Test*.cs"]
+    confidence: 0.8
+
+  - id: VS-SEC-042
+    category: insecure-api
+    severity: high
+    title: "Pickle deserialization of untrusted bytes"
+    message: >-
+      pickle.loads on data from a socket, cache, or upload is convenient in
+      generated Python services, and pickle's opcode set is arbitrary code
+      execution — no malformed-data trickery required.
+    fix: "Exchange data as JSON or msgpack; if pickling is unavoidable, sign payloads with an HMAC"
+    languages: [python]
+    pattern:
+      kind: regex
+      match: '(pickle\.loads?\s*\(|yaml\.load\s*\([^)]*\b(Unsafe|Loader=yaml\.(Unsafe)?Loader))'
+    paths:
+      include: ["**/*.py"]
+      exclude: ["tests/**", "**/test_*"]
+    confidence: 0.7
+    references:
+      - "https://docs.python.org/3/library/pickle.html#warning"
+
+  - id: VS-SEC-043
+    category: insecure-api
+    severity: high
+    title: "yaml.load called without SafeLoader"
+    message: >-
+      Pre-2019 PyYAML docs showed yaml.load(data) with no Loader argument,
+      and AI completions still reproduce it. Default load constructs
+      arbitrary Python objects, making tagged input executable.
+    fix: "Call yaml.safe_load, or pass Loader=yaml.SafeLoader explicitly"
+    languages: [python]
+    pattern:
+      kind: regex
+      match: 'yaml\.load\s*\('
+    paths:
+      include: ["**/*.py"]
+      exclude: ["tests/**", "**/test_*"]
+    confidence: 0.75
+
+  - id: VS-SEC-044
+    category: insecure-api
+    severity: high
+    title: "Unsafe Java deserialization of a request stream"
+    message: >-
+      ObjectInputStream wrapped around a socket or request body is the shape
+      of every classic Java gadget-chain exploit, and generated serialization
+      helpers still use it because the API is simple.
+    fix: "Deserialize with a JSON/protobuf library, or apply a look-ahead deserialization allow-list"
+    languages: [java]
+    pattern:
+      kind: regex
+      match: 'new\s+ObjectInputStream\s*\('
+    paths:
+      include: ["**/*.java"]
+      exclude: ["src/test/**", "**/*Test.java"]
+    confidence: 0.65
+    references:
+      - "https://cheatsheetseries.owasp.org/cheatsheets/Undeserializable_Cheat_Sheet.html"
+
+  - id: VS-SEC-045
+    category: insecure-api
+    severity: high
+    title: "PHP unserialize applied to request data"
+    message: >-
+      unserialize($_POST/$_GET/$_COOKIE) completes object properties from
+      user input, enabling POP-chain attacks in codebases with gadget classes.
+      AI scaffolding picks it as the quick 'array from wire' option.
+    fix: "Transmit structured data as JSON and decode with json_decode using assoc mode"
+    languages: [php]
+    pattern:
+      kind: regex
+      match: 'unserialize\s*\(\s*\$(_(GET|POST|REQUEST|COOKIE)|GLOBAL)|unserialize\s*\(\s*file_get_contents'
+    paths:
+      include: ["**/*.php"]
+    confidence: 0.8
+
+  - id: VS-SEC-046
+    category: insecure-api
+    severity: high
+    title: "Marshal.load or JSON.parse with create_additions"
+    message: >-
+      Ruby's Marshal.load deserializes arbitrary objects with initializer
+      side effects — the Ruby analogue of Java's ObjectInputStream — and
+      appears in generated cache/session code.
+    fix: "Serialize session and cache data with JSON (or YAML.safe_load) and never Marshal.load untrusted bytes"
+    languages: [ruby]
+    pattern:
+      kind: regex
+      match: '(Marshal\.load\s*\(|JSON\.parse\s*\([^)]*create_additions\s*:\s*true)'
+    paths:
+      include: ["**/*.rb"]
+      exclude: ["spec/**", "test/**"]
+    confidence: 0.75
+
+  - id: VS-SEC-047
+    category: insecure-api
+    severity: high
+    title: "BinaryFormatter deserialization in .NET"
+    message: >-
+      BinaryFormatter is deprecated-by-default in current .NET precisely
+      because untrusted input means remote code execution, yet older training
+      data still emits it for 'quick' object persistence.
+    fix: "Migrate to System.Text.Json or MessagePack serialization"
+    languages: [csharp]
+    pattern:
+      kind: regex
+      match: '(new\s+BinaryFormatter\s*\(\)|\.Deserialize\s*\()'
+    paths:
+      include: ["**/*.cs"]
+      exclude: ["**/*Test*.cs"]
+    confidence: 0.45
+
+  - id: VS-SEC-048
+    category: insecure-api
+    severity: high
+    title: "PHP dynamic code execution with eval or assert"
+    message: >-
+      eval() and assert() on request-derived strings appear in generated
+      template and rules engines. assert() evaluates its string argument and
+      is equally a code-exec sink.
+    fix: "Replace dynamic evaluation with a data-driven rules structure or an allow-listed switch"
+    languages: [php]
+    pattern:
+      kind: regex
+      match: '\b(eval|assert)\s*\(\s*\$(\w+\s*[\[.(])?'
+    paths:
+      include: ["**/*.php"]
+    confidence: 0.55
+
+  - id: VS-SEC-049
+    category: insecure-api
+    severity: high
+    title: "Java ScriptEngine runs request-supplied code"
+    message: >-
+      ScriptEngineManager().eval(...) blocks surface in AI-written extension
+      points as a 'configurable' feature. Nashorn/GraalJS full modes can call
+      arbitrary Java, so the script text is an RCE surface.
+    fix: "Remove the scripting hook or confine it to a sandboxed expression engine with no host access"
+    languages: [java]
+    pattern:
+      kind: regex
+      match: '(getEngineByName\s*\([^)]*\)\s*\.eval|new\s+ScriptEngineManager\s*\(\)[^;]*eval)'
+    paths:
+      include: ["**/*.java"]
+    confidence: 0.8
+
+  - id: VS-SEC-050
+    category: insecure-api
+    severity: high
+    title: "Unencrypted block cipher mode (ECB or no-IV CBC)"
+    message: >-
+      Generated crypto helpers pick Cipher.getInstance("AES") — which defaults
+      to ECB in some providers — or explicit ECB mode, because the call fits
+      on one line. ECB leaks plaintext structure.
+    fix: "Use AES/GCM/NoPadding with a fresh random nonce via javax.crypto"
+    languages: [java]
+    pattern:
+      kind: regex
+      match: 'Cipher\.getInstance\s*\(\s*"(AES|DES|DESede|Blowfish)(/ECB(/[A-Za-z0-9]+)?)?"'
+    paths:
+      include: ["**/*.java"]
+    confidence: 0.7
+
+  - id: VS-SEC-051
+    category: insecure-api
+    severity: medium
+    title: "document.write or innerHTML with runtime data"
+    message: >-
+      DOM sinks like innerHTML = data and document.write(variable) are the
+      stored/reflected XSS starters models emit when wiring API results into
+      a page — escaping is left as an exercise.
+    fix: "Render with textContent or a framework's auto-escaping templates"
+    languages: [javascript, typescript]
+    pattern:
+      kind: regex
+      match: '(document\.write\s*\(|\.innerHTML\s*=|dangerouslySetInnerHTML)'
+    paths:
+      include: ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.html"]
+      exclude: ["**/*.test.*", "**/*.spec.*"]
+    confidence: 0.55

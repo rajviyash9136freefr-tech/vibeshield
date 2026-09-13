@@ -1,0 +1,372 @@
+schema: vibeshield.rules/v1
+id: core
+version: 1.0.0
+license: MIT
+# VS-DEP-001..019 — dependency-tree risk for AI-generated code (PRD §2.1 row 6).
+# Focus: unpinned manifests, wildcard/"latest" ranges, floating VCS refs,
+# git/URL requirements, install-from-unknown-index config, and deprecated or
+# archived dependency markers. Transitive-count heuristics live in the
+# diff-aware tree delta (engine feature D), not here.
+rules:
+  - id: VS-DEP-001
+    category: dependency-risk
+    severity: medium
+    title: "Python requirement declared with no version constraint"
+    message: >-
+      A bare package name in requirements.txt resolves to whatever is newest
+      at install time, so a compromised or broken release lands in every
+      future build. Agents add requirements one line at a time without
+      pinning, and the drift is invisible until CI or production breaks.
+    fix: "Pin each requirement to an exact version (==) or a tested range, and generate hashes with pip-compile."
+    languages: [python]
+    pattern:
+      kind: regex
+      match: '^\s*[A-Za-z0-9][A-Za-z0-9._-]*\s*(?:\[[^\]]*\])?\s*(?:#.*)?$'
+    paths:
+      include: ["**/requirements*.txt", "**/requirements/*.txt"]
+      exclude: ["**/node_modules/**"]
+    confidence: 0.7
+    references:
+      - "https://pip.pypa.io/en/stable/cli/pip_compile/"
+  - id: VS-DEP-002
+    category: dependency-risk
+    severity: medium
+    title: "Python requirement open-ended above its minimum version"
+    message: >-
+      A >= constraint admits every future release, including ones with
+      breaking changes or new install scripts nobody reviewed. Models favor
+      >= because it always resolves, which hides exactly the upgrade risk a
+      lockfile exists to control.
+    fix: "Use a bounded range (e.g. >=1.2,<2) or an exact pin committed with a lockfile."
+    languages: [python]
+    pattern:
+      kind: regex
+      match: '^\s*[A-Za-z0-9][A-Za-z0-9._-]*(?:\[[^\]]*\])?\s*>=\s*\d[\d.]*(?:\s*,\s*!=\s*\d[\d.]*)*\s*(?:#.*)?$'
+    paths:
+      include: ["**/requirements*.txt", "**/requirements/*.txt"]
+      exclude: ["**/node_modules/**"]
+    confidence: 0.6
+  - id: VS-DEP-003
+    category: dependency-risk
+    severity: medium
+    title: "npm dependency range floats across minor or major versions"
+    message: >-
+      ^, ~, and x ranges let npm resolve a different tree on every clean
+      install unless a committed lockfile pins it. Agents regenerate
+      package.json constantly, and an unpinned range is how one approved
+      dependency quietly becomes two hundred unreviewed transitive ones.
+    fix: "Commit package-lock.json and pin direct dependencies to exact versions (npm install --save-exact)."
+    languages: [javascript, typescript]
+    pattern:
+      kind: regex
+      match: '"[^"]+"\s*:\s*"[\^~]|"[^"]+"\s*:\s*"[\d.]+\.x"'
+    paths:
+      include: ["**/package.json"]
+      exclude: ["**/node_modules/**"]
+    confidence: 0.55
+    references:
+      - "https://docs.npmjs.com/cli/v10/configuring-npm/package-json#dependencies"
+  - id: VS-DEP-004
+    category: dependency-risk
+    severity: high
+    title: "npm dependency or install command pinned to the latest tag"
+    message: >-
+      "latest" as a version resolves to whatever is published at install
+      time, which is the exact attack window typosquats and
+      account-takeover releases exploit. No reproducible build should treat
+      the publish moment as a version constraint.
+    fix: "Replace \"latest\" with an exact semantic version."
+    languages: [javascript, typescript, generic]
+    pattern:
+      kind: regex
+      match: '"[^"]+"\s*:\s*"(?:latest|next|canary|bleeding)"|(?:npm|pnpm|yarn)\s+(?:install|add)(?:\s+-\S+)*\s+\S+@latest'
+      flags: [caseless]
+    paths:
+      exclude: ["**/node_modules/**", "**/dist/**", "**/build/**"]
+    confidence: 0.8
+  - id: VS-DEP-005
+    category: dependency-risk
+    severity: high
+    title: "Wildcard version range in a Maven or Gradle dependency"
+    message: >-
+      LATEST/RELEASE version tags and open-ended [x,] ranges resolve to the
+      newest artifact at build time, so the build silently consumes the next
+      compromised release. Java scaffolding from training data still carries
+      these deprecated range styles into current projects.
+    fix: "Pin an explicit version and let Dependabot or Renovate open update PRs."
+    languages: [java]
+    pattern:
+      kind: regex
+      match: '<version>\s*(?:LATEST|RELEASE)\s*</version>|\[\s*[\d][\d.]*\s*,\s*\]|version\s*[=:]\s*"\+?[0-9][\d.]*\+"'
+      flags: [caseless]
+    paths:
+      include: ["**/pom.xml", "**/build.gradle", "**/build.gradle.kts", "**/settings.gradle"]
+    confidence: 0.75
+    references:
+      - "https://maven.apache.org/pom.html#Dependencies"
+  - id: VS-DEP-006
+    category: dependency-risk
+    severity: high
+    title: "Composer dependency allows any version"
+    message: >-
+      A "*" or "dev-master" constraint pulls whatever the upstream author
+      publishes next, with no changelog review in between. PHP scaffold
+      templates generated from memory tend to emit "*" because it always
+      resolves during the demo.
+    fix: "Use a bounded caret range (^1.2) and commit composer.lock."
+    languages: [php]
+    pattern:
+      kind: regex
+      match: '"[^"]+"\s*:\s*"(?:\*|dev-master|dev-main|dev-develop|dev-trunk)"'
+    paths:
+      include: ["**/composer.json"]
+    confidence: 0.75
+    references:
+      - "https://getcomposer.org/doc/articles/versions.md"
+  - id: VS-DEP-007
+    category: dependency-risk
+    severity: medium
+    title: "Gem dependency declared without a version bound"
+    message: >-
+      A Gemfile line with no version resolves to the newest published gem
+      on every fresh bundle install. Bundler warns about this pattern
+      because the drift only shows up when someone else's release breaks
+      your build.
+    fix: "Pin each gem to a version or range (gem \"foo\", \"~> 1.4\") and commit Gemfile.lock."
+    languages: [ruby]
+    pattern:
+      kind: regex
+      match: '^\s*gem\s+["''][A-Za-z0-9_-]+["'']\s*(?:#.*)?$'
+    paths:
+      include: ["**/Gemfile"]
+    confidence: 0.6
+    references:
+      - "https://bundler.io/man/gemfile.5.html"
+  - id: VS-DEP-008
+    category: dependency-risk
+    severity: medium
+    title: "Cargo wildcard dependency or version-less install command"
+    message: >-
+      "*" as a Cargo version constraint, and cargo commands copied without
+      a version, both resolve to the newest crate at build time. Rust README
+      snippets written by models frequently skip the pin a reproducible
+      workspace expects.
+    fix: "Pin the crate to an exact version in Cargo.toml and commit Cargo.lock."
+    languages: [rust]
+    pattern:
+      kind: regex
+      match: '^[A-Za-z0-9_-]+\s*=\s*"\*"|cargo\s+(?:add|install)\s+(?:--\S+\s+)*[A-Za-z0-9_-]+\s*$'
+      flags: [caseless]
+    paths:
+      include: ["**/Cargo.toml", "**/*.md", "**/*.sh"]
+    confidence: 0.6
+    references:
+      - "https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html"
+  - id: VS-DEP-009
+    category: dependency-risk
+    severity: high
+    title: "Dependency fetched from a Git URL at a branch ref"
+    message: >-
+      git+https://, github:, and @main requirements rebuild from whatever
+      the branch head contains at install time, bypassing every registry
+      review signal (age, downloads, maintainers). Generated manifests reach
+      for branch pins when a package version they "remember" was never
+      actually published.
+    fix: "Pin to a full commit hash (pkg @ git+https://host/repo@<sha>) or use a tagged registry release."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: 'git\+(?:https?|ssh|git)://|(?:requirements|dependency|require)\b[^\n]{0,40}(?:github|gitlab|bitbucket)\.com[:/][^\s"\x27]+@(?:main|master|develop|HEAD|latest|trunk|dev)'
+      flags: [caseless]
+    paths:
+      exclude: ["**/node_modules/**", "**/vendor/**", "**/*.lock", "**/go.sum", "**/Cargo.lock", "**/pnpm-lock.yaml", "**/yarn.lock"]
+    confidence: 0.75
+  - id: VS-DEP-010
+    category: dependency-risk
+    severity: medium
+    title: "Pip requirement installed from a Git URL"
+    message: >-
+      VCS requirements in requirements.txt skip PyPI's release review and
+      can float on a branch if not pinned to a commit. Models emit these to
+      resolve an import they believe needs an unreleased fix, which is also
+      the pattern of a hallucinated-package workaround.
+    fix: "Pin the VCS requirement to a commit hash (@ git+https://host/repo@<full-sha>) or wait for a release."
+    languages: [python]
+    pattern:
+      kind: regex
+      match: '^\s*(?:-e\s+)?(?:git\+)?(?:https?|ssh|git)://[^\s]*(?:github|gitlab|bitbucket)[^\s]*(?:$|\s)'
+      flags: [caseless]
+    paths:
+      include: ["**/requirements*.txt", "**/requirements/*.txt", "**/Pipfile", "**/pyproject.toml"]
+    confidence: 0.65
+  - id: VS-DEP-011
+    category: dependency-risk
+    severity: medium
+    title: "Go module installed at @latest"
+    message: >-
+      go get / go install with @latest builds against the moving tip of the
+      module, and generated README install lines use it even when the repo's
+      go.mod is properly pinned right beside them. The install command a
+      reader copies is part of the dependency surface.
+    fix: "Use an explicit version: go install module@v1.2.3 (or go get module@v1.2.3)."
+    languages: [go, generic]
+    pattern:
+      kind: regex
+      match: 'go\s+(?:get|install)\s+(?:-\S+\s+)*\S+@latest'
+      flags: [caseless]
+    confidence: 0.75
+  - id: VS-DEP-012
+    category: dependency-risk
+    severity: high
+    title: "Pip configured to trust an extra index URL"
+    message: >-
+      --extra-index-url (or PIP_EXTRA_INDEX_URL) lets any package served by
+      that host win installation, including names that shadow real PyPI
+      packages — the dependency-confusion setup. Scaffolds with "internal
+      mirror" placeholders sometimes ship the flag with a fabricated host
+      still in it.
+    fix: "Verify every index host is your own; prefer an exact pin plus hashes over extra indexes for one-off packages."
+    languages: [python, generic]
+    pattern:
+      kind: regex
+      match: '--extra-index-url\s*=?\s*["\x27]?https?://|PIP_EXTRA_INDEX_URL\s*=\s*["\x27]?https?://|--index-url\s*=?\s*["\x27]?https?://(?:\d{1,3}\.){3}\d{1,3}|PIP_INDEX_URL\s*=\s*["\x27]?https?://(?:\d{1,3}\.){3}\d{1,3}'
+      flags: [caseless]
+    paths:
+      exclude: ["**/node_modules/**", "**/*.md"]
+    confidence: 0.7
+    references:
+      - "https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-extra-index-url"
+  - id: VS-DEP-013
+    category: dependency-risk
+    severity: high
+    title: "npm registry redirected to a non-default host"
+    message: >-
+      .npmrc registry lines and scoped @host:registry config redirect every
+      install on the machine, so a lookalike host serves tarballs for
+      common names without anyone noticing. Model-written setup docs invent
+      registry URLs the same way they invent package names — a review pass
+      is cheap insurance.
+    fix: "Point registry settings only at registry.npmjs.org or a verified internal mirror you actually own."
+    languages: [javascript, typescript, generic]
+    pattern:
+      kind: regex
+      match: 'registry\s*=\s*["\x27]?(?:http://|https?://[^\s"\x27]*(?:npmjs\.(?:com|net|io|dev|cn)|npm-js|registrynpm|registry-npm|(?:\d{1,3}\.){3}\d{1,3}|[^/\s"\x27]*:[^/\s"\x27]*@))'
+      flags: [caseless]
+    paths:
+      include: ["**/.npmrc", "**/.yarnrc", "**/.yarnrc.yml", "**/verdaccio*.yaml", "**/*.toml", "**/*.json"]
+      exclude: ["**/node_modules/**"]
+    confidence: 0.7
+    references:
+      - "https://docs.npmjs.com/cli/v10/configuring-npm/npmrc#registries"
+  - id: VS-DEP-014
+    category: dependency-risk
+    severity: medium
+    title: "GOPROXY bypassed in favor of direct module fetches"
+    message: >-
+      GOPROXY=direct (or off) skips the checksum database enforcement
+      semantics proxy.golang.org provides in default configs, letting
+      module fetches hit arbitrary hosts unchecked. Generated CI snippets
+      flip this to "fix" a proxy timeout and never flip it back.
+    fix: "Restore GOPROXY=https://proxy.golang.org,direct and GOFLAGS without -insecure; fix the underlying network instead."
+    languages: [go, generic]
+    pattern:
+      kind: regex
+      match: 'GOPROXY\s*=\s*"?(?:direct|off|none)"?\b|go\s+install[^\n]*-insecure|go\s+get\s+-insecure'
+      flags: [caseless]
+    confidence: 0.7
+    references:
+      - "https://proxy.golang.org/"
+  - id: VS-DEP-015
+    category: dependency-risk
+    severity: medium
+    title: "Dependency install with integrity or signature checks disabled"
+    message: >-
+      --no-verify (npm), --no-verify-ssl / trusted-host (pip), and
+      composer.json "secure-http": false all exist to silence the exact
+      checks that catch a swapped artifact. Docs written for a demo build
+      ship them into CI by accident and stay there.
+    fix: "Remove the flag; solve the certificate or script issue properly instead of muting the check."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: '(?:npm|yarn|pnpm)\s+(?:install|add)[^\n]*--no-verify|pip[^\n]*--trusted-host|(?:--|")no-?verify-?ssl(?:\s*[:=]\s*true)?|"secure-http"\s*:\s*false'
+      flags: [caseless]
+    paths:
+      exclude: ["**/node_modules/**"]
+    confidence: 0.65
+  - id: VS-DEP-016
+    category: dependency-risk
+    severity: high
+    title: "Dependency marked deprecated or archived in its own manifest"
+    message: >-
+      Lines like "# deprecated", "@deprecated", or "archived" beside a
+      required package mean upstream stopped maintaining it — the supply
+      chain equivalent of a lights-out warehouse. Models still suggest
+      popular-but-retired packages because they were everywhere before the
+      retirement notice.
+    fix: "Migrate to the successor package named in the deprecation notice, or vendor a maintained fork."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: '(?:#.*)?(?:^|\s)(?:@deprecated|DEPRECATED:|\[DEPRECATED\]|Package is (?:deprecated|archived)|repository (?:was |has been )?archived)\b[^\n]{0,80}(?:request|dep|dependenc|package|use|replace|successor|migrat)?'
+    paths:
+      exclude: ["**/node_modules/**", "**/vendor/**", "**/dist/**", "**/build/**"]
+    confidence: 0.55
+  - id: VS-DEP-017
+    category: dependency-risk
+    severity: medium
+    title: "Deprecated comment marker next to a dependency declaration"
+    message: >-
+      "deprecated: use X instead" comments adjacent to requires/install
+      lines survive copy-paste from older manifests and mark dependencies
+      this repo is expected to drop. The successor named in the comment is
+      the migration path agents skipped.
+    fix: "Switch to the successor dependency named in the comment, or delete the stale notice."
+    languages: [generic]
+    pattern:
+      kind: regex
+      match: '(?:#|//|/\*|\*)\s*(?:TODO|FIXME|NB|note)?\s*[^\n]{0,30}deprecated[^\n]{0,60}(?:use|replaced by|migrate|instead|successor)'
+      flags: [caseless]
+    paths:
+      include: ["**/requirements*.txt", "**/package.json", "**/pyproject.toml", "**/setup.py", "**/setup.cfg", "**/composer.json", "**/Cargo.toml", "**/Gemfile", "**/go.mod", "**/pom.xml", "**/build.gradle", "**/build.gradle.kts", "**/Pipfile"]
+    confidence: 0.6
+  - id: VS-DEP-018
+    category: dependency-risk
+    severity: medium
+    title: "Setup script or Dockerfile installs from a raw URL or pasted source"
+    message: >-
+      pip install <http-url>, curl <url> | python, and setup.py fetched from
+      a personal page skip the package index entirely, so no registry
+      metadata (age, maintainer, download count) vets what enters the
+      image. Generated quickstarts love one-liner URL installs because they
+      always work in the demo.
+    fix: "Install from the package index with a pinned version; host the artifact in a registry you control if none exists."
+    languages: [python, generic]
+    pattern:
+      kind: regex
+      match: 'pip[3]?\s+install\s+(?:--\S+[^\n]*)?["\x27]?https?://|curl[^\n]*\|\s*(?:sudo\s+)?(?:python[3]?|bash|sh)\b'
+      flags: [caseless]
+    paths:
+      exclude: ["**/node_modules/**", "**/*.md"]
+    confidence: 0.6
+  - id: VS-DEP-019
+    category: dependency-risk
+    severity: medium
+    title: "Go requirement marked +incompatible"
+    message: >-
+      A +incompatible module has no semantic-version tags, so "major
+      version 2+ by date" is the only upgrade story and the tree resolves
+      to a moving pseudo-version nobody reviewed. Agents add these to
+      silence a go.mod error instead of picking a properly versioned
+      module — the transitive-blowout pattern (PRD row 6) in its tidiest
+      form.
+    fix: "Replace the +incompatible module with a semver-tagged dependency, or vendor the specific commit intentionally."
+    languages: [go]
+    pattern:
+      kind: regex
+      match: '^[^\n]*\+incompatible\b|^\s*[A-Za-z0-9][^\s]*\s+v?\d+\.0\.0-(?:0\.)?\d{14}-[0-9a-f]{12}\b'
+    paths:
+      include: ["**/go.mod"]
+    confidence: 0.6
+    references:
+      - "https://go.dev/ref/mod#versions"

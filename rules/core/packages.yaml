@@ -1,0 +1,189 @@
+# VibeShield core pack — package supply-chain risk (VS-PKG-001..010)
+# Declarative detection of the AI dependency failure modes from PRD §5.5A:
+# hallucinated names, remote-code install hooks, and unpinned install paths.
+# The namescore / age / maintainer signals themselves come from the scanner's
+# package-intel engine; these rules mark the manifest-side patterns around them.
+schema: vibeshield.rules/v1
+id: core
+version: 1.0.0
+license: MIT
+rules:
+  - id: VS-PKG-001
+    category: hallucinated-package
+    severity: critical
+    title: "Hallucinated package name added as a dependency"
+    message: >-
+      LLMs invent plausible package names, and attackers register them within
+      hours ("slopsquatting"). This dependency name scores as likely-generated
+      and has weak supply-chain signals (registry age, maintainers, install
+      scripts) — there is no CVE because the package exists only to be
+      installed once.
+    fix: "Remove the dependency and re-implement the call with a stdlib function or a package you verified exists before the model's training cutoff"
+    languages: [javascript, typescript, python, go, ruby, php, java, rust]
+    pattern:
+      kind: structural
+      match: namescore >= 0.7 and (age_days < 30 or install_scripts > 0)
+    paths:
+      include: ["package.json", "**/package.json", "requirements*.txt", "Pipfile", "pyproject.toml", "go.mod", "Gemfile", "composer.json", "pom.xml", "build.gradle*", "Cargo.toml"]
+    confidence: 0.85
+    references:
+      - "https://vibeshield.dev/docs/hallucinated-packages"
+
+  - id: VS-PKG-002
+    category: dependency-risk
+    severity: high
+    title: "Install hook downloads and executes a remote script"
+    message: >-
+      setup.py logic or package.json install hooks that curl/wget a URL run
+      arbitrary remote code at install time, on your machine and on every CI
+      runner. AI scaffolds add these to 'grab the native binary' without
+      pinning or verifying what it fetches.
+    fix: "Vendor the dependency or fetch it from an allow-listed host with a checksum you verify before execution"
+    languages: [python, javascript, typescript, ruby, php, generic]
+    pattern:
+      kind: regex
+      match: '(subprocess|os\.system|system)\s*\(?[^)\n]*(curl|wget)|["\x27](postinstall|preinstall|prepare)["\x27]?\s*:[^\n]*(curl|wget|powershell|iwr)'
+    paths:
+      include: ["**/setup.py", "**/package.json", "**/setup.cfg", "**/pyproject.toml", "**/*.gemspec", "**/composer.json"]
+    confidence: 0.8
+
+  - id: VS-PKG-003
+    category: dependency-risk
+    severity: high
+    title: "setup.py executes remote code during install"
+    message: >-
+      exec/eval/os.system inside a setup.py or __main__ block means building
+      the wheel runs the author's code with your user's permissions. Generated
+      packaging code adds it for 'download the model/binary' steps.
+    fix: "Ship pure-python packages or use a build backend; never exec network content from setup.py"
+    languages: [python]
+    pattern:
+      kind: regex
+      match: '(exec(urllib|requests|http)|os\.system\s*\(|subprocess\.call\s*\([^)]*(curl|wget|http))'
+    paths:
+      include: ["**/setup.py", "**/setup.cfg"]
+    confidence: 0.75
+
+  - id: VS-PKG-004
+    category: dependency-risk
+    severity: medium
+    title: "Dependency installed directly from a git URL"
+    message: >-
+      git+ssh/git+https and require: git:... pins resolve to a mutable ref
+      or unreviewed repository. AI code uses them when inventing an 'unpublished
+      fix' path; the target can change under you without a version bump.
+    fix: "Depend only on published versions; if a fork is required, pin to a full commit hash and review the diff"
+    languages: [python, javascript, ruby, php, generic]
+    pattern:
+      kind: regex
+      match: '(git\+(https|ssh|git)://|["\x27](file|github|gitlab)[:/]|require\s+["\x27]https?://|from\s+["\x27]git\+)'
+    paths:
+      include: ["**/requirements*.txt", "**/package.json", "**/Pipfile", "**/pyproject.toml", "**/Gemfile", "**/composer.json"]
+    confidence: 0.6
+
+  - id: VS-PKG-005
+    category: dependency-risk
+    severity: medium
+    title: "Dependency pinned to a wildcard or latest version"
+    message: >-
+      "*" / "latest" / ">=0.0.1" ranges let any new publisher of that name —
+      including one who squatted a hallucinated one — deploy straight to your
+      build. Generated manifests use wildcards to avoid version errors.
+    fix: "Pin exact versions in manifests and let Renovate/Dependabot propose upgrades"
+    languages: [python, javascript, ruby, php, java, generic]
+    pattern:
+      kind: regex
+      match: '(["\x27][^"\x27]+["\x27]\s*:\s*["\x27]?(latest|\*)|[=(<>~]=?\s*\*|[^-\d\w]\d+\.\d+\.\d+\+["\x27]?\s*)'
+    paths:
+      include: ["**/package.json", "**/requirements*.txt", "**/Pipfile", "**/pyproject.toml", "**/composer.json", "**/Gemfile"]
+    confidence: 0.5
+
+  - id: VS-PKG-006
+    category: dependency-risk
+    severity: medium
+    title: "Typosquat-adjacent package name (hyphen/underscore confusion)"
+    message: >-
+      Names that differ from a popular package only by - vs _ or a doubled
+      separator (fast-parse-utils vs fast_parse_utils) are how squatting
+      harvests model typos. The scanner's namescore compares added names
+      against the popular-package edit-distance table.
+    fix: "Confirm the exact package name on the registry page, then install the canonical one"
+    languages: [javascript, typescript, python, generic]
+    pattern:
+      kind: structural
+      match: namescore typosquat_distance == 1 against top-10k packages
+    paths:
+      include: ["package.json", "**/package.json", "requirements*.txt", "pyproject.toml"]
+    confidence: 0.7
+
+  - id: VS-PKG-007
+    category: dependency-risk
+    severity: medium
+    title: "Newly registered package matches a plausible hallucination pattern"
+    message: >-
+      A package first seen in this PR is younger than the typical
+      slopsquatting window and its name matches generated-name morphology
+      (adjective-noun-utils-style). Age plus namescore is the launch-window
+      signal, before any CVE could exist.
+    fix: "Do not install packages registered after the model's training cutoff; replace with an established equivalent"
+    languages: [javascript, typescript, python, go, ruby, php, java, rust]
+    pattern:
+      kind: structural
+      match: age_days < 30 and namescore >= 0.6
+    paths:
+      include: ["package.json", "**/package.json", "requirements*.txt", "Pipfile", "pyproject.toml", "go.mod", "Gemfile", "composer.json", "pom.xml", "Cargo.toml"]
+    confidence: 0.75
+
+  - id: VS-PKG-008
+    category: dependency-risk
+    severity: medium
+    title: "Dependency added without a lockfile update"
+    message: >-
+      A new entry in the manifest with no matching lockfile delta means CI
+      and local builds resolve different versions — and gives a re-released
+      dependency a window to slip changed code into the build unnoticed.
+    fix: "Commit the regenerated package-lock.json/poetry.lock/Gemfile.lock alongside the manifest change"
+    languages: [javascript, typescript, python, ruby, php]
+    pattern:
+      kind: structural
+      match: manifest_added_dependency and not lockfile_updated
+    paths:
+      include: ["package.json", "**/package.json", "requirements*.txt", "Pipfile", "pyproject.toml", "composer.json"]
+      exclude: ["**/node_modules/**"]
+    confidence: 0.7
+
+  - id: VS-PKG-009
+    category: dependency-risk
+    severity: medium
+    title: "Install-time binary download from a personal/unpinned host"
+    message: >-
+      download_url or bin: stanzas pointing at raw.githubusercontent.com,
+      personal domains, or short-link services fetch binaries with no
+      integrity check. AI 'just works' installer snippets produce these when
+      real packages publish no wheel.
+    fix: "Depend on a published package with checksummed artifacts instead of ad-hoc binary fetches"
+    languages: [python, javascript, generic]
+    pattern:
+      kind: regex
+      match: '(download_url|urls?|bin|download)\s*[:=]\s*["\x27]https?://(raw\.githubusercontent\.com|[a-z0-9.-]+\.herokuapp\.com|[a-z0-9.-]+\.blogspot\.com|bit\.ly|tinyurl\.com|gl\.ot)'
+      flags: [caseless]
+    paths:
+      include: ["**/setup.py", "**/package.json", "**/pyproject.toml", "**/setup.cfg"]
+    confidence: 0.55
+
+  - id: VS-PKG-010
+    category: dependency-risk
+    severity: medium
+    title: "Single-maintainer package with install scripts added in this diff"
+    message: >-
+      New dependencies that run install scripts and have one maintainer and
+      no README match the published profile of a squatting dropper; there is
+      no established supply chain to detect a compromise in yet.
+    fix: "Prefer libraries without install-time scripts, or vendor the functionality with a pinned checksum"
+    languages: [javascript, typescript, python, ruby, php, generic]
+    pattern:
+      kind: structural
+      match: maintainers == 1 and install_scripts > 0 and added_in_diff
+    paths:
+      include: ["package.json", "**/package.json", "requirements*.txt", "Pipfile", "pyproject.toml", "composer.json", "Gemfile"]
+    confidence: 0.75
