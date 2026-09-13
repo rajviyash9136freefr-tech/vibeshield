@@ -1,0 +1,43 @@
+---
+// Blog index — /blog. Real HTML list, newest first; posts render under
+// /blog/<slug> with the internal-link rule (§9.2: each post links to /#install
+// and a compare page — authored into the post content, not the template).
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/ui/Nav.astro';
+import Footer from '../../components/ui/Footer.astro';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<BaseLayout
+  title="Blog — VibeShield"
+  description="Notes on AI-code security: slopsquatting, hallucinated packages, threat models, and what the bots shipped. From the VibeShield team."
+  canonical="/blog"
+>
+  <Nav slot="nav" />
+  <div class="wrap section">
+    <p class="eyebrow">Blog</p>
+    <h1 class="mt-2 text-[36px] font-bold tracking-[-0.03em]">What the bots shipped</h1>
+    <p class="mt-3 max-w-[60ch] text-[17px] text-[var(--color-muted)]">
+      Research notes and postmortems on the failure modes of AI-generated code.
+    </p>
+    <ul class="mt-12 space-y-4">
+      {posts.map((p) => (
+        <li data-reveal>
+          <a href={`/blog/${p.id}/`} class="card block p-6 transition-colors duration-150 hover:border-[var(--color-accent)]">
+            <p class="text-sm text-[var(--color-faint)]">
+              {p.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              {p.data.tags.length > 0 && <span> · {p.data.tags.join(' · ')}</span>}
+            </p>
+            <h2 class="mt-1 text-[22px] font-semibold leading-8">{p.data.title}</h2>
+            <p class="mt-2 text-[15px] text-[var(--color-muted)]">{p.data.description}</p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+  <Footer slot="footer" />
+</BaseLayout>

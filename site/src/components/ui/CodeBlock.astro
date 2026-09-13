@@ -1,0 +1,33 @@
+---
+/**
+ * Static code block with copy button + optional filename tab (UIUX §5).
+ * Monospace 13.5px via global .astro-code-like styling; no syntax-highlight
+ * dependency — the hero demo and findings carry their own semantic colors.
+ */
+interface Props {
+  code: string;
+  filename?: string;
+  label?: string;
+  class?: string;
+}
+const { code, filename, label, class: cls = '' } = Astro.props;
+---
+
+<div class={`relative ${cls}`}>
+  {filename && (
+    <div class="mb-[-1px] inline-block rounded-t-[var(--radius-card)] border border-b-0 border-[var(--color-hairline)] bg-[var(--color-elevated)] px-3 py-1.5 font-mono text-[13px] text-[var(--color-muted)]">
+      {filename}
+    </div>
+  )}
+  <pre
+    class="scroll-x rounded-[var(--radius-card)] border border-[var(--color-hairline)] bg-[var(--color-elevated)] p-4 font-mono text-[13.5px] leading-[1.7] text-[var(--color-fg)]"
+    tabindex="0"
+    data-code
+  ><code set:html={code.replace(/&/g, '&amp;').replace(/</g, '&lt;')} /></pre>
+  <button
+    type="button"
+    class="absolute top-2.5 right-2.5 rounded-[var(--radius-btn)] border border-[var(--color-hairline)] bg-[var(--color-bg)] px-2.5 py-1 text-xs text-[var(--color-muted)] transition-colors duration-150 hover:text-[var(--color-accent)]"
+    aria-label={label ?? 'Copy code to clipboard'}
+    data-copy
+  >Copy</button>
+</div>

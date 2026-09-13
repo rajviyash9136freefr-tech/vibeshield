@@ -1,0 +1,20 @@
+---
+/**
+ * Severity chip (UIUX §5). Conveys severity by TEXT, not color alone
+ * (UIUX §6 a11y). Colors from §2.1 only — never decorative.
+ */
+interface Props {
+  severity: 'critical' | 'high' | 'medium' | 'low' | 'info';
+  label?: string;
+}
+const { severity, label } = Astro.props;
+const text = (label ?? severity).toUpperCase();
+---
+
+<span
+  class="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-hairline)] bg-[var(--color-accent-dim)] px-2.5 py-0.5 font-mono text-xs font-semibold"
+  style={`color: var(--color-${severity})`}
+>
+  <span class="h-1.5 w-1.5 rounded-full" style={`background: var(--color-${severity})`} aria-hidden="true"></span>
+  {text}
+</span>

@@ -1,0 +1,67 @@
+---
+// /security — the trust page security buyers check (UIUX §10 #7).
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/ui/Nav.astro';
+import Footer from '../components/ui/Footer.astro';
+---
+
+<BaseLayout
+  title="Security & threat model — VibeShield"
+  description="What VibeShield sees, where analysis results go, how findings are stored, and how to disclose a vulnerability. The threat model, in plain text."
+  canonical="/security"
+>
+  <Nav slot="nav" />
+  <div class="wrap-narrow section">
+    <p class="eyebrow">Trust</p>
+    <h1 class="mt-2 text-[36px] font-bold tracking-[-0.03em]">Security & threat model</h1>
+
+    <h2 class="mt-10 text-[24px] font-semibold">What leaves your machine</h2>
+    <ul class="mt-4 list-disc space-y-2 pl-5 text-[var(--color-muted)]">
+      <li><strong class="text-[var(--color-fg)]">CLI & pre-commit hook:</strong> nothing. Static analysis is fully local; the rules engine runs from the embedded pack. Network calls happen only with explicit <code class="font-mono text-sm">--online</code>, and then only package names go to public registries — never file contents.</li>
+      <li><strong class="text-[var(--color-fg)]">GitHub Action:</strong> analysis runs on your runner. We send findings <em>metadata</em> to the dashboard — file paths, rule IDs, symbol names, severities. File contents and snippets are never persisted server-side; snippets exist only inside your PR comment.</li>
+      <li><strong class="text-[var(--color-fg)]">Private-repo results are never used for model training. Ever.</strong></li>
+    </ul>
+
+    <h2 class="mt-10 text-[24px] font-semibold">Trust boundaries</h2>
+    <table class="mt-4 w-full border-collapse text-sm">
+      <thead class="text-left">
+        <tr class="border-b border-[var(--color-hairline)]">
+          <th scope="col" class="py-2 pr-4 font-semibold">Component</th>
+          <th scope="col" class="py-2 pr-4 font-semibold">Runs</th>
+          <th scope="col" class="py-2 font-semibold">Handles</th>
+        </tr>
+      </thead>
+      <tbody class="text-[var(--color-muted)]">
+        <tr class="border-b border-[var(--color-hairline)]"><td class="py-2 pr-4 font-mono text-[13px] text-[var(--color-fg)]">scanner (Go binary)</td><td class="py-2 pr-4">your machine / runner</td><td class="py-2">source files (read-only), git metadata</td></tr>
+        <tr class="border-b border-[var(--color-hairline)]"><td class="py-2 pr-4 font-mono text-[13px] text-[var(--color-fg)]">rules packs (YAML)</td><td class="py-2 pr-4">in-process</td><td class="py-2">validated at load; strict schema, RE2 only — a malformed pack is exit 2, never execution</td></tr>
+        <tr class="border-b border-[var(--color-hairline)]"><td class="py-2 pr-4 font-mono text-[13px] text-[var(--color-fg)]">package-intel API</td><td class="py-2 pr-4">our cloud</td><td class="py-2">registry snapshots (npm/PyPI/crates/Go); sees package names from opt-in --online lookups</td></tr>
+        <tr class="border-b border-[var(--color-hairline)]"><td class="py-2 pr-4 font-mono text-[13px] text-[var(--color-fg)]">findings API + dashboard</td><td class="py-2 pr-4">our cloud</td><td class="py-2">findings metadata; GitHub OAuth; no file contents</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="mt-10 text-[24px] font-semibold">How the scanner reads your code</h2>
+    <ul class="mt-4 list-disc space-y-2 pl-5 text-[var(--color-muted)]">
+      <li>Read-only file access; the scanner never writes to your repo (<code class="font-mono text-sm">init</code> writes config files, and says so first).</li>
+      <li>It does not execute your code, install dependencies, or build. Findings are pattern matches over text, weighted by AI-likelihood.</li>
+      <li>Secrets found in matched lines are redacted by the scanner (4 + 4 characters kept) before anything is printed, posted, or sent.</li>
+    </ul>
+
+    <h2 class="mt-10 text-[24px] font-semibold">Disclosure</h2>
+    <p class="mt-4 text-[var(--color-muted)]">
+      Found a vulnerability in VibeShield itself? Email
+      <a class="text-[var(--color-accent)] hover:underline" href="mailto:security@vibeshield.dev">security@vibeshield.dev</a>
+      — PGP key on request. We acknowledge within 48 hours and aim to ship a fix within 14 days for anything rated high or above.
+      Please don't open a public issue first; we'll credit reporters who give us the window.
+    </p>
+
+    <h2 class="mt-10 text-[24px] font-semibold">Precision, honestly stated</h2>
+    <p class="mt-4 text-[var(--color-muted)]">
+      No scanner is right all the time. Our release bar is ≥ 85 % precision on
+      critical/high findings against a 200-PR golden set, ≤ 5 false positives per
+      1k diff lines, and every dismiss carries a required reason into an audit
+      log we can learn from. When a rule underperforms we lower its confidence
+      or retire it — the pack's changelog is public in the repo.
+    </p>
+  </div>
+  <Footer slot="footer" />
+</BaseLayout>

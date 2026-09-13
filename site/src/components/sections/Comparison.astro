@@ -1,0 +1,42 @@
+---
+// §3.8 — honest ✅/⚠️/❌, sticky first column on mobile (§6).
+import { COMPARISON } from '../../data/site';
+---
+
+<section class="section border-t border-[var(--color-hairline)]">
+  <div class="wrap">
+    <h2 class="text-[28px] font-bold tracking-[-0.02em] lg:text-[40px]">{COMPARISON.h2}</h2>
+    <div class="scroll-x mt-10 overflow-x-auto rounded-[var(--radius-card)] border border-[var(--color-hairline)]">
+      <table class="w-full min-w-[720px] border-collapse text-sm">
+        <thead>
+          <tr class="border-b border-[var(--color-hairline)] bg-[var(--color-elevated)] text-left">
+            <th scope="col" class="sticky left-0 z-10 min-w-52 bg-[var(--color-elevated)] px-4 py-3 font-semibold text-[var(--color-fg)]">Capability</th>
+            {COMPARISON.cols.map((c) => (
+              <th scope="col" class={`min-w-28 px-4 py-3 font-semibold ${c === 'VibeShield' ? 'text-[var(--color-accent)]' : 'text-[var(--color-muted)]'}`}>{c}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {COMPARISON.rows.map((r) => (
+            <tr class="border-b border-[var(--color-hairline)] last:border-0">
+              <th scope="row" class="sticky left-0 z-10 bg-[var(--color-bg)] px-4 py-3 text-left font-medium text-[var(--color-fg)]">{r.label}</th>
+              {r.vals.map((v, i) => (
+                <td class={`px-4 py-3 font-mono ${i === r.vals.length - 1 ? 'bg-[var(--color-accent-dim)]' : ''}`} data-sev={v === '✅' ? 'ok' : v === '❌' ? 'no' : 'warn'}>{v}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-3 text-sm text-[var(--color-faint)]">
+      ⚠️ = partial or paid-only. Data from public docs, Sep 2026. VibeShield complements
+      Dependabot — it doesn\x27t replace it.
+    </p>
+  </div>
+</section>
+
+<style>
+  [data-sev='ok'] { color: var(--color-ok); }
+  [data-sev='no'] { color: var(--color-critical); }
+  [data-sev='warn'] { color: var(--color-medium); }
+</style>

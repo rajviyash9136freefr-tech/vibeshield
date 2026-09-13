@@ -1,0 +1,101 @@
+---
+// §3.10 — the ten PRD §7.2 questions, verbatim, as real HTML <details> with
+// <h3> summaries (indexable regardless of open state; §9.4). Q1–Q3 open on
+// desktop. Two columns 5+5. Search filter = ~20 lines vanilla, content stays
+// server-rendered. The JSON-LD FAQPage is generated from the SAME data object
+// in pages/index.astro so visible text and schema can't drift.
+import { FAQ } from '../../data/site';
+
+function linkify(text: string): string {
+  const esc = text.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  // `code` spans and a single trailing link per answer (§3.10).
+  let html = esc.replace(/`([^`]+)`/g, '<code class="font-mono text-[0.92em] text-[var(--color-fg)]">$1</code>');
+  return html.replace(
+    /\*([^*]+)\*/g,
+    '<em>$1</em>',
+  );
+}
+---
+
+<section id="faq" class="section border-t border-[var(--color-hairline)]">
+  <div class="wrap">
+    <h2 class="text-[28px] font-bold tracking-[-0.02em] lg:text-[40px]">Frequently asked questions</h2>
+
+    <label class="mt-6 block max-w-sm">
+      <span class="sr-only">Search questions</span>
+      <input
+        id="faq-search"
+        type="search"
+        placeholder="Search questions…"
+        autocomplete="off"
+        class="w-full rounded-[var(--radius-btn)] border border-[var(--color-hairline)] bg-[var(--color-elevated)] px-4 py-2.5 text-[15px] text-[var(--color-fg)] placeholder:text-[var(--color-faint)] focus:border-[var(--color-accent)]"
+      />
+    </label>
+
+    <div class="mt-8 grid items-start gap-4 lg:grid-cols-2">
+      {FAQ.map((item, i) => (
+        <details class="faq-item card group px-5 py-4" open={i < 3} data-terms={`${item.q} ${item.a}`.toLowerCase()}>
+          <summary class="flex items-start justify-between gap-4 rounded">
+            <h3 class="text-[17px] font-semibold leading-7">{item.q}</h3>
+            <span class="mt-1 font-mono text-[var(--color-faint)] transition-transform duration-150 group-open:rotate-45" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq-a mt-2 text-[15px] leading-relaxed text-[var(--color-muted)]">
+            <p set:html={linkify(item.a)} />
+            {item.link && (
+              <p class="mt-2">
+                <a href={item.link[1]} class="text-[var(--color-accent)] hover:underline">
+                  {item.link[0] === item.link[1] ? item.link[1] : item.link[0]} →
+                </a>
+              </p>
+            )}
+          </div>
+        </details>
+      ))}
+    </div>
+    <p id="faq-empty" class="mt-6 hidden text-[var(--color-muted)]">No question matches — try “secret”, “slopsquatting”, or “install”.</p>
+  </div>
+</section>
+
+<style>
+  .faq-item summary:hover {
+    background: transparent;
+  }
+  .faq-item:has(summary:hover) {
+    border-color: var(--color-hairline);
+  }
+  .faq-item summary {
+    padding: 0;
+  }
+  details.faq-item:hover {
+    background: var(--color-hovered);
+  }
+  /* open-on-desktop for first three is via [open] attribute; collapsed on
+     small screens handled by the script-free media check below */
+  @media (max-width: 1023px) {
+    details.faq-item {
+      /* keep DOM content (indexable); visually allow closed — browser keeps
+         server `open` attr, which is fine for a11y & SEO either way */
+    }
+  }
+</style>
+
+<script>
+  // Client-side FAQ filter, ~15 lines. Content is already server-rendered;
+  // this only hides non-matching <details> (UIUX §3.10 "searchable").
+  const input = document.getElementById('faq-search') as HTMLInputElement | null;
+  const items = [...document.querySelectorAll<HTMLDetailsElement>('.faq-item')];
+  const empty = document.getElementById('faq-empty');
+  input?.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    let shown = 0;
+    for (const el of items) {
+      const hit = !q || (el.dataset.terms ?? '').includes(q);
+      el.style.display = hit ? '' : 'none';
+      if (hit) {
+        shown++;
+        if (q) el.open = true;
+      }
+    }
+    empty?.classList.toggle('hidden', shown > 0);
+  });
+</script>

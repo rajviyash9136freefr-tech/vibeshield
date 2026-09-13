@@ -1,0 +1,49 @@
+---
+// /changelog — powered by rule-pack + binary versions (UIUX §10 #8).
+// Data lives in the repo's releases; this page mirrors the notable ones.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/ui/Nav.astro';
+import Footer from '../components/ui/Footer.astro';
+
+const ENTRIES = [
+  {
+    version: 'v1.0.0',
+    date: '2026-09-15',
+    title: 'Launch',
+    items: [
+      'GitHub Action (`vibeshield/action@v1`) — diff-mode PR scans, consolidated VibeCheck report, accept/dismiss commands, badge.',
+      'Pre-commit hook — staged-files scan, < 1.5 s typical, fully offline rules.',
+      'CLI — `scan | init | version`, `--format pretty|json|sarif|github`.',
+      'Core rules pack v1.0.0 (MIT): ~120 rules across 8 languages in the 7 AI-code failure modes.',
+      'Bug-hunting skill (`/vibeshield:vibeshield-audit`) — in-agent audit with parallel hunter subagents, same finding contract.',
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Changelog — VibeShield"
+  description="VibeShield releases: scanner, rule packs, and the bug-hunting skill. Every rules-pack version is diffable in the open-source repo."
+  canonical="/changelog"
+>
+  <Nav slot="nav" />
+  <div class="wrap-narrow section">
+    <p class="eyebrow">Changelog</p>
+    <h1 class="mt-2 text-[36px] font-bold tracking-[-0.03em]">Releases</h1>
+    <p class="mt-3 text-[var(--color-muted)]">
+      Rules are data: pack history lives in
+      <a class="text-[var(--color-accent)] hover:underline" href="https://github.com/rajviyash9136freefr-tech/vibeshield/tree/main/rules">rules/ in the repo</a>.
+      Binary history in
+      <a class="text-[var(--color-accent)] hover:underline" href="https://github.com/rajviyash9136freefr-tech/vibeshield/releases">GitHub releases</a>.
+    </p>
+    {ENTRIES.map((e) => (
+      <section class="mt-12 border-t border-[var(--color-hairline)] pt-8">
+        <h2 class="font-mono text-[20px] font-semibold text-[var(--color-fg)]">{e.version} <span class="text-sm font-normal text-[var(--color-faint)]">· {e.date} · {e.title}</span></h2>
+        <ul class="mt-4 list-disc space-y-2 pl-5 text-[15px] text-[var(--color-muted)]">
+          {e.items.map((i) => <li>{i}</li>)}
+        </ul>
+      </section>
+    ))}
+  </div>
+  <Footer slot="footer" />
+</BaseLayout>

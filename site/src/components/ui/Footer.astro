@@ -1,0 +1,41 @@
+---
+import { FOOTER } from '../../data/site';
+---
+
+<footer class="border-t border-[var(--color-hairline)]">
+  <div class="wrap section !py-16">
+    <div class="grid grid-cols-2 gap-8 md:grid-cols-5">
+      <div class="col-span-2 md:col-span-1">
+        <span class="font-semibold">VibeShield</span>
+        <p class="mt-2 max-w-56 text-sm text-[var(--color-muted)]">
+          The security gate for code your AI writes.
+        </p>
+      </div>
+      {FOOTER.cols.map((col) => (
+        <nav aria-label={col.title}>
+          <h2 class="text-sm font-semibold text-[var(--color-fg)]">{col.title}</h2>
+          <ul class="mt-3 space-y-2">
+            {col.links.map(([label, href]) => (
+              <li>
+                <a href={href} class="text-sm text-[var(--color-muted)] transition-colors duration-150 hover:text-[var(--color-accent)]">
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))}
+    </div>
+    <div class="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--color-hairline)] pt-6 text-sm text-[var(--color-faint)]">
+      <span>{FOOTER.bottom}</span>
+      <span aria-label="Language">
+        {FOOTER.langs.map((l, i) => (
+          <>
+            {i > 0 && <span aria-hidden="true"> · </span>}
+            {l === 'en' ? <span class="text-[var(--color-muted)]">en</span> : <span>{l}</span>}
+          </>
+        ))}
+      </span>
+    </div>
+  </div>
+</footer>

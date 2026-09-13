@@ -1,0 +1,27 @@
+---
+// /docs landing = quickstart (single canonical URL, no duplicate content).
+import { getCollection, render } from 'astro:content';
+import DocsLayout from '../../layouts/DocsLayout.astro';
+
+const doc = (await getCollection('docs')).find((d) => d.id === 'quickstart')!;
+const { Content } = await render(doc);
+
+const howTo = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: 'How to scan AI-generated code before committing',
+    step: [
+      { '@type': 'HowToStep', name: 'Add the GitHub Action', text: 'Add uses: vibeshield/action@v1 to your pull_request workflow.' },
+      { '@type': 'HowToStep', name: 'Open a pull request', text: 'VibeShield scans the diff and posts a VibeCheck report.' },
+      { '@type': 'HowToStep', name: 'Merge with an audit trail', text: 'Accept or dismiss each finding; dismissals are logged.' },
+    ],
+  },
+];
+---
+
+<DocsLayout title={doc.data.title} description={doc.data.description} schema={howTo}>
+  <h1>{doc.data.title}</h1>
+  <p class="mb-8 text-[var(--color-faint)]">{doc.data.description}</p>
+  <Content />
+</DocsLayout>

@@ -8,16 +8,25 @@ or flag it — never silently improvise product copy or numbers.
 ## Repo layout (monorepo)
 
 ```
-scanner/   Go scanner binary (CLI + pre-commit engine). Module: github.com/vibeshield/vibeshield/scanner
+scanner/   Go scanner binary (CLI + pre-commit engine). Module: github.com/rajviyash9136freefr-tech/vibeshield/scanner
 rules/     Versioned YAML rule packs (core pack = MIT, ships with the binary)
 action/    GitHub Action composite wrapper (action.yml + entrypoint script)
 api/       Fastify package-intel + findings API (Node 22+ / TypeScript)
 site/      Astro marketing site (vibeshield.dev) + Tailwind
+npm/       npm wrapper package (fetch-on-first-run launcher for the Go binary)
 contracts/ Cross-component JSON schemas + docs — the interface law
 fixtures/  Golden test repos & seeded AI-PR corpus
 docs/      Product docs source (quickstart, GitHub Action page)
-scripts/   Build/dev helper scripts
+scripts/   Build/dev helper scripts (sync-rules.mjs keeps embedded packs honest)
 ```
+
+## Distribution model (decided 2026-09-13)
+
+VibeShield is **fully free and MIT-licensed end to end** — scanner, action, hooks,
+all rule packs. No pricing tiers exist anywhere (site, docs, code) — do not
+introduce any. The npm package `vibeshield` is a thin launcher (no install-time
+network); the real binary is Go, published via GitHub Releases by
+`.github/workflows/release.yml` with asset names the Action entrypoint downloads.
 
 ## Hard rules
 

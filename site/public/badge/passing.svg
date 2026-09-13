@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="172" height="20" role="img" aria-label="VibeShield: passing">
+  <linearGradient id="s" x2="0" y2="100%"><stop offset="0" stop-color="#eee" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient>
+  <rect width="92" height="20" fill="#111113"/>
+  <rect x="92" width="80" height="20" fill="#34D399"/>
+  <rect width="172" height="20" fill="url(#s)"/>
+  <g fill="#EDEDEF" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" font-size="110" text-rendering="geometricPrecision" transform="scale(.1)">
+    <text x="470" y="140" fill="#0A0A0B" stroke="#0A0A0B" stroke-width="2" stroke-opacity=".3">🛡 VibeShield</text>
+    <text x="470" y="140" fill="#EDEDEF">🛡 VibeShield</text>
+    <text x="1310" y="140" fill="#06231f">passing</text>
+  </g>
+</svg>

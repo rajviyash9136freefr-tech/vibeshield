@@ -84,7 +84,7 @@ Section-by-section blueprint. Every section lists: purpose → layout → copy (
 
 ### 3.1 Nav (sticky, glass)
 
-`[🛡 VibeShield]  Product · Docs · Pricing · Blog · FAQ        [GitHub ★] [Sign in] [Install free]`
+`[🛡 VibeShield]  Product · Docs · Blog · FAQ        [GitHub ★] [Open source] [Install free]`
 
 - Height 64px, `backdrop-filter: blur(12px)`, `background: rgba(10,10,11,0.8)`, bottom hairline.
 - Primary CTA button: teal fill, "Install free" → anchor to `#install`.
@@ -103,7 +103,7 @@ Layout: centered text, 2-column on desktop (60% copy / 40% live code demo).
 
 **CTA row:** `[Install free]` (teal, large) · `[See a live report →]` (ghost, scrolls to demo)
 
-**Trust strip (below CTAs, 14px tertiary):** `MIT core · 3-min setup · Runs locally · No code leaves your machine`
+**Trust strip (below CTAs, 14px tertiary):** `MIT licensed · 3-min setup · Runs locally · No code leaves your machine`
 
 **Right column — the live VibeCheck demo (the conversion asset):**
 
@@ -170,20 +170,15 @@ Tabbed code block (Tailwind-style pill tabs): `GitHub Action | pre-commit | CLI`
 
 ### 3.8 Comparison table (SEO + sales asset)
 
-H2: **VibeShield vs. your current stack** — rows: Dependabot, Snyk, Semgrep, Socket, Gitleaks; columns: AI-specific detections / hallucinated-package scoring / pre-commit / diff-speed / free tier. Honest ✅/⚠️/❌ (no trash-talking copy — the table speaks). Mirrors PRD §2.3; ranks for `semgrep vs snyk for AI code` and `is dependabot enough`.
+H2: **VibeShield vs. your current stack** — rows: Dependabot, Snyk, Semgrep, Socket, Gitleaks; columns: AI-specific detections / hallucinated-package scoring / pre-commit / diff-speed / free & open source. Honest ✅/⚠️/❌ (no trash-talking copy — the table speaks). Mirrors PRD §2.3; ranks for `semgrep vs snyk for AI code` and `is dependabot enough`.
 
 ### 3.9 Pricing
 
-Two cards + a thin comparison of what's gated (from PRD §8):
-
-- **Free** — `$0` — "Public repos, solo private repos, core pack." CTA: ghost "Install on GitHub".
-- **Team** — `$9/dev/mo` (badge: "Most teams start here") — AI-hardening pack, merge gates, org policy, 12-mo history. CTA: teal "Start free · upgrade when the team grows".
-
-Annual toggle (2 months free). Below cards: 6-line mini-FAQ (billing-specific only). Prices in USD; keep the table server-rendered static (no JS pricing logic).
+**No pricing — VibeShield is fully free & MIT-licensed open source (amended 2026-09-13).** The `/pricing` route and the homepage pricing section were deleted. The FAQ answer to "How much does it cost?" states it plainly: no tiers, no seats, no account, no credit card. The single "Install free" CTA (Nav / Hero / FinalCta) links to `#install`, never a signup flow. Any hosted or commercial offering, if it ever exists, lives outside this repo and out of the site's scope.
 
 ### 3.10 FAQ (SEO-critical — implement exactly)
 
-H2: **Frequently asked questions**. All 10 questions from PRD §7.2 ship verbatim as `<details>/<summary>` (Google-indexes-safe), open-by-default for Q1–Q3 on desktop, all content present in DOM (no JS-loaded answers). Each answer links once to a relevant section (`#install`, `/blog/slopsquatting`, `/pricing`). Structure per item:
+H2: **Frequently asked questions**. All 10 questions from PRD §7.2 ship verbatim as `<details>/<summary>` (Google-indexes-safe), open-by-default for Q1–Q3 on desktop, all content present in DOM (no JS-loaded answers). Each answer links once to a relevant section (`#install`, `/blog/slopsquatting`, the GitHub repo). Structure per item:
 
 ```html
 <details class="faq-item" open>
@@ -204,7 +199,7 @@ Full-width, `--accent-dim` wash, centered:
 
 ### 3.12 Footer
 
-4 columns: Product (Docs, Changelog, Roadmap, Status) · Resources (Blog, Threat model doc, Slopsquatting guide) · Compare (vs Snyk, vs Socket, vs Dependabot — the roadmap comparison pages) · Company (GitHub, X, Contact, Privacy). Bottom bar: `© 2026 VibeShield · MIT-licensed core · 🛡 badge` + language switcher placeholder (en · es · de · fr — hreflang-ready).
+4 columns: Product (Docs, Changelog, Roadmap, Status) · Resources (Blog, Threat model doc, Slopsquatting guide) · Compare (vs Snyk, vs Socket, vs Dependabot — the roadmap comparison pages) · Company (GitHub, X, Contact, Privacy). Bottom bar: `© 2026 VibeShield · MIT open source · 🛡 badge` + language switcher placeholder (en · es · de · fr — hreflang-ready).
 
 ---
 
@@ -245,7 +240,7 @@ Shields.io-style static SVG served from our CDN: `VibeShield | passing | 0 findi
 | Severity chip | 5 severities | dot + label, `--accent-dim` background |
 | FAQ item | open/closed | `<details>`, summary hover = `--bg-hover` |
 | Comparison table | marketing | sticky first column on mobile scroll |
-| Pricing card | free/team | team card gets 1px accent border + badge |
+| Install CTA | — | "Install free" pill in Nav/Hero/FinalCta, all linking to `#install` |
 | Nav | desktop/mobile-sheet | glass on scroll |
 | Testimonial | text-only | name, role, repo stars as credibility |
 
@@ -367,7 +362,6 @@ Also: `Organization` + `BreadcrumbList` on docs pages; sitemap.xml auto via Astr
 |---|---|---|---|
 | 1 | `/` home (all §3 sections) | P0 launch | the whole §3 spec |
 | 2 | `/docs` quickstart + GitHub Action page | P0 launch | docs carry HowTo schema |
-| 3 | `/pricing` | P0 launch | §3.9 extracted |
 | 4 | `/blog` + slopsquatting pillar post | P0 launch week 1 | PRD §7.3 #1–2 |
 | 5 | `/compare/snyk` · `/socket` · `/dependabot` | P1 +4 weeks | PRD §7.1 comparison cluster |
 | 6 | `/docs/{cursor,copilot,claude-code}` per-agent pages | P1 +6 weeks | low-competition keywords |
@@ -376,4 +370,4 @@ Also: `Organization` + `BreadcrumbList` on docs pages; sitemap.xml auto via Astr
 
 ---
 
-*End of UIUX.md. Feature scope, FAQ copy, keyword research, and pricing logic live in `PRD.md`.*
+*End of UIUX.md. Feature scope, FAQ copy, and keyword research live in `PRD.md`.*

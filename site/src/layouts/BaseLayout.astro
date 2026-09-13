@@ -1,0 +1,83 @@
+---
+import { SITE } from '../data/site';
+import '@fontsource-variable/geist';
+import '@fontsource-variable/inter';
+import '@fontsource-variable/geist-mono';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Absolute or root-relative canonical override. */
+  canonical?: string;
+  /** JSON-LD graph objects to embed (UIUX §9.3). */
+  schema?: object[];
+  /** OG image path, default /og.png (UIUX §8: one per key page). */
+  ogImage?: string;
+  bodyClass?: string;
+}
+
+const {
+  title = SITE.title,
+  description = SITE.description,
+  canonical,
+  schema = [],
+  ogImage = '/og.png',
+  bodyClass = '',
+} = Astro.props;
+
+const canonicalURL = new URL(canonical ?? Astro.url.pathname, SITE.url).href;
+const ogURL = new URL(ogImage, SITE.url).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="icon" type="image/svg+xml" href="/shield.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="VibeShield blog"
+      href="/rss.xml"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="VibeShield" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={ogURL} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogURL} />
+
+    {schema.length > 0 && (
+      <script
+        type="application/ld+json"
+        set:html={JSON.stringify(schema.length === 1 ? schema[0] : schema)}
+      />
+    )}
+
+    <script is:inline>
+      // Pre-paint: mark reduced-motion so entrances and the hero loop stay off.
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.dataset.reducedMotion = '1';
+      }
+    </script>
+  </head>
+  <body class={bodyClass}>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot name="nav" />
+    <main id="main">
+      <slot />
+    </main>
+    <slot name="footer" />
+    <script src="../scripts/reveal.ts"></script>
+    <script src="../scripts/copy.ts"></script>
+  </body>
+</html>

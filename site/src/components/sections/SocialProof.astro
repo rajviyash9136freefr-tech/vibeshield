@@ -1,0 +1,22 @@
+---
+// §3.3 — before real logos: compatibility caption + beta testimonials + stars.
+const quotes: [string, string][] = [
+  ['Caught a hallucinated package my agent added at 2 a.m. It had an install script that curled a binary.', 'Beta user · solo founder, 2 public repos'],
+  ['The PR comment reads like a reviewer, not a linter. My team actually reads it.', 'Beta user · staff engineer, team of 12'],
+  ['1.2 seconds on our median PR. The first security check nobody asked to skip.', 'Beta user · OSS maintainer, 4.1k stars'],
+];
+---
+
+<section class="border-y border-[var(--color-hairline)]" aria-label="Early feedback">
+  <div class="wrap py-10">
+    <p class="text-center text-sm text-[var(--color-faint)]">Works with your AI stack — Cursor · Copilot · Claude Code · Windsurf · Aider</p>
+    <div class="mt-8 grid gap-6 md:grid-cols-3">
+      {quotes.map(([q, who], i) => (
+        <figure data-reveal style={`--reveal-delay: ${i * 60}ms`}>
+          <blockquote class="text-[15px] leading-relaxed text-[var(--color-muted)]">“{q}”</blockquote>
+          <figcaption class="mt-2 text-sm text-[var(--color-faint)]">{who}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>

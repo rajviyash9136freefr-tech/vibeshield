@@ -1,0 +1,207 @@
+@import "tailwindcss";
+
+/* Design tokens — UIUX.md §2.1 (law). Severity colors appear only on
+   findings/legends; accent teal is the only free color. */
+@theme {
+  /* Surfaces */
+  --color-bg: #0a0a0b;
+  --color-elevated: #111113;
+  --color-hovered: #1a1a1e;
+  --color-hairline: #232329;
+
+  /* Text */
+  --color-fg: #ededef;
+  --color-muted: #a1a1aa;
+  --color-faint: #62626b;
+
+  /* Brand — shield teal */
+  --color-accent: #2dd4bf;
+  --color-accent-strong: #14b8a6;
+  --color-accent-dim: rgba(45, 212, 191, 0.12);
+
+  /* Severity (semantic-only) */
+  --color-critical: #f87171;
+  --color-high: #fb923c;
+  --color-medium: #fbbf24;
+  --color-low: #60a5fa;
+  --color-info: #71717a;
+  --color-ok: #34d399;
+
+  /* Type */
+  --font-sans: "Geist Variable", "Inter Variable", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "Cascadia Code",
+    "JetBrains Mono", Menlo, Consolas, monospace;
+
+  /* Shape & elevation — bordered, not shadowed (hairlines everywhere) */
+  --radius-card: 12px;
+  --radius-btn: 8px;
+  --shadow-pop: 0 8px 30px rgba(0, 0, 0, 0.45);
+
+  /* Motion */
+  --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px; /* sticky nav clearance */
+  }
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 {
+    letter-spacing: -0.02em;
+    color: var(--color-fg);
+    font-weight: 600;
+  }
+  ::selection {
+    background: rgba(45, 212, 191, 0.25);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  details > summary {
+    cursor: pointer;
+    list-style: none;
+  }
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+  a {
+    color: inherit;
+  }
+  /* Shiki (github-dark) inherits page bg; keep code blocks on --bg-elevated */
+  .astro-code {
+    background: var(--color-elevated) !important;
+    font-size: 13.5px;
+    line-height: 1.7;
+    padding: 16px 20px;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-hairline);
+    overflow-x: auto;
+  }
+  /* Long-form prose (docs + blog) */
+  .prose-docs h1 { font-size: 32px; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .prose-docs h2 { font-size: 22px; margin-top: 40px; margin-bottom: 10px; }
+  .prose-docs h3 { font-size: 17px; margin-top: 28px; margin-bottom: 8px; }
+  .prose-docs p, .prose-docs li { color: var(--color-muted); line-height: 1.7; }
+  .prose-docs a { color: var(--color-accent); }
+  .prose-docs a:hover { text-decoration: underline; }
+  .prose-docs code { font-family: var(--font-mono); font-size: 0.9em; background: var(--color-elevated); border: 1px solid var(--color-hairline); border-radius: 4px; padding: 1px 5px; }
+  .prose-docs pre code { background: none; border: 0; padding: 0; font-size: 13.5px; }
+  .prose-docs table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 16px 0; display: block; overflow-x: auto; }
+  .prose-docs th, .prose-docs td { border: 1px solid var(--color-hairline); padding: 8px 12px; text-align: left; }
+  .prose-docs th { color: var(--color-fg); background: var(--color-elevated); }
+  .prose-docs ul, .prose-docs ol { padding-left: 22px; margin: 12px 0; }
+  .prose-docs li { margin: 4px 0; }
+  .prose-docs strong { color: var(--color-fg); }
+}
+
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: 1080px;
+    margin-inline: auto;
+    padding-inline: 24px;
+  }
+  .wrap-narrow {
+    width: 100%;
+    max-width: 720px;
+    margin-inline: auto;
+    padding-inline: 24px;
+  }
+  /* Section rhythm — UIUX §2.3: 128 desktop / 72 mobile */
+  .section {
+    padding-block: 72px;
+  }
+  @media (min-width: 1024px) {
+    .section {
+      padding-block: 128px;
+    }
+  }
+  .hairline {
+    border: 1px solid var(--color-hairline);
+  }
+  .card {
+    background: var(--color-elevated);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-card);
+  }
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 8px 16px;
+    background: var(--color-accent-strong);
+    color: #06231f;
+    border-radius: 0 0 var(--radius-btn) 0;
+    font-weight: 600;
+  }
+  .skip-link:focus {
+    left: 0;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-accent);
+    text-transform: none;
+    letter-spacing: 0.01em;
+  }
+}
+
+@layer utilities {
+  /* Entrance motion — UIUX §2.4: fade + 8px rise, once, staggered 60ms */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+      opacity 250ms var(--ease-soft),
+      transform 250ms var(--ease-soft);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  [data-reveal].revealed {
+    opacity: 1;
+    transform: none;
+  }
+  /* Horizontal-scroll tables with fade-edge affordance (§6) */
+  .scroll-x {
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .scroll-x::-webkit-scrollbar {
+    height: 6px;
+  }
+  .scroll-x::-webkit-scrollbar-thumb {
+    background: var(--color-hairline);
+    border-radius: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}

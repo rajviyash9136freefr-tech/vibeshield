@@ -2,7 +2,7 @@
 
 **Product:** VibeShield — the security & dependency auditor built for AI-generated code
 **Form factor:** GitHub Action + pre-commit hook + CLI, packaged as a CI plugin
-**Version:** 1.0 (MVP) · **Author:** Jai · **Date:** 2026-09-08
+**Version:** 1.1 (MVP) · **Author:** Jai · **Date:** 2026-09-08 · **Amended 2026-09-13:** fully free & open source (MIT), no paid tiers
 **Status:** Draft for build
 **Target launch:** GitHub Marketplace public listing + `vibeshield.dev` landing site
 
@@ -50,7 +50,7 @@ Snyk, Dependabot, Semgrep, SonarQube, and Trivy assume (a) a human wrote or at l
 | Trivy | ❌ | ⚠️ community | ✅ | ❌ | Free |
 | Gitleaks / SecretScanning | ⚠️ (secrets only) | ✅ | ✅ | ❌ | Free / GitHub native |
 | Socket.dev | ⚠️ (supply chain) | ✅ | ✅ | ⚠️ heuristic | $$ |
-| **VibeShield** | ✅ **core design** | ✅ | ✅ | ✅ **dedicated model** | Freemium → $9/dev |
+| **VibeShield** | ✅ **core design** | ✅ | ✅ | ✅ **dedicated model** | Free, MIT open source |
 
 Positioning statement: *"The first security gate designed for the vibe-coding workflow."*
 
@@ -66,7 +66,7 @@ Positioning statement: *"The first security gate designed for the vibe-coding wo
 
 ### 3.2 Persona A — "Solo Viber" (indie hacker)
 
-Ships weekend products with Cursor + Claude Code. Doesn't read diffs. Fear: wakes up to a banned npm package or a leaked key in a public repo. Needs: zero-config, free tier, one-line install, badge for the README. **This persona is the viral engine** (badges + GitHub stars).
+Ships weekend products with Cursor + Claude Code. Doesn't read diffs. Fear: wakes up to a banned npm package or a leaked key in a public repo. Needs: zero-config, free & open source, one-line install, badge for the README. **This persona is the viral engine** (badges + GitHub stars).
 
 ### 3.3 Persona B — "Skeptical Staff Eng" (team of 5–40)
 
@@ -85,7 +85,7 @@ Popular repo getting AI-generated drive-by PRs. Needs: GitHub Action that litter
 1. Install-to-first-scan in **under 3 minutes** for a public GitHub repo (one file, no account needed).
 2. Detect the 7 failure modes in §2.1 with a curated rules engine + package-hallucination model, **precision ≥ 85 % on Critical/High** (measured against a golden set of 200 seeded AI PRs).
 3. Every finding carries: **why it matters for AI code**, the vulnerable pattern, a one-line suggested fix, and a "accept/dismiss" flow that writes an auditable ignore.
-4. Free tier useful enough to be a default install; paid tier inevitable for private repos at team scale.
+4. Fully free and open source: every feature ships to everyone — the product goal is to be a default install, not a conversion funnel.
 
 ### Non-goals (MVP — explicitly out)
 
@@ -182,14 +182,14 @@ notifications:
 ├────────────┤              │ SARIF/JSON    │  └ auth (GitHub OAuth)   │
 │ CLI (same  │──────────────┘               └──────────────────────────┘
 │ Go binary) │   Rules ship as signed, versioned packs (OSS core pack;
-└────────────┘   "AI-hardening pack" = paid, updated weekly)
+└────────────┘   "AI-hardening pack" = MIT OSS, updated weekly)
 ```
 
 Key decisions:
 
 1. **Scanner = single static Go binary.** Installs everywhere (brew/npm-release/go-get), no runtime deps, boots <50 ms, works offline for rules. Critical for pre-commit UX.
 2. **tree-sitter parsing** per language → robust to weird formatting that LLMs emit; rules are queries + dataflow-lite taint tags, not regex.
-3. **Rules as data, not code.** Versioned YAML packs → weekly updates without binary releases; the AI-hardening pack stays proprietary while the core pack is MIT (open-source = trust + distribution, the paid pack = the moat).
+3. **Rules as data, not code.** Versioned YAML packs → weekly updates without binary releases; the AI-hardening pack is MIT-licensed and community-maintained alongside the core pack (open source everywhere = trust + distribution; the moat is the intelligence, not the license).
 4. **Package-intelligence service is the server-side moat** — the hourly-rebuilt registry snapshot (age, maintainers, scripts, download velocity, typosquat graph) is something a local-only tool can't replicate.
 5. **Privacy by default:** code never leaves the machine in CLI/hook mode; in Action mode only diff *analysis results* (file paths, rule IDs, symbol names) go to the dashboard — file contents never persist. State this on the landing page in one sentence and in the marketplace listing.
 
@@ -234,10 +234,10 @@ Diff-only scanning takes seconds, not minutes — most PRs finish under 10s in t
 No. The CLI and pre-commit hook run fully local analysis. In GitHub Action mode, only findings metadata (file paths, rule IDs, symbol names) is sent to your dashboard — file contents are never persisted, and private-repo analysis results are never used for model training. Ever.
 
 **Q7. How much does VibeShield cost?**
-Free forever for public repos and solo developers on private repos (core rules pack). Team plan is $9/developer/month: the weekly-updated AI-hardening rules pack, org policies, the `block-on-critical` merge gate, ignore-audit log, and priority support. Start with the free GitHub Action — no credit card, install takes one YAML file.
+Nothing. VibeShield is fully open source under the MIT license — the scanner, the GitHub Action, the pre-commit hook, and every rules pack. No tiers, no seats, no credit card, no account. Install takes one YAML file, and it works offline forever.
 
 **Q8. How do I get started in 3 minutes?**
-Add `uses: vibeshield/action@v1` to your workflow (or run `npx vibeshield init` for the hook + workflow + config in one command). VibeShield scans the next PR, comments a VibeCheck report, and you can enable the badge on your README. No account required for public repos.
+Add `uses: rajviyash9136freefr-tech/vibeshield/action@v1` to your workflow (or run `npx vibeshield scan .` / `go install` for the CLI). VibeShield scans the next PR, comments a VibeCheck report, and you can enable the badge on your README. No account, no signup — MIT-licensed and free for every repo.
 
 **Q9. Can VibeShield fix the code automatically?**
 v1 explains and suggests — every finding includes a one-line fix — but never rewrites your code. Auto-fix ("VibePatch") is on the roadmap behind an explicit opt-in with diff preview, because trusting an AI to fix AI code without a human gate is exactly the problem we're here to reduce, not reinvent.
@@ -259,19 +259,9 @@ Legally and practically, still you — the shipping team. Standards bodies and e
 
 ## 8. Pricing & packaging
 
-| | **Free** | **Team ($9/dev/mo)** | **Business ($19/dev/mo, post-MVP)** |
-|---|---|---|---|
-| Public repos | ✅ unlimited | ✅ | ✅ |
-| Private repos | 1 solo dev | ✅ | ✅ |
-| Core rules pack (MIT OSS) | ✅ | ✅ | ✅ |
-| AI-hardening pack (weekly updates) | ❌ | ✅ | ✅ |
-| Merge-gate modes (`block-*`) | ❌ | ✅ | ✅ |
-| Org policies + centralized config | ❌ | ✅ | ✅ SSO/SAML |
-| Findings history + audit log | 7 days | 12 months | 3 years + export |
-| Slack/Teams digest | ❌ | ✅ | ✅ |
-| Support | Community | Email 48h | SLA |
+**Everything is free.** VibeShield is MIT-licensed open source end to end — scanner, GitHub Action, pre-commit hook, all rules packs (core now, AI-hardening as a community pack). No tiers, no seats, no SSO upcharge, no account.
 
-Model logic: free tier must be *genuinely* useful on public repos (distribution + badge virality + benchmark data), paywall = team controls and the continuously-updated intelligence pack. Annual = 2 months free. Open-source core is a trust requirement, not a marketing choice: security buyers run what they can read.
+The packaging question was reframed on 2026-09-13: the moat for an AI-code auditor is *trust + rule quality + distribution*, not a paywall. Security buyers run what they can read; a fully public codebase and rule set is the strongest argument to run it. Support stays community-first (GitHub issues); anything commercial (hosted dashboard, SLAs) is explicitly out of scope for the OSS project and would live, if ever, in a separate repo.
 
 ---
 
@@ -280,13 +270,13 @@ Model logic: free tier must be *genuinely* useful on public repos (distribution 
 **Activation:** installs → 2+ scans within 7 days ≥ 40%. Time-to-first-VibeCheck < 3 min (median).
 **Quality:** precision ≥ 85% C/H findings (golden set, refreshed monthly); ≤ 5 false positives per 1k diff-lines on median PR; noise complaints ("turned it off") < 8% of installs/mo.
 **Growth:** GitHub stars 1k in 90 days (launch bar); 30% of installs from badge/README links; organic signups from SEO ≥ 50% of total by month 6.
-**Revenue:** free→paid ≥ 6% of teams with ≥3 active devs; $2k MRR by month 6; CAC via content ≈ $0 (SEO/Marketplace-native distribution).
+**Reach (no revenue targets — the tool is free):** installs tracked by release-asset downloads + Action usage; ≥ 500 weekly active repos by month 6; CAC ≈ 0 (SEO/Marketplace-native distribution).
 
 ---
 
 ## 10. Roadmap
 
-**v1.0 (launch, ~6 weeks):** Action + pre-commit + CLI, rules engine + 8-language AI pack, hallucinated-package model, PR comment report, badge, free tier, landing site.
+**v1.0 (launch, ~6 weeks):** Action + pre-commit + CLI, rules engine + 8-language AI pack, hallucinated-package model, PR comment report, badge, landing site — all free.
 **v1.1 (+6 weeks):** ignore-audit UI, org config inheritance, Slack digest, SARIF export (defensible on a GitHub security tab), VS Code / Cursor companion extension.
 **v1.2:** VibePatch (opt-in auto-fix with diff preview), prompt-injection-change detection for agent-driven repos, GitLab CI support.
 **v2.0 (next year):** Business tier (SSO, SBOM export, audit reports), IDE pre-generation warnings, registry-intel API licensing to other scanners, "AI change provenance" attestation (signed AI-origin metadata per hunk).

@@ -1,0 +1,25 @@
+---
+// /privacy — minimal, honest, matches the "code never leaves your machine"
+// brand promise (UIUX §8: site must be clean; PRD §6.5 privacy by default).
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/ui/Nav.astro';
+import Footer from '../components/ui/Footer.astro';
+---
+
+<BaseLayout
+  title="Privacy — VibeShield"
+  description="What VibeShield stores and doesn't: no file contents, no trackers, privacy-safe analytics, findings metadata only in Action mode."
+  canonical="/privacy"
+>
+  <Nav slot="nav" />
+  <div class="wrap-narrow section">
+    <h1 class="text-[36px] font-bold tracking-[-0.03em]">Privacy</h1>
+    <div class="mt-6 space-y-5 text-[16px] leading-[1.7] text-[var(--color-muted)]">
+      <p><strong class="text-[var(--color-fg)]">Your code.</strong> The CLI and pre-commit hook analyze locally and send nothing anywhere. The GitHub Action posts findings metadata (paths, rule IDs, symbol names, severities) to your PR and dashboard. File contents are never persisted by us, and private-repo results are never used for model training.</p>
+      <p><strong class="text-[var(--color-fg)]">This website.</strong> No cookies for advertising, no third-party trackers. Analytics are privacy-safe (Plausible: aggregate pageviews, no cross-site profiling). Fonts are self-hosted, so no requests leak to Google.</p>
+      <p><strong class="text-[var(--color-fg)]">Accounts.</strong> Sign-in is GitHub OAuth; we keep your username, avatar URL, org list, and the findings your repos produce. Delete your org and we purge findings within 30 days.</p>
+      <p><strong class="text-[var(--color-fg)]">Questions.</strong> <a class="text-[var(--color-accent)] hover:underline" href="mailto:privacy@vibeshield.dev">privacy@vibeshield.dev</a>.</p>
+    </div>
+  </div>
+  <Footer slot="footer" />
+</BaseLayout>

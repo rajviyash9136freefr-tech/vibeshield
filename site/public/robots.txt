@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /app
+
+Sitemap: https://vibeshield.dev/sitemap-index.xml

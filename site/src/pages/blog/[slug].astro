@@ -1,0 +1,50 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/ui/Nav.astro';
+import Footer from '../../components/ui/Footer.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((p) => ({ params: { slug: p.id }, props: { post: p } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const dateISO = post.data.pubDate.toISOString().slice(0, 10);
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.data.title,
+    description: post.data.description,
+    datePublished: dateISO,
+    author: { '@type': 'Organization', name: post.data.author },
+  },
+];
+---
+
+<BaseLayout
+  title={`${post.data.title} — VibeShield blog`}
+  description={post.data.description}
+  canonical={`/blog/${post.id}/`}
+  schema={schema}
+>
+  <Nav slot="nav" />
+  <article class="wrap-narrow section">
+    <p class="text-sm text-[var(--color-faint)]">
+      <a href="/blog" class="hover:text-[var(--color-accent)]">← Blog</a> ·
+      {dateISO} · {post.data.tags.join(', ')}
+    </p>
+    <h1 class="mt-3 text-[32px] font-bold leading-tight tracking-[-0.02em] lg:text-[40px]">{post.data.title}</h1>
+    <div class="prose-docs mt-8">
+      <Content />
+    </div>
+  </article>
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style is:global>
+  /* shared prose rules live in DocsLayout; import once if standalone */
+</style>

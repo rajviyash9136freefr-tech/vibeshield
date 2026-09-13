@@ -1,0 +1,41 @@
+---
+import { PROBLEM } from '../../data/site';
+---
+
+<section id="product" class="section">
+  <div class="wrap">
+    <h2 class="max-w-[22ch] text-[28px] font-bold leading-[1.2] tracking-[-0.02em] lg:text-[40px] lg:leading-[48px]">
+      {PROBLEM.h2}
+    </h2>
+    <div class="mt-12 grid gap-12 lg:grid-cols-2 lg:gap-16">
+      <div class="space-y-5 text-[16px] leading-[1.7] text-[var(--color-muted)]">
+        {PROBLEM.paras.map((p) => <p>{p}</p>)}
+      </div>
+      <div data-reveal>
+        <div class="scroll-x rounded-[var(--radius-card)] border border-[var(--color-hairline)]">
+          <table class="w-full min-w-[560px] border-collapse text-sm">
+            <caption class="px-4 pt-4 text-left text-[var(--color-faint)]">
+              {PROBLEM.table.caption}
+            </caption>
+            <thead>
+              <tr class="border-b border-[var(--color-hairline)] text-left">
+                {PROBLEM.table.cols.map((c) => (
+                  <th scope="col" class="px-4 py-3 font-semibold text-[var(--color-fg)]">{c}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {PROBLEM.table.rows.map(([mode, looks, catch_]) => (
+                <tr class="border-b border-[var(--color-hairline)] last:border-0 align-top">
+                  <th scope="row" class="px-4 py-3 font-medium text-[var(--color-fg)]">{mode}</th>
+                  <td class="px-4 py-3 text-[var(--color-muted)]">{looks}</td>
+                  <td class="px-4 py-3 text-[var(--color-faint)]">{catch_}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

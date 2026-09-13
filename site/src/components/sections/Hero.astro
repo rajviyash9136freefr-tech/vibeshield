@@ -1,0 +1,44 @@
+---
+import { HERO } from '../../data/site';
+import HeroDemo from './HeroDemo.astro';
+---
+
+<section class="relative overflow-hidden">
+  {/* The single allowed gradient: hero glow (UIUX §2.1) */}
+  <div
+    class="pointer-events-none absolute inset-x-0 -top-40 h-[520px]"
+    style="background: radial-gradient(60% 55% at 50% 35%, rgba(45,212,191,0.12) 0%, rgba(10,10,11,0) 100%);"
+    aria-hidden="true"
+  ></div>
+
+  <div class="wrap relative grid items-center gap-12 py-20 lg:grid-cols-[60%_40%] lg:gap-8 lg:py-32">
+    <div>
+      <h1 class="max-w-[16ch] text-[36px] font-bold leading-[1.16] tracking-[-0.03em] lg:text-[56px] lg:leading-[64px]">
+        {HERO.h1}
+      </h1>
+      <p class="mt-5 max-w-[560px] text-[18px] leading-[1.6] text-[var(--color-muted)] lg:text-[20px]">
+        VibeShield audits every Cursor, Copilot, and Claude Code commit —
+        hallucinated packages, leaked secrets, insecure boilerplate — as a
+        GitHub Action, pre-commit hook, or one command. Before it hits
+        <code class="font-mono text-[0.92em] text-[var(--color-fg)]">main</code>.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center gap-4">
+        <a
+          href="/#install"
+          class="rounded-[var(--radius-btn)] bg-[var(--color-accent-strong)] px-6 py-3 font-semibold text-[#06231f] transition-transform duration-150 hover:-translate-y-px"
+        >Install free</a>
+        <a
+          href="/#how"
+          class="rounded-[var(--radius-btn)] border border-[var(--color-hairline)] px-6 py-3 font-medium text-[var(--color-fg)] transition-colors duration-150 hover:border-[var(--color-accent)]"
+        >See a live report →</a>
+      </div>
+      <p class="mt-6 text-sm text-[var(--color-faint)]">
+        {HERO.trust.join(' · ')}
+      </p>
+    </div>
+
+    <div data-reveal>
+      <HeroDemo />
+    </div>
+  </div>
+</section>

@@ -1,0 +1,85 @@
+---
+// /compare/{snyk,socket,dependabot} — honest tables, one template, data-driven.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/ui/Nav.astro';
+import Footer from '../../components/ui/Footer.astro';
+import FinalCta from '../../components/sections/FinalCta.astro';
+import { COMPETITORS } from '../../data/compare';
+
+export function getStaticPaths() {
+  return COMPETITORS.map((c) => ({ params: { slug: c.slug }, props: { c } }));
+}
+
+const { c } = Astro.props;
+const title = `VibeShield vs ${c.name} — security for AI-generated code`;
+const description = `Honest comparison: VibeShield vs ${c.name} on AI-code failure modes — hallucinated packages, pasted secrets, insecure boilerplate — plus how it stacks up on cost and setup.`;
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `Is VibeShield an alternative to ${c.name}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `Not a replacement — a complement. ${c.name} covers ${c.tagline.toLowerCase().replace(/\.$/, '')}; VibeShield adds the AI-code failure modes its model doesn't see: hallucinated packages with no CVE, pasted secrets, insecure boilerplate, license stripping, and prompt-injection payloads. Many teams run both.`,
+        },
+      },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} canonical={`/compare/${c.slug}`} schema={schema}>
+  <Nav slot="nav" />
+  <div class="wrap section">
+    <p class="eyebrow">Compare</p>
+    <h1 class="mt-2 text-[36px] font-bold tracking-[-0.03em] lg:text-[48px]">VibeShield vs {c.name}</h1>
+    <div class="mt-6 max-w-[72ch] space-y-4 text-[16px] leading-[1.7] text-[var(--color-muted)]">
+      <p><strong class="text-[var(--color-fg)]">What {c.name} does well:</strong> {c.tagline}</p>
+      <p><strong class="text-[var(--color-fg)]">Where AI-code risk still falls through:</strong> {c.summary}</p>
+    </div>
+
+    <div class="scroll-x mt-10 overflow-x-auto rounded-[var(--radius-card)] border border-[var(--color-hairline)]">
+      <table class="w-full min-w-[640px] border-collapse text-sm">
+        <thead>
+          <tr class="border-b border-[var(--color-hairline)] bg-[var(--color-elevated)] text-left">
+            <th scope="col" class="sticky left-0 bg-[var(--color-elevated)] px-4 py-3 font-semibold">Capability</th>
+            <th scope="col" class="px-4 py-3 font-semibold text-[var(--color-accent)]">VibeShield</th>
+            <th scope="col" class="px-4 py-3 font-semibold text-[var(--color-muted)]">{c.name}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {c.rows.map((r) => (
+            <tr class="border-b border-[var(--color-hairline)] last:border-0 align-top">
+              <th scope="row" class="sticky left-0 bg-[var(--color-bg)] px-4 py-3 text-left font-medium">{r.label}</th>
+              <td class="px-4 py-3"><span data-sev={r.us.startsWith('✅') ? 'ok' : r.us.startsWith('❌') ? 'no' : 'warn'}>{r.us}</span></td>
+              <td class="px-4 py-3 text-[var(--color-muted)]"><span data-sev={r.them.startsWith('✅') ? 'ok' : r.them.startsWith('❌') ? 'no' : 'warn'}>{r.them}</span>{r.note && <span class="mt-1 block text-xs text-[var(--color-faint)]">{r.note}</span>}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-3 text-sm text-[var(--color-faint)]">Based on public docs and plans, Sep 2026. Corrections welcome — <a class="text-[var(--color-accent)] hover:underline" href="mailto:hi@vibeshield.dev">email us</a> and we'll fix the table, not the framing.</p>
+
+    <div class="wrap-narrow mt-16 !px-0">
+      <h2 class="text-[24px] font-semibold">Related comparisons</h2>
+      <ul class="mt-4 space-y-2">
+        {COMPETITORS.filter((o) => o.slug !== c.slug).map((o) => (
+          <li><a class="text-[var(--color-accent)] hover:underline" href={`/compare/${o.slug}`}>VibeShield vs {o.name} →</a></li>
+        ))}
+        <li><a class="text-[var(--color-accent)] hover:underline" href="/blog/slopsquatting-explained">Slopsquatting explained →</a></li>
+      </ul>
+    </div>
+  </div>
+  <FinalCta />
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  [data-sev='ok'] { color: var(--color-ok); }
+  [data-sev='no'] { color: var(--color-critical); }
+  [data-sev='warn'] { color: var(--color-medium); }
+</style>

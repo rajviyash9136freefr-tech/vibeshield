@@ -1,0 +1,5 @@
+Contact: mailto:security@vibeshield.dev
+Encryption: never paste secrets into issues; PGP on request
+Acknowledgements: yes — reporters credited in release notes
+Policy: https://vibeshield.dev/security
+Preferred-Languages: en
