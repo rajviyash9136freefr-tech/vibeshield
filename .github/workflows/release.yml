@@ -81,7 +81,7 @@ jobs:
           merge-multiple: true
       - name: Merge checksums (npm wrapper verifies against this file)
         run: cat sums/sha256sums-part.txt > assets/sha256sums.txt
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           files: assets/*
           generate_release_notes: true
