@@ -1,0 +1,14 @@
+{
+  "name": "golden-empty-test-repo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Clean control: expect zero findings from the core pack.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test tests/"
+  },
+  "dependencies": {}
+}

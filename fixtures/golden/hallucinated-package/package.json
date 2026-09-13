@@ -1,0 +1,10 @@
+{
+  "name": "golden-hallucinated-package",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Golden fixture: a hallucinated package appears in dependencies (VS-PKG-001).",
+  "dependencies": {
+    "fast-parse-utils-v3": "^2.1.4"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "golden-unpinned-wildcard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Golden fixture: wildcard dependency ranges (VS-DEP dependency-risk family). Counts are kept small and exact; looseness like >= is exercised in requirements.txt, not here.",
+  "dependencies": {
+    "left-pad": "*"
+  },
+  "devDependencies": {
+    "chalk": "*"
+  }
+}

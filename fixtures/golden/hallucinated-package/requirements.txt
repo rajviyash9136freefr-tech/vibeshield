@@ -1,0 +1,5 @@
+# Golden fixture: a hallucinated package appears in requirements (VS-PKG-001).
+# fast-parse-utils-v3 does not exist on PyPI or npm — do not "fix" this file
+# by pinning it or swapping registries; the fake name is the point.
+requests==2.32.3
+fast-parse-utils-v3==2.1.4

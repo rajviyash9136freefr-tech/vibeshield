@@ -1,0 +1,4 @@
+# Golden fixture: unpinned requirements (VS-DEP dependency-risk family).
+# Exactly two bare, unpinned lines — counts are load-bearing in manifest.json.
+requests
+numpy

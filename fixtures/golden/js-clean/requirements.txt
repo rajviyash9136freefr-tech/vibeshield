@@ -1,0 +1,2 @@
+# Clean control requirements: fully pinned, real packages, no scripts.
+requests==2.32.3
