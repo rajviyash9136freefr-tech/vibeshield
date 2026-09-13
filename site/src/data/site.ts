@@ -4,7 +4,8 @@
 
 export const SITE = {
   name: 'VibeShield',
-  url: 'https://vibeshield.dev',
+  // GitHub Pages origin — see site/astro.config.mjs (base = /vibeshield/).
+  url: 'https://rajviyash9136freefr-tech.github.io',
   title: 'VibeShield — Security Scanner for AI-Generated Code | GitHub Action',
   description:
     'VibeShield audits Cursor, Copilot & Claude Code output for hallucinated packages, leaked secrets and insecure code. Free GitHub Action + pre-commit hook. 3-minute setup.',

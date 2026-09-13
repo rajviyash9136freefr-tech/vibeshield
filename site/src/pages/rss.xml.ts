@@ -2,6 +2,7 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
 import { SITE } from '../data/site';
+import { baseHref } from '../lib/base';
 
 export async function GET(context) {
   const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
@@ -10,12 +11,12 @@ export async function GET(context) {
   return rss({
     title: 'VibeShield blog',
     description: 'Notes on AI-code security: slopsquatting, hallucinated packages, threat models.',
-    site: context.site,
+    site: new URL((import.meta.env.BASE_URL ?? '/').replace(/\/+$/, ''), SITE.url).href + '/',
     items: posts.map((p) => ({
       title: p.data.title,
       description: p.data.description,
       pubDate: p.data.pubDate,
-      link: `/blog/${p.id}/`,
+      link: baseHref(`/blog/${p.id}/`),
     })),
   });
 }

@@ -5,6 +5,7 @@ import Nav from '../../components/ui/Nav.astro';
 import Footer from '../../components/ui/Footer.astro';
 import FinalCta from '../../components/sections/FinalCta.astro';
 import { COMPETITORS } from '../../data/compare';
+import { baseHref } from '../../lib/base';
 
 export function getStaticPaths() {
   return COMPETITORS.map((c) => ({ params: { slug: c.slug }, props: { c } }));
@@ -68,9 +69,9 @@ const schema = [
       <h2 class="text-[24px] font-semibold">Related comparisons</h2>
       <ul class="mt-4 space-y-2">
         {COMPETITORS.filter((o) => o.slug !== c.slug).map((o) => (
-          <li><a class="text-[var(--color-accent)] hover:underline" href={`/compare/${o.slug}`}>VibeShield vs {o.name} →</a></li>
+          <li><a class="text-[var(--color-accent)] hover:underline" href={baseHref(`/compare/${o.slug}`)}>VibeShield vs {o.name} →</a></li>
         ))}
-        <li><a class="text-[var(--color-accent)] hover:underline" href="/blog/slopsquatting-explained">Slopsquatting explained →</a></li>
+        <li><a class="text-[var(--color-accent)] hover:underline" href={baseHref('/blog/slopsquatting-explained')}>Slopsquatting explained →</a></li>
       </ul>
     </div>
   </div>

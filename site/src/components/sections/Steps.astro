@@ -6,14 +6,16 @@ import CodeBlock from '../ui/CodeBlock.astro';
 
 <section id="how" class="section border-t border-[var(--color-hairline)]">
   <div class="wrap">
-    <p class="eyebrow">Three minutes, end to end</p>
+    <p class="eyebrow scroll-tell">Three minutes, end to end</p>
     <div class="mt-4 grid gap-6 md:grid-cols-3">
       {STEPS.map((s, i) => (
-        <div class="card p-6" data-reveal style={`--reveal-delay: ${i * 60}ms`}>
+        <div data-reveal style={`--reveal-delay: ${i * 60}ms`}>
+          <div class="card relative overflow-hidden h-full p-6" data-tilt="3">
           <span class="font-mono text-sm text-[var(--color-accent)]" aria-hidden="true">{i + 1}.</span>
           <h3 class="mt-1 text-[20px] font-semibold leading-7">{s.h3}</h3>
           <p class="mt-2 text-[15px] text-[var(--color-muted)]">{s.body}</p>
           <CodeBlock code={s.code} class="mt-5" label={`Copy snippet: ${s.h3}`} />
+          </div>
         </div>
       ))}
     </div>

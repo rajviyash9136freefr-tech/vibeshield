@@ -5,6 +5,7 @@
 // server-rendered. The JSON-LD FAQPage is generated from the SAME data object
 // in pages/index.astro so visible text and schema can't drift.
 import { FAQ } from '../../data/site';
+import { baseHref } from '../../lib/base';
 
 function linkify(text: string): string {
   const esc = text.replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -19,7 +20,7 @@ function linkify(text: string): string {
 
 <section id="faq" class="section border-t border-[var(--color-hairline)]">
   <div class="wrap">
-    <h2 class="text-[28px] font-bold tracking-[-0.02em] lg:text-[40px]">Frequently asked questions</h2>
+    <h2 class="scroll-tell text-[28px] font-bold tracking-[-0.02em] lg:text-[40px]">Frequently asked questions</h2>
 
     <label class="mt-6 block max-w-sm">
       <span class="sr-only">Search questions</span>
@@ -43,7 +44,7 @@ function linkify(text: string): string {
             <p set:html={linkify(item.a)} />
             {item.link && (
               <p class="mt-2">
-                <a href={item.link[1]} class="text-[var(--color-accent)] hover:underline">
+                <a href={baseHref(item.link[1])} class="text-[var(--color-accent)] hover:underline">
                   {item.link[0] === item.link[1] ? item.link[1] : item.link[0]} →
                 </a>
               </p>

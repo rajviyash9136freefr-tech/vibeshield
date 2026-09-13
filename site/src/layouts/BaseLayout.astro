@@ -1,5 +1,6 @@
 ---
 import { SITE } from '../data/site';
+import { baseHref } from '../lib/base';
 import '@fontsource-variable/geist';
 import '@fontsource-variable/inter';
 import '@fontsource-variable/geist-mono';
@@ -26,8 +27,8 @@ const {
   bodyClass = '',
 } = Astro.props;
 
-const canonicalURL = new URL(canonical ?? Astro.url.pathname, SITE.url).href;
-const ogURL = new URL(ogImage, SITE.url).href;
+const canonicalURL = new URL(baseHref(canonical ?? Astro.url.pathname), SITE.url).href;
+const ogURL = new URL(baseHref(ogImage), SITE.url).href;
 ---
 
 <!doctype html>
@@ -38,13 +39,13 @@ const ogURL = new URL(ogImage, SITE.url).href;
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
-    <link rel="icon" type="image/svg+xml" href="/shield.svg" />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" type="image/svg+xml" href={baseHref('/shield.svg')} />
+    <link rel="sitemap" href={baseHref('/sitemap-index.xml')} />
     <link
       rel="alternate"
       type="application/rss+xml"
       title="VibeShield blog"
-      href="/rss.xml"
+      href={baseHref('/rss.xml')}
     />
 
     <meta property="og:type" content="website" />
@@ -71,6 +72,7 @@ const ogURL = new URL(ogImage, SITE.url).href;
     </script>
   </head>
   <body class={bodyClass}>
+    <div class="scroll-progress" aria-hidden="true"></div>
     <a class="skip-link" href="#main">Skip to content</a>
     <slot name="nav" />
     <main id="main">
@@ -79,5 +81,6 @@ const ogURL = new URL(ogImage, SITE.url).href;
     <slot name="footer" />
     <script src="../scripts/reveal.ts"></script>
     <script src="../scripts/copy.ts"></script>
+    <script src="../scripts/motion.ts"></script>
   </body>
 </html>

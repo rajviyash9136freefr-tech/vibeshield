@@ -1,5 +1,6 @@
 ---
 import { FOOTER } from '../../data/site';
+import { baseHref } from '../../lib/base';
 ---
 
 <footer class="border-t border-[var(--color-hairline)]">
@@ -17,7 +18,7 @@ import { FOOTER } from '../../data/site';
           <ul class="mt-3 space-y-2">
             {col.links.map(([label, href]) => (
               <li>
-                <a href={href} class="text-sm text-[var(--color-muted)] transition-colors duration-150 hover:text-[var(--color-accent)]">
+                <a href={baseHref(href)} class="text-sm text-[var(--color-muted)] transition-colors duration-150 hover:text-[var(--color-accent)]">
                   {label}
                 </a>
               </li>

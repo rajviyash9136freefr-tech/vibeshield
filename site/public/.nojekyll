@@ -1,0 +1,1 @@
+# GitHub Pages: skip Jekyll processing so /_astro/* assets are served as-is.

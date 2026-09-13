@@ -1,15 +1,18 @@
 ---
 // §3.6 bento grid. Each card: icon (accent, 20px), H3, one sentence, one
 // micro-visual. Verbs and numbers, no adjectives (§7 copy standards).
+// Cinematic layer: [data-reveal] wrapper owns the entrance transform, the
+// inner [data-tilt] card owns the 3D pointer tilt + spotlight (motion.ts).
 const chips = ['VS-PKG-001', 'VS-SEC-017', 'VS-LIC-003', 'VS-DEP-002', 'VS-INJ-001'];
 ---
 
 <section class="section border-t border-[var(--color-hairline)]">
   <div class="wrap">
-    <h2 class="text-[28px] font-bold tracking-[-0.02em] lg:text-[40px]">Built for how AI code actually fails</h2>
+    <h2 class="scroll-tell text-[28px] font-bold tracking-[-0.02em] lg:text-[40px]">Built for how AI code actually fails</h2>
     <div class="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <!-- Large card, 2-col span -->
-      <div class="card p-6 md:col-span-2" data-reveal>
+      <div class="md:col-span-2" data-reveal>
+        <div class="card relative overflow-hidden p-6" data-tilt="3">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 4 5.5V11c0 5 3.2 8.9 8 10.5 4.8-1.6 8-5.5 8-10.5V5.5L12 2Z"/></svg>
         <h3 class="mt-3 text-[20px] font-semibold">Hallucinated package detection</h3>
         <p class="mt-1 text-[15px] text-[var(--color-muted)]">Scores every new dependency for slopsquatting risk — age, maintainers, install scripts, name-hallucination likelihood.</p>
@@ -19,45 +22,55 @@ const chips = ['VS-PKG-001', 'VS-SEC-017', 'VS-LIC-003', 'VS-DEP-002', 'VS-INJ-0
               <tr>{['package', 'age', 'maintainers', 'install hook', 'risk'].map((h) => <th scope="col" class="px-3 py-2 font-medium">{h}</th>)}</tr>
             </thead>
             <tbody class="border-t border-[var(--color-hairline)]">
-              <tr><td class="px-3 py-2 text-[var(--color-fg)]">fast-parse-utils-v3</td><td class="px-3 py-2">9 d</td><td class="px-3 py-2">1</td><td class="px-3 py-2">curl | sh</td><td class="px-3 py-2 font-semibold text-[var(--color-critical)]">critical</td></tr>
+              <tr><td class="px-3 py-2 text-[var(--color-fg)]">fast-parse-utils-v3</td><td class="px-3 py-2"><span data-countup="9">9</span> d</td><td class="px-3 py-2">1</td><td class="px-3 py-2">curl | sh</td><td class="px-3 py-2 font-semibold text-[var(--color-critical)]">critical</td></tr>
               <tr class="border-t border-[var(--color-hairline)]"><td class="px-3 py-2 text-[var(--color-fg)]">yargs</td><td class="px-3 py-2">13 y</td><td class="px-3 py-2">7</td><td class="px-3 py-2">none</td><td class="px-3 py-2 text-[var(--color-ok)]">ok</td></tr>
             </tbody>
           </table>
         </div>
+        </div>
       </div>
 
-      <div class="card p-6" data-reveal>
+      <div data-reveal style="--reveal-delay: 60ms">
+        <div class="card relative overflow-hidden p-6" data-tilt="4">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m8 6-5 6 5 6M16 6l5 6-5 6"/></svg>
         <h3 class="mt-3 text-[20px] font-semibold">120 AI-specific rules, 8 languages</h3>
         <p class="mt-1 text-[15px] text-[var(--color-muted)]">JS/TS, Python, Go, Java, Ruby, PHP, Rust, C# — ranked by AI-likelihood, not generic severity.</p>
         <p class="mt-4 flex flex-wrap gap-1.5">
           {chips.map((c) => <code class="rounded-full border border-[var(--color-hairline)] bg-[var(--color-bg)] px-2.5 py-0.5 font-mono text-xs text-[var(--color-muted)]">{c}</code>)}
         </p>
+        </div>
       </div>
 
-      <div class="card p-6" data-reveal>
+      <div data-reveal style="--reveal-delay: 120ms">
+        <div class="card relative overflow-hidden p-6" data-tilt="4">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 3v18M5 10l7-7 7 7"/></svg>
         <h3 class="mt-3 text-[20px] font-semibold">AI-origin attribution</h3>
         <p class="mt-1 text-[15px] text-[var(--color-muted)]">Knows which diff hunks the bot wrote.</p>
         <pre class="mt-4 overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-hairline)] bg-[var(--color-bg)] p-3 font-mono text-[12.5px] leading-6" aria-hidden="true"><span class="text-[var(--color-faint)]">@@ -40,2 +40,3 @@</span>
 <span class="bg-[var(--color-accent-dim)] text-[var(--color-fg)]">+ const key = "sk-proj-••••4a2f"; // AI-origin: confirmed</span></pre>
+        </div>
       </div>
 
-      <div class="card p-6" data-reveal>
+      <div data-reveal style="--reveal-delay: 180ms">
+        <div class="card relative overflow-hidden p-6" data-tilt="4">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
         <h3 class="mt-3 text-[20px] font-semibold">Secrets re-scan</h3>
         <p class="mt-1 text-[15px] text-[var(--color-muted)]">Entropy + allow-list + known formats, tuned to training-data echo.</p>
         <p class="mt-4 rounded-[var(--radius-card)] border border-[var(--color-hairline)] bg-[var(--color-bg)] px-3 py-2 font-mono text-[13px] text-[var(--color-muted)]">OPENAI_API_KEY = <span class="text-[var(--color-critical)]">sk-proj-••••••••••••4a2f</span></p>
+        </div>
       </div>
 
-      <div class="card p-6" data-reveal>
+      <div data-reveal style="--reveal-delay: 240ms">
+        <div class="card relative overflow-hidden p-6" data-tilt="4">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
         <h3 class="mt-3 text-[20px] font-semibold">Diff-speed</h3>
         <p class="mt-1 text-[15px] text-[var(--color-muted)]">1.2s median. Diff-only. Offline rules.</p>
-        <p class="mt-4 font-mono text-[13px] text-[var(--color-ok)]">✓ 14 files · 1.2s · 2 findings</p>
+        <p class="mt-4 font-mono text-[13px] text-[var(--color-ok)]">✓ 14 files · <span data-countup="1.2" data-suffix="s">1.2s</span> · 2 findings</p>
+        </div>
       </div>
 
-      <div class="card p-6" data-reveal>
+      <div data-reveal style="--reveal-delay: 300ms">
+        <div class="card relative overflow-hidden p-6" data-tilt="4">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 4h14v16l-3-2-2 2-2-2-2 2-3-2V4Z"/><path d="M9 9h6M9 13h4"/></svg>
         <h3 class="mt-3 text-[20px] font-semibold">Explain-grade reports</h3>
         <p class="mt-1 text-[15px] text-[var(--color-muted)]">Why it matters for AI code, the pattern, a one-line fix, accept/dismiss.</p>
@@ -65,6 +78,7 @@ const chips = ['VS-PKG-001', 'VS-SEC-017', 'VS-LIC-003', 'VS-DEP-002', 'VS-INJ-0
   Why this matters for AI code: LLMs
   invent plausible package names…
   Fix: remove it — 12 lines → node:util</pre>
+        </div>
       </div>
     </div>
   </div>

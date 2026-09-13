@@ -1,12 +1,13 @@
 ---
 import { HERO } from '../../data/site';
+import { baseHref } from '../../lib/base';
 import HeroDemo from './HeroDemo.astro';
 ---
 
 <section class="relative overflow-hidden">
-  {/* The single allowed gradient: hero glow (UIUX §2.1) */}
+  {/* The single allowed gradient: hero glow (UIUX §2.1) — parallax-drifts on scroll */}
   <div
-    class="pointer-events-none absolute inset-x-0 -top-40 h-[520px]"
+    class="parallax-slow pointer-events-none absolute inset-x-0 -top-40 h-[520px]"
     style="background: radial-gradient(60% 55% at 50% 35%, rgba(45,212,191,0.12) 0%, rgba(10,10,11,0) 100%);"
     aria-hidden="true"
   ></div>
@@ -24,11 +25,11 @@ import HeroDemo from './HeroDemo.astro';
       </p>
       <div class="mt-8 flex flex-wrap items-center gap-4">
         <a
-          href="/#install"
+          href={baseHref('/#install')}
           class="rounded-[var(--radius-btn)] bg-[var(--color-accent-strong)] px-6 py-3 font-semibold text-[#06231f] transition-transform duration-150 hover:-translate-y-px"
         >Install free</a>
         <a
-          href="/#how"
+          href={baseHref('/#how')}
           class="rounded-[var(--radius-btn)] border border-[var(--color-hairline)] px-6 py-3 font-medium text-[var(--color-fg)] transition-colors duration-150 hover:border-[var(--color-accent)]"
         >See a live report →</a>
       </div>
@@ -37,8 +38,11 @@ import HeroDemo from './HeroDemo.astro';
       </p>
     </div>
 
+    {/* reveal + parallax on separate wrappers — both own `transform` */}
     <div data-reveal>
-      <HeroDemo />
+      <div class="parallax-fast">
+        <HeroDemo />
+      </div>
     </div>
   </div>
 </section>

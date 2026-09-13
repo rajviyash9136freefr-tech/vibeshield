@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /app
 
-Sitemap: https://vibeshield.dev/sitemap-index.xml
+Sitemap: https://rajviyash9136freefr-tech.github.io/vibeshield/sitemap-index.xml

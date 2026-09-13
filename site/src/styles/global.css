@@ -175,6 +175,56 @@
     opacity: 1;
     transform: none;
   }
+
+  /* ---- Cinematic layer -------------------------------------------------
+     3D tilt cards: --tilt-x/--tilt-y are set by motion.ts on pointer-move
+     (fine pointer + lg only). The ::after spotlight follows --mx/--my.
+     Depth: children can opt in with [data-depth] to float on the z axis. */
+  [data-tilt] {
+    position: relative;
+    transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    transform-style: preserve-3d;
+    transition: transform 250ms var(--ease-soft);
+    will-change: transform;
+  }
+  [data-tilt]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 250ms var(--ease-soft);
+    background: radial-gradient(
+      320px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(45, 212, 191, 0.08),
+      transparent 60%
+    );
+  }
+  [data-tilt]:hover::after {
+    opacity: 1;
+  }
+  [data-depth] {
+    transform: translateZ(var(--z, 24px));
+  }
+  /* Hero demo gets a cinematic hover float on top of the tilt */
+  [data-tilt]:hover {
+    transition-duration: 150ms;
+  }
+
+  /* Scroll progress hairline under the nav (CSS scroll-driven, §8: zero JS) */
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: 60;
+    transform-origin: 0 50%;
+    background: linear-gradient(90deg, var(--color-accent-strong), var(--color-accent));
+    opacity: 0; /* revealed by @supports below; invisible where unsupported */
+  }
+
   /* Horizontal-scroll tables with fade-edge affordance (§6) */
   .scroll-x {
     overflow-x: auto;
@@ -186,6 +236,110 @@
   .scroll-x::-webkit-scrollbar-thumb {
     background: var(--color-hairline);
     border-radius: 3px;
+  }
+}
+
+/* Scroll-driven motion — pure CSS where the browser can do it (§8 zero-JS).
+   Everything is one-shot / scroll-positioned, never looping decoration;
+   prefers-reduced-motion below shuts all of it off. */
+@supports (animation-timeline: view()) {
+  /* Parallax drift for the hero glow + demo card (opposite rates = depth) */
+  .parallax-slow,
+  .parallax-fast {
+    animation: parallax-rise linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 80vh;
+  }
+  .parallax-fast {
+    --parallax: 120px;
+  }
+  @keyframes parallax-rise {
+    to {
+      transform: translateY(calc(var(--parallax, 60px) * -1));
+    }
+  }
+
+  /* Section headers: settle as they enter, lift as they leave (cinematic
+     scroll tell — Linear-style restraint, small deltas only) */
+  .scroll-tell {
+    animation: scroll-tell linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 40%;
+  }
+  @keyframes scroll-tell {
+    from {
+      opacity: 0;
+      transform: translateY(18px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Steps: the connector line draws itself down as you scroll the section */
+  .draw-line {
+    transform-origin: 50% 0;
+    animation: draw-line linear both;
+    animation-timeline: view();
+    animation-range: entry 20% exit 80%;
+  }
+  @keyframes draw-line {
+    from {
+      transform: scaleY(0);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  /* Scroll progress bar + rail fills ride the document scroll */
+  .scroll-progress {
+    opacity: 0.9;
+    animation: progress-scale linear both;
+    animation-timeline: scroll(root block);
+  }
+  @keyframes progress-scale {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* Feature cards: tiny per-card scroll rotation-in (depth, not gimmick) */
+  .scroll-in {
+    animation: scroll-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 60%;
+  }
+  @keyframes scroll-in {
+    from {
+      opacity: 0;
+      transform: perspective(900px) translateY(26px) rotateX(6deg);
+    }
+    to {
+      opacity: 1;
+      transform: perspective(900px) none;
+    }
+  }
+
+  /* Final-CTA shield: 3D swing into plane, scroll-positioned */
+  .shield-3d {
+    animation: shield-3d linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 70%;
+  }
+  @keyframes shield-3d {
+    from {
+      opacity: 0;
+      transform: perspective(800px) rotateY(-70deg) translateZ(-120px);
+    }
+    to {
+      opacity: 1;
+      transform: perspective(800px) none;
+    }
   }
 }
 
@@ -203,5 +357,23 @@
   [data-reveal] {
     opacity: 1;
     transform: none;
+  }
+  [data-tilt] {
+    transform: none;
+  }
+  [data-tilt]::after {
+    display: none;
+  }
+  .parallax-slow,
+  .parallax-fast,
+  .scroll-tell,
+  .scroll-in,
+  .draw-line {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .scroll-progress {
+    display: none;
   }
 }

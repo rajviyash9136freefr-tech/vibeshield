@@ -4,14 +4,16 @@ import { PROBLEM } from '../../data/site';
 
 <section id="product" class="section">
   <div class="wrap">
-    <h2 class="max-w-[22ch] text-[28px] font-bold leading-[1.2] tracking-[-0.02em] lg:text-[40px] lg:leading-[48px]">
+    <h2 class="scroll-tell max-w-[22ch] text-[28px] font-bold leading-[1.2] tracking-[-0.02em] lg:text-[40px] lg:leading-[48px]">
       {PROBLEM.h2}
     </h2>
     <div class="mt-12 grid gap-12 lg:grid-cols-2 lg:gap-16">
-      <div class="space-y-5 text-[16px] leading-[1.7] text-[var(--color-muted)]">
+      <div class="space-y-5 text-[16px] leading-[1.7] text-[var(--color-muted)] relative">
+        <!-- Cinematic scroll tell: the hairline draws itself as the section scrolls -->
+        <div class="draw-line absolute -left-6 top-1 hidden h-[calc(100%-8px)] w-px bg-[var(--color-hairline)] lg:block" aria-hidden="true"></div>
         {PROBLEM.paras.map((p) => <p>{p}</p>)}
       </div>
-      <div data-reveal>
+      <div class="scroll-in">
         <div class="scroll-x rounded-[var(--radius-card)] border border-[var(--color-hairline)]">
           <table class="w-full min-w-[560px] border-collapse text-sm">
             <caption class="px-4 pt-4 text-left text-[var(--color-faint)]">
