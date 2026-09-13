@@ -1,4 +1,4 @@
-# 🛡 VibeShield
+                                                            # 🛡 VibeShield
 
 **Security & dependency auditing for AI-generated code.**
 Your AI agent ships code you didn't write and can't be bothered to read. VibeShield reads it for you — in CI, at the commit hook, before it reaches `main`.
