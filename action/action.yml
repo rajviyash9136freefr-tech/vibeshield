@@ -1,0 +1,94 @@
+name: 'VibeShield'
+description: >-
+  Security and dependency audit for AI-generated code. Scans your PR diff for
+  hallucinated packages, leaked secrets and insecure boilerplate, then posts a
+  VibeCheck report. Static analysis on the runner — your code never leaves it.
+author: 'VibeShield'
+
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  mode:
+    description: >-
+      Gate policy: off | warn | block-on-critical | block-on-high+.
+      In block modes the step fails (exit 1) when findings at or above the
+      threshold are present. Default warn comments and annotates but passes.
+    required: false
+    default: 'warn'
+  github_token:
+    description: 'Token used to create or update the VibeCheck PR comment.'
+    required: false
+    default: ${{ github.token }}
+  config:
+    description: >-
+      Path to vibeshield.yml, relative to the workspace root. If the file does
+      not exist, scanner defaults are used (a non-default path that is missing
+      is a config error, exit 2).
+    required: false
+    default: 'vibeshield.yml'
+  online:
+    description: >-
+      Allow network calls for package-intel lookups (--online). Default false;
+      offline heuristics are used otherwise and degrade gracefully.
+    required: false
+    default: 'false'
+  scanner_bin:
+    description: >-
+      Optional path to a prebuilt vibeshield binary. Skips the release download
+      and go-build fallback when set.
+    required: false
+    default: ''
+  version:
+    description: >-
+      Pinned scanner release tag to download when scanner_bin is not set
+      (rajviyash9136freefr-tech/vibeshield releases, assets vibeshield-{os}-{arch}).
+      Falls back to "go build ./scanner" if the download fails and Go is on
+      the runner.
+    required: false
+    default: 'v1.0.0'
+
+outputs:
+  critical:
+    description: 'Number of CRITICAL findings in this scan.'
+    value: ${{ steps.vibeshield.outputs.critical }}
+  high:
+    description: 'Number of HIGH findings in this scan.'
+    value: ${{ steps.vibeshield.outputs.high }}
+  medium:
+    description: 'Number of MEDIUM findings in this scan.'
+    value: ${{ steps.vibeshield.outputs.medium }}
+  low:
+    description: 'Number of LOW findings in this scan.'
+    value: ${{ steps.vibeshield.outputs.low }}
+  info:
+    description: 'Number of INFO findings in this scan.'
+    value: ${{ steps.vibeshield.outputs.info }}
+  total:
+    description: 'Total findings across all severities.'
+    value: ${{ steps.vibeshield.outputs.total }}
+  blocked:
+    description: 'true when the mode threshold was met and the step will fail.'
+    value: ${{ steps.vibeshield.outputs.blocked }}
+  report_path:
+    description: 'Path of the rendered VibeCheck comment markdown on the runner.'
+    value: ${{ steps.vibeshield.outputs.report_path }}
+  report_json:
+    description: 'Path of the raw scanner JSON on the runner (contracts/cli.md).'
+    value: ${{ steps.vibeshield.outputs.report_json }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: VibeShield — scan diff, annotate, post VibeCheck report
+      id: vibeshield
+      shell: bash
+      env:
+        INPUT_MODE: ${{ inputs.mode }}
+        INPUT_GITHUB_TOKEN: ${{ inputs.github_token }}
+        INPUT_CONFIG: ${{ inputs.config }}
+        INPUT_ONLINE: ${{ inputs.online }}
+        INPUT_SCANNER_BIN: ${{ inputs.scanner_bin }}
+        INPUT_VERSION: ${{ inputs.version }}
+      run: bash "$GITHUB_ACTION_PATH/entrypoint.sh"

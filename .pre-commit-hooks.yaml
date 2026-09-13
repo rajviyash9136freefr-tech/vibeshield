@@ -1,0 +1,14 @@
+# pre-commit.framework registry hooks (the repo URL is the module path; the
+# binary itself is go-installed from the published scanner module).
+- id: vibeshield
+  name: VibeShield
+  description: >-
+    Security & dependency audit for AI-generated code: pasted secrets,
+    hallucinated packages, insecure defaults. Static analysis only.
+  entry: vibeshield scan --staged
+  language: golang
+  additional_dependencies:
+    - github.com/rajviyash9136freefr-tech/vibeshield/scanner/cmd/vibeshield@v1.0.0
+  pass_filenames: false
+  always_run: true
+  minimum_pre_commit_version: "3.0.0"
