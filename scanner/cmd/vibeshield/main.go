@@ -4,6 +4,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -12,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/config"
+	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/fix"
 	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/output"
 	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/rules"
 	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/scan"
@@ -25,6 +27,7 @@ const usage = `vibeshield %s — security scanner for AI-generated code
 
 Usage:
   vibeshield scan [path]      Scan a directory (full) or a git diff (--diff/--staged)
+  vibeshield fix [path]       VibePatch: preview + apply mechanical fixes from scan findings
   vibeshield version          Print version and embedded rule-pack info
 
 Scan flags:
@@ -37,6 +40,12 @@ Scan flags:
   --online           (reserved) allow package-intel network lookups
   --max-cols <n>     Output width cap (default 88)
   --no-color         Disable color (also: NO_COLOR env, non-TTY auto)
+
+Fix flags (VibePatch — opt-in, human-gated):
+  --dry-run          Preview the diff, change nothing
+  --yes              Apply without prompting (for coding agents / CI);
+                     every patch still lands in vibeshield-fixes.log
+  --report <file>    Reuse an existing --format json scan instead of rescanning
 
 Exit codes: 0 clean or warn-mode findings · 1 block threshold met · 2 config/usage error
 `
@@ -55,6 +64,8 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return cmdVersion(stdout)
 	case "scan":
 		return cmdScan(args[1:], stdout, stderr)
+	case "fix":
+		return cmdFix(args[1:], os.Stdin, stdout, stderr)
 	case "help", "--help", "-h":
 		fmt.Fprintf(stdout, usage, Version)
 		return 0
@@ -105,10 +116,141 @@ func normalizeScanArgs(args []string) []string {
 
 func flagTakesValue(name string) bool {
 	switch name {
-	case "diff", "format", "config", "mode", "rules", "max-cols":
+	case "diff", "format", "config", "mode", "rules", "max-cols", "report":
 		return true
 	}
 	return false
+}
+
+// cmdFix is VibePatch: it scans (or reuses a --report file), plans the
+// mechanical autofixes, shows a −/+ preview of exactly which files will be
+// read and changed, and applies them through a human gate. --yes skips the
+// prompts for coding agents; every applied patch is appended to
+// vibeshield-fixes.log (JSONL) so the change trail stays auditable.
+func cmdFix(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
+	args = normalizeScanArgs(args)
+	fl := flag.NewFlagSet("fix", flag.ContinueOnError)
+	fl.SetOutput(stderr)
+	var (
+		dryRun   = fl.Bool("dry-run", false, "preview only, change nothing")
+		yes      = fl.Bool("yes", false, "apply without prompting (agent/CI mode; still audited)")
+		report   = fl.String("report", "", "reuse a --format json scan file instead of rescanning")
+		cfgPath  = fl.String("config", "vibeshield.yml", "config file path")
+		rulesDir = fl.String("rules", "", "directory of extra rule pack YAML files")
+		noColor  = fl.Bool("no-color", false, "disable color")
+	)
+	fl.Usage = func() { fmt.Fprintf(stderr, usage, Version) }
+	if err := fl.Parse(args); err != nil {
+		return 2
+	}
+	path := "."
+	if fl.NArg() > 0 {
+		path = fl.Arg(0)
+	}
+	if fi, err := os.Stat(path); err != nil || !fi.IsDir() {
+		fmt.Fprintf(stderr, "vibeshield: %s is not a readable directory\n", path)
+		return 2
+	}
+
+	cfg, err := config.Load(*cfgPath)
+	if err != nil {
+		fmt.Fprintf(stderr, "vibeshield: %v\n", err)
+		return 2
+	}
+	pack, err := rules.LoadCore()
+	if err != nil {
+		fmt.Fprintf(stderr, "vibeshield: core rules failed to load: %v\n", err)
+		return 2
+	}
+	if *rulesDir != "" {
+		extra, err := loadExtraPack(*rulesDir)
+		if err != nil {
+			fmt.Fprintf(stderr, "vibeshield: %v\n", err)
+			return 2
+		}
+		pack.Rules = append(pack.Rules, extra.Rules...)
+	}
+
+	var rep *scan.Report
+	if *report != "" {
+		data, err := os.ReadFile(*report)
+		if err != nil {
+			fmt.Fprintf(stderr, "vibeshield: %v\n", err)
+			return 2
+		}
+		rep = &scan.Report{}
+		if err := json.Unmarshal(data, rep); err != nil {
+			fmt.Fprintf(stderr, "vibeshield: --report is not a vibeshield json scan: %v\n", err)
+			return 2
+		}
+	} else {
+		opts := scan.Options{Ignores: cfg.Ignores()}
+		if len(cfg.Languages) > 0 {
+			opts.Languages = cfg.Languages
+		}
+		fmt.Fprintf(stderr, "  Reading %s…\n", path)
+		rep, err = scan.Dir(path, pack, Version, opts)
+		if err != nil {
+			fmt.Fprintf(stderr, "vibeshield: scan failed: %v\n", err)
+			return 2
+		}
+		fmt.Fprintf(stderr, "  Read %d files · %d findings\n", rep.Scan.FilesScanned, len(rep.Findings))
+	}
+
+	plan := fix.BuildPlan(path, rep, pack)
+	color := !*noColor && output.IsTTY(stdout)
+	fix.Render(stdout, plan, color)
+	if !plan.HasWork() {
+		return 0
+	}
+
+	gate := fix.Gate{Mode: "ask", Stdin: stdin, Out: stdout}
+	mode := "interactive"
+	switch {
+	case *dryRun:
+		gate.Mode = "dry"
+		fmt.Fprintln(stdout, "  (--dry-run: nothing was changed)")
+		return 0
+	case *yes:
+		gate.Mode = "yes"
+		mode = "yes"
+	case !stdinIsInteractive(stdin):
+		fmt.Fprintln(stderr, "vibeshield: stdin is not a terminal — refusing to guess at the gate. Re-run with --dry-run to preview or --yes to apply.")
+		return 2
+	}
+
+	logPath := filepath.Join(path, "vibeshield-fixes.log")
+	audit, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644)
+	if err != nil {
+		fmt.Fprintf(stderr, "vibeshield: cannot open audit log %s: %v\n", logPath, err)
+		return 2
+	}
+	defer audit.Close()
+
+	applied, err := fix.Apply(path, plan, &gate, audit, mode)
+	if err != nil {
+		fmt.Fprintf(stderr, "vibeshield: %v\n", err)
+		return 2
+	}
+	fmt.Fprintf(stdout, "\n  %d fix(es) applied · trail in %s — re-scan to confirm, review the diff before you commit.\n",
+		applied, filepath.ToSlash(logPath))
+	if applied == 0 {
+		fmt.Fprintln(stdout, "  Nothing applied.")
+	}
+	return 0
+}
+
+// stdinIsInteractive reports whether fix's per-file gate can actually ask.
+// A piped/scripted stdin would auto-answer EOF → "N" on every file, which
+// looks like a hang to a user at a terminal — so non-TTY stdin must choose
+// --dry-run or --yes explicitly.
+func stdinIsInteractive(stdin io.Reader) bool {
+	f, ok := stdin.(*os.File)
+	if !ok {
+		return false
+	}
+	fi, err := f.Stat()
+	return err == nil && fi.Mode()&os.ModeCharDevice != 0
 }
 
 func cmdScan(args []string, stdout, stderr io.Writer) int {

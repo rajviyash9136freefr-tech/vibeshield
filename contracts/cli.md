@@ -6,9 +6,28 @@ Binary name: `vibeshield` (Go, single static binary, pure Go — no CGO).
 
 ```
 vibeshield scan [path]     Scan a directory (full mode) or diff (diff mode)
+vibeshield fix [path]      VibePatch: preview + apply mechanical autofixes (opt-in, gated)
 vibeshield init            Detect frameworks, write vibeshield.yml + hook + workflow, run first scan
 vibeshield version         Print version + embedded rule-pack versions
 ```
+
+## Fix flags (VibePatch)
+
+```
+--dry-run              Preview the −/+ diff; change nothing
+--yes                  Skip the per-file prompt (coding-agent / CI mode). Every
+                       applied patch is still appended to vibeshield-fixes.log
+                       (JSONL: time, rule_id, file, line, before, after, mode)
+--report <file>        Reuse a `scan --format json` file instead of rescanning
+--config / --rules / --no-color   shared with scan
+```
+
+Gate law: `fix` prompts `[y/N/a/s]` per file; a non-TTY stdin must pass
+`--dry-run` or `--yes` (it never guesses an answer). Rules without an
+`autofix` (contracts/rulepack.md) are previewed as suggestions only.
+`hardcoded-secret` and `prompt-injection` findings are never patched
+mechanically — a key needs rotation, and an agent editing its own
+instruction file is the injection we came to catch.
 
 ## Global flags
 

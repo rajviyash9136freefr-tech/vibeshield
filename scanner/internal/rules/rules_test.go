@@ -111,3 +111,47 @@ func TestLoadCore(t *testing.T) {
 		ids[r.ID] = true
 	}
 }
+
+func packWithAutofix(t *testing.T, autofixYAML string) (*Pack, []error) {
+	t.Helper()
+	doc := "schema: vibeshield.rules/v1\nid: core\nversion: 1.0.0\nlicense: MIT\nrules:\n" +
+		"  - id: VS-SEC-014\n    category: insecure-default\n    severity: high\n" +
+		"    title: t\n    message: m\n    fix: f\n    languages: [python]\n" +
+		"    pattern:\n      kind: regex\n      match: 'x'\n" + autofixYAML
+	return ParsePackBytes([]byte(doc), "t.yaml", LoadOptions{})
+}
+
+// TestAutofixValidation is table-driven over the contracts/rulepack.md
+// autofix law: braced group refs only, one line, RE2, both keys required.
+func TestAutofixValidation(t *testing.T) {
+	cases := []struct {
+		name    string
+		yaml    string
+		wantErr string // "" = must load; otherwise substring of the error
+	}{
+		{"absent is legal", "", ""},
+		{"braced groups", "    autofix:\n      match: '^(\\s*)DEBUG\\s*=\\s*True$'\n      replace: '${1}DEBUG = False'\n", ""},
+		{"no groups at all", "    autofix:\n      match: 'debug\\s*=\\s*True'\n      replace: 'debug=False'\n", ""},
+		{"dangling bare group", "    autofix:\n      match: 'a'\n      replace: '$1DEBUG'\n", "unknown group"},
+		{"multiline replace", "    autofix:\n      match: 'a'\n      replace: \"x\\ny\"\n", "one line"},
+		{"missing replace", "    autofix:\n      match: 'a'\n", "replace required"},
+		{"unknown field", "    autofix:\n      match: 'a'\n      replace: 'b'\n      extra: 1\n", "unknown field"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			_, errs := packWithAutofix(t, c.yaml)
+			if c.wantErr == "" {
+				if len(errs) > 0 {
+					t.Fatalf("must load: %v", errs)
+				}
+				return
+			}
+			if len(errs) == 0 {
+				t.Fatalf("must reject (%s), got no error", c.wantErr)
+			}
+			if !strings.Contains(errs[0].Error(), c.wantErr) {
+				t.Fatalf("error = %q, want substring %q", errs[0], c.wantErr)
+			}
+		})
+	}
+}

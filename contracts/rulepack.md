@@ -41,6 +41,7 @@ rules:
 | `title` | yes | ≤80 chars, sentence case, names the pattern not the person |
 | `message` | yes | the "why this matters for AI code" text — 1–3 sentences |
 | `fix` | yes | one imperative line |
+| `autofix` | no | mechanical same-line rewrite (VibePatch) — see below |
 | `languages` | yes | from: javascript, typescript, python, go, java, ruby, php, rust, csharp, yaml, generic |
 | `pattern.kind` | yes | `regex` (RE2 syntax, no backrefs), `literal`, or `structural` (v1.1 reserved) |
 | `pattern.match` | yes for regex/literal | RE2 regex or exact literal |
@@ -50,6 +51,26 @@ rules:
 | `references` | no | URLs shown in reports |
 
 ## Engine semantics (scanner contract)
+
+### `autofix` (VibePatch) semantics
+
+```yaml
+    autofix:
+      match: '^(\s*)DEBUG\s*=\s*True\s*$'
+      replace: '${1}DEBUG = False'
+```
+
+- Applied by `vibeshield fix` only — never by `scan`, the Action, or the hook.
+- RE2 `match` runs against the **finding's line**; `replace` is a Go
+  `Regexp.ReplaceAllString` template. Group references MUST use the braced
+  form `${1}` (a bare `$1DEBUG` expands as group `1DEBUG` → empty, silently
+  deleting code; the loader rejects unknown/dangling group names).
+- `replace` must keep the rewrite on one line — no `\n`/`\r` (load error).
+- The human gate (`y/N` per file, or explicit `--yes` for agents) is part of
+  the contract; every applied patch is appended to `vibeshield-fixes.log`.
+- Categories `hardcoded-secret` and `prompt-injection` are never patched
+  mechanically regardless of rule data.
+- `autofix` is optional; a rule without it is "explain + suggest" only.
 
 - A rule **fires** when `pattern.match` matches any line within an included path,
   and the matched region lies inside the scanned diff hunk (diff mode) or file (full mode).

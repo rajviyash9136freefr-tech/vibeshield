@@ -92,7 +92,7 @@ Popular repo getting AI-generated drive-by PRs. Needs: GitHub Action that litter
 - Full SAST parity with Semgrep/Sonar (we are AI-behavior-focused, not a general scanner).
 - Runtime/appsec, DAST, container scanning, IaC scanning (roadmap).
 - GitLab/Azure DevOps/Bitbucket (roadmap; architecture keeps hosts pluggable).
-- Fixing code automatically (v1.1: "explain + patch suggestion" only; autonomous auto-fix is a trust decision, not an engineering one).
+- Fixing code automatically is NOT silent: `vibeshield fix` (VibePatch) applies mechanical, rule-authored same-line rewrites only behind an explicit preview + per-file y/N gate, or an explicit `--yes` for coding agents — where every patch still lands in `vibeshield-fixes.log` (see contracts/cli.md; secrets and prompt-injection findings are never auto-patched).
 - IDE extensions (Cursor plugin is roadmap P1 after launch).
 
 ---
@@ -111,7 +111,7 @@ Popular repo getting AI-generated drive-by PRs. Needs: GitHub Action that litter
 
 ```yaml
 repos:
-  - repo: https://github.com/vibeshield/vibeshield
+  - repo: https://github.com/rajviyash9136freefr-tech/vibeshield
     rev: v1.0.0
     hooks:
       - id: vibeshield        # staged-files scan, < 1.5 s on typical diffs
@@ -240,7 +240,7 @@ Nothing. VibeShield is fully open source under the MIT license — the scanner, 
 Add `uses: rajviyash9136freefr-tech/vibeshield/action@v1` to your workflow (or run `npx vibeshield scan .` / `go install` for the CLI). VibeShield scans the next PR, comments a VibeCheck report, and you can enable the badge on your README. No account, no signup — MIT-licensed and free for every repo.
 
 **Q9. Can VibeShield fix the code automatically?**
-v1 explains and suggests — every finding includes a one-line fix — but never rewrites your code. Auto-fix ("VibePatch") is on the roadmap behind an explicit opt-in with diff preview, because trusting an AI to fix AI code without a human gate is exactly the problem we're here to reduce, not reinvent.
+Yes — with a human gate, never silently. `vibeshield fix` previews every change (which file was read, −/+ per line), asks `[y/N]` per file, and writes an audit trail to `vibeshield-fixes.log`. Coding agents can run `vibeshield fix --yes` to apply the mechanical patches directly, but only mechanical, rule-authored, same-line rewrites are ever eligible — and secrets or prompt-injection findings are excluded by contract, because a key needs rotation and an agent editing its own instruction file is exactly the problem we're here to reduce, not reinvent.
 
 **Q10. Who is responsible for the security of AI-generated code?**
 Legally and practically, still you — the shipping team. Standards bodies and enterprise procurement are converging on "AI-authored changes need the same gate as human-authored changes"; VibeShield gives you that gate plus the audit trail (who shipped what, when, with what risk) that questions like this require.
@@ -276,9 +276,9 @@ The packaging question was reframed on 2026-09-13: the moat for an AI-code audit
 
 ## 10. Roadmap
 
-**v1.0 (launch, ~6 weeks):** Action + pre-commit + CLI, rules engine + 8-language AI pack, hallucinated-package model, PR comment report, badge, landing site — all free.
+**v1.0 (launch, ~6 weeks):** Action + pre-commit + CLI, rules engine + 8-language AI pack, hallucinated-package model, PR comment report, badge, landing site — all free. VibePatch ships here as the gated `vibeshield fix` command (mechanical autofixes, preview + y/N or audited `--yes`).
 **v1.1 (+6 weeks):** ignore-audit UI, org config inheritance, Slack digest, SARIF export (defensible on a GitHub security tab), VS Code / Cursor companion extension.
-**v1.2:** VibePatch (opt-in auto-fix with diff preview), prompt-injection-change detection for agent-driven repos, GitLab CI support.
+**v1.2:** broader autofix coverage per rule pack, prompt-injection-change detection for agent-driven repos, GitLab CI support.
 **v2.0 (next year):** Business tier (SSO, SBOM export, audit reports), IDE pre-generation warnings, registry-intel API licensing to other scanners, "AI change provenance" attestation (signed AI-origin metadata per hunk).
 
 ---

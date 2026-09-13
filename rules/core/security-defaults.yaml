@@ -15,6 +15,9 @@ rules:
       Debug mode exposes the interactive debugger (remote code execution
       when reachable) and leaks environment contents in error pages.
     fix: "Set debug from an env var: app.run(debug=os.environ.get('FLASK_DEBUG') == '1')"
+    autofix:
+      match: 'debug\s*=\s*True'
+      replace: 'debug=False'
     languages: [python]
     pattern:
       kind: regex
@@ -258,6 +261,9 @@ rules:
       flip it. Debug mode renders full tracebacks with settings (including
       SECRET_KEY context) into error pages.
     fix: "Set DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True' and default it off"
+    autofix:
+      match: '^(\s*)DEBUG\s*=\s*True\s*$'
+      replace: '${1}DEBUG = False'
     languages: [python]
     pattern:
       kind: regex

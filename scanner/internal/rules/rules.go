@@ -7,6 +7,7 @@ package rules
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/bmatcuk/doublestar/v4"
@@ -48,25 +49,41 @@ type Pattern struct {
 	// redaction when the full match is a key=value assignment.
 	captureGroup int
 }
+
 // Paths holds optional doublestar filters applied before matching.
 type Paths struct {
 	Include []string `yaml:"include,omitempty"`
 	Exclude []string `yaml:"exclude,omitempty"`
 }
 
+// Autofix is an optional, mechanical line rewrite (VibePatch). match is an
+// RE2 regex applied per finding line; replace is the Go expansion template
+// ($1 groups). Replace must not add or remove lines — VibeShield patches
+// within the matched line only (contracts/rulepack.md).
+type Autofix struct {
+	Match   string `yaml:"match"`
+	Replace string `yaml:"replace"`
+
+	re *regexp.Regexp
+}
+
+// Re exposes the compiled autofix matcher.
+func (a *Autofix) Re() *regexp.Regexp { return a.re }
+
 // Rule is one validated rule with its compiled matcher.
 type Rule struct {
-	ID          string   `yaml:"id"`
-	Category    string   `yaml:"category"`
-	Severity    string   `yaml:"severity"`
-	Title       string   `yaml:"title"`
-	Message     string   `yaml:"message"`
-	Fix         string   `yaml:"fix"`
-	Languages   []string `yaml:"languages"`
-	Pattern     Pattern  `yaml:"pattern"`
-	Paths       Paths    `yaml:"paths,omitempty"`
-	Confidence  float64  `yaml:"confidence,omitempty"`
-	References  []string `yaml:"references,omitempty"`
+	ID         string   `yaml:"id"`
+	Category   string   `yaml:"category"`
+	Severity   string   `yaml:"severity"`
+	Title      string   `yaml:"title"`
+	Message    string   `yaml:"message"`
+	Fix        string   `yaml:"fix"`
+	Autofix    *Autofix `yaml:"autofix,omitempty"`
+	Languages  []string `yaml:"languages"`
+	Pattern    Pattern  `yaml:"pattern"`
+	Paths      Paths    `yaml:"paths,omitempty"`
+	Confidence float64  `yaml:"confidence,omitempty"`
+	References []string `yaml:"references,omitempty"`
 
 	pack string // owning pack id:version (for reports)
 }
@@ -106,8 +123,9 @@ func checkKeys(keys []string, allowed map[string]bool, kind, path string) error 
 
 var (
 	packFields    = keyset("schema", "id", "version", "license", "rules")
-	ruleFields    = keyset("id", "category", "severity", "title", "message", "fix", "languages", "pattern", "paths", "confidence", "references")
+	ruleFields    = keyset("id", "category", "severity", "title", "message", "fix", "autofix", "languages", "pattern", "paths", "confidence", "references")
 	patternFields = keyset("kind", "match", "flags")
+	autofixFields = keyset("match", "replace")
 	pathsFields   = keyset("include", "exclude")
 )
 
@@ -217,7 +235,7 @@ func parseRule(node *yaml.Node, packName string, allowed map[string]bool, opts L
 		return nil, errs
 	}
 	var rule Rule
-	var patternNode, pathsNode *yaml.Node
+	var patternNode, pathsNode, autofixNode *yaml.Node
 	for i := 0; i+1 < len(node.Content); i += 2 {
 		k := node.Content[i].Value
 		v := node.Content[i+1]
@@ -235,6 +253,8 @@ func parseRule(node *yaml.Node, packName string, allowed map[string]bool, opts L
 			rule.Message = strings.TrimSpace(v.Value)
 		case "fix":
 			rule.Fix = strings.TrimSpace(v.Value)
+		case "autofix":
+			autofixNode = v
 		case "languages":
 			if err := v.Decode(&rule.Languages); err != nil {
 				errs = append(errs, fmt.Errorf("rule %s: languages: %v", rule.ID, err))
@@ -354,6 +374,59 @@ func parseRule(node *yaml.Node, packName string, allowed map[string]bool, opts L
 		rule.Pattern = p
 	}
 
+	// autofix (optional, mechanical line rewrite — VibePatch)
+	if autofixNode != nil {
+		if autofixNode.Kind != yaml.MappingNode {
+			errs = append(errs, fmt.Errorf("rule %s: autofix must be a mapping", idCtx))
+		} else {
+			ak := make([]string, 0, 2)
+			for i := 0; i+1 < len(autofixNode.Content); i += 2 {
+				ak = append(ak, autofixNode.Content[i].Value)
+			}
+			if err := checkKeys(ak, autofixFields, "autofix", idCtx); err != nil {
+				errs = append(errs, err)
+				return nil, errs
+			}
+			var a Autofix
+			for i := 0; i+1 < len(autofixNode.Content); i += 2 {
+				k := autofixNode.Content[i].Value
+				v := autofixNode.Content[i+1]
+				switch k {
+				case "match":
+					a.Match = v.Value
+				case "replace":
+					a.Replace = v.Value
+				}
+			}
+			if a.Match == "" {
+				errs = append(errs, fmt.Errorf("rule %s: autofix.match required", idCtx))
+			} else if a.Replace == "" {
+				errs = append(errs, fmt.Errorf("rule %s: autofix.replace required", idCtx))
+			} else {
+				if loc := unsupportedRe.FindStringIndex(a.Match); loc != nil {
+					errs = append(errs, fmt.Errorf("rule %s: autofix.match uses a construct RE2 does not support (%q)", idCtx, a.Match[loc[0]:loc[1]]))
+				} else if re, err := regexp.Compile(a.Match); err != nil {
+					errs = append(errs, fmt.Errorf("rule %s: autofix.match does not compile under Go RE2: %v", idCtx, err))
+				} else {
+					a.re = re
+					// A replace that adds a newline would silently
+					// renumber every finding below it — refuse.
+					if strings.ContainsAny(a.Replace, "\n\r") {
+						errs = append(errs, fmt.Errorf("rule %s: autofix.replace must stay on one line", idCtx))
+					}
+					// Go expands `$1abc` as group "1abc" (invalid → empty).
+					// Group references in autofix templates must use the
+					// braced form `${1}`; reject dangling names so a typo
+					// can never delete code silently.
+					if bad := badGroupRefs(re, a.Replace); bad != "" {
+						errs = append(errs, fmt.Errorf("rule %s: autofix.replace references unknown group %q (match has %d groups; use ${1}…${%d})", idCtx, bad, re.NumSubexp(), re.NumSubexp()))
+					}
+					rule.Autofix = &a
+				}
+			}
+		}
+	}
+
 	// paths
 	if pathsNode != nil {
 		if pathsNode.Kind != yaml.MappingNode {
@@ -439,6 +512,55 @@ func compilePattern(p *Pattern, ruleID string, _ bool) error {
 
 // Re exposes the compiled matcher for the engine.
 func (p *Pattern) Re() *regexp.Regexp { return p.re }
+
+// badGroupRefs validates a Replace template against re's groups: every $name
+// / ${name} must be an existing numeric group (1..NumSubexp) or a declared
+// named group. Go's Expand silently drops unknown names, which in an autofix
+// would delete the wrong span — `$1DEBUG` (meant `${1}DEBUG`) is exactly the
+// class of typo that must be a load error, not a corrupted file.
+func badGroupRefs(re *regexp.Regexp, tmpl string) string {
+	names := map[string]bool{}
+	for i, n := range re.SubexpNames() {
+		if i > 0 && n != "" {
+			names[n] = true
+		}
+	}
+	isWord := func(c byte) bool {
+		return c == '_' || (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+	}
+	for i := 0; i < len(tmpl); i++ {
+		if tmpl[i] != '$' {
+			continue
+		}
+		j := i + 1
+		braced := false
+		if j < len(tmpl) && tmpl[j] == '{' {
+			braced = true
+			j++
+		}
+		k := j
+		for k < len(tmpl) && isWord(tmpl[k]) {
+			k++
+		}
+		name := tmpl[j:k]
+		if braced && (k >= len(tmpl) || tmpl[k] != '}') {
+			return name
+		}
+		if name == "" {
+			continue // literal $
+		}
+		if n, err := strconv.Atoi(name); err == nil {
+			if n < 1 || n > re.NumSubexp() {
+				return name
+			}
+			continue
+		}
+		if !names[name] {
+			return name
+		}
+	}
+	return ""
+}
 
 // CaptureGroup returns the submatch index holding the sensitive value
 // (1 when the pattern has a capture group, else 0 = whole match).
