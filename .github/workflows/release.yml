@@ -1,0 +1,87 @@
+name: release
+
+# Cross-compiles the pure-Go scanner (no CGO) and publishes GitHub Release
+# assets in the exact naming action/entrypoint.sh downloads:
+#   vibeshield-{os}-{arch}.tar.gz   (linux/darwin; arch: x86_64 | aarch64)
+#   vibeshield-{os}-{arch}.zip      (windows)
+# The npm wrapper (npm/vibeshield) resolves the same assets at install time.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - { goos: linux,   goarch: amd64, suffix: x86_64,  ext: tar.gz }
+          - { goos: linux,   goarch: arm64, suffix: aarch64, ext: tar.gz }
+          - { goos: darwin,  goarch: amd64, suffix: x86_64,  ext: tar.gz }
+          - { goos: darwin,  goarch: arm64, suffix: aarch64, ext: tar.gz }
+          - { goos: windows, goarch: amd64, suffix: x86_64,  ext: zip }
+    env:
+      CGO_ENABLED: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: scanner/go.mod
+      - name: Embedded rules must match rules/core/
+        run: node scripts/sync-rules.mjs --check
+      - name: Test
+        run: cd scanner && go test ./...
+      - name: Build
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          mkdir -p out
+          cd scanner
+          go build -trimpath -ldflags "-s -w -X main.Version=${GITHUB_REF_NAME}" \
+            -o ../out/vibeshield ./cmd/vibeshield
+      - name: Package
+        run: |
+          NAME=vibeshield-${{ matrix.goos }}-${{ matrix.suffix }}
+          cd out
+          if [ "${{ matrix.ext }}" = zip ]; then
+            mv vibeshield vibeshield.exe
+            zip -q "$NAME.zip" vibeshield.exe
+          else
+            tar -czf "$NAME.tar.gz" vibeshield
+          fi
+          sha256sum "$NAME.${{ matrix.ext }}" >> ../sha256sums-part.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pkg-${{ matrix.goos }}-${{ matrix.suffix }}
+          path: out/vibeshield-*
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sums-${{ matrix.goos }}-${{ matrix.suffix }}
+          path: sha256sums-part.txt
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: pkg-*
+          path: assets
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: sums-*
+          path: sums
+          merge-multiple: true
+      - name: Merge checksums (npm wrapper verifies against this file)
+        run: cat sums/sha256sums-part.txt > assets/sha256sums.txt
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: assets/*
+          generate_release_notes: true
