@@ -105,7 +105,7 @@ install_skill() { # $1=dest dir, $2=label
   echo "→ skill installed for $label → $dest/vibeshield-audit"
 }
 
-if [ "$WANT_SKILL" = 1 ]; then
+if [ "$WANT_SKILL" = 1 ] && [ "$AGENT" != none ]; then
   echo "→ fetching the audit skill (SKILL.md)"
   SK="https://raw.githubusercontent.com/$REPO/$VERSION"
   # GitHub release pages don't carry the repo tree; pull the two files from
