@@ -15,6 +15,7 @@ export const SITE = {
 export const NAV = [
   { label: 'Product', href: '/#product' },
   { label: 'Docs', href: '/docs' },
+  { label: 'Install', href: '/install' },
   { label: 'Blog', href: '/blog' },
   { label: 'FAQ', href: '/#faq' },
 ];
@@ -242,12 +243,50 @@ export const FAQ: { q: string; a: string; link?: [string, string] }[] = [
   },
 ];
 
+// Extra questions beyond PRD §7.2's verbatim ten (added 2026-09-13 at the
+// maintainer's request — "create them according to you"). Kept in a separate
+// array so the PRD-sourced ten stay auditable; both ship in the grid AND the
+// FAQPage JSON-LD (answers must match visible text — UIUX §9.4).
+export const FAQ_EXTRA: { q: string; a: string; link?: [string, string] }[] = [
+  {
+    q: 'Do I need an account, token, or API key to run VibeShield?',
+    a: 'No. The CLI and pre-commit hook need nothing — no signup, no key, no telemetry. In GitHub Action mode the workflow uses the built-in `GITHUB_TOKEN` that every runner already has, only to post the VibeCheck comment on your PR. The rules pack is embedded in the binary, so a first scan works fully offline.',
+    link: ['the install page', '/install'],
+  },
+  {
+    q: 'Which languages and package registries does it check?',
+    a: 'Eight languages in v1: JavaScript/TypeScript, Python, Go, Java, Ruby, PHP, Rust, and C#. Newly-added dependencies are scored against npm, PyPI, crates.io, and the Go module index — live registry signals with `--online`, or the offline heuristics baked into the binary when you are air-gapped.',
+    link: ['CLI reference', '/docs/cli'],
+  },
+  {
+    q: 'What permissions does the GitHub Action need?',
+    a: '`contents: read` and `pull-requests: write` — that is the whole list. Analysis runs on your GitHub runner; findings metadata (file paths, rule IDs, symbol names, severities) is posted to your PR. File contents never leave the runner and are never persisted by us.',
+    link: ['the threat model', '/security'],
+  },
+  {
+    q: 'Can I pin the version or run air-gapped?',
+    a: 'Yes, and we recommend pinning in CI. The scanner is a single static Go binary published with sha256sums on every release; pin it with `rev: v1.0.0` in pre-commit, a versioned `go install`, or a downloaded archive checked against the published checksums. Rules ship inside the binary and as versioned YAML packs, so offline scanning keeps working.',
+    link: ['install options', '/install'],
+  },
+  {
+    q: 'Does VibeShield work on GitLab, Azure DevOps, or Bitbucket?',
+    a: 'Not yet — v1 is GitHub-first by design. The CLI is host-agnostic though: pipe any diff through `vibeshield scan --diff -`, get pretty, JSON, or SARIF out, and gate any CI that way. Pluggable hosts are on the roadmap.',
+    link: ['the roadmap', '/docs'],
+  },
+  {
+    q: 'What are the terms, and what happens to my data?',
+    a: 'Everything — scanner, Action, hook, rules — is MIT-licensed and provided as-is, with no warranty; the plain-language terms are on the terms page. The short privacy answer: your code never leaves your machine in CLI/hook mode, and the Action sends findings metadata only, never file contents.',
+    link: ['/terms', '/terms'],
+  },
+];
+
 export const FOOTER = {
   cols: [
     {
       title: 'Product',
       links: [
         ['Docs', '/docs'],
+        ['Install', '/install'],
         ['Changelog', '/changelog'],
         ['Roadmap', '/docs#roadmap'],
         ['Status', 'https://status.vibeshield.dev'],
@@ -277,6 +316,7 @@ export const FOOTER = {
         ['X', 'https://x.com/vibeshield'],
         ['Contact', 'mailto:hi@vibeshield.dev'],
         ['Privacy', '/privacy'],
+        ['Terms', '/terms'],
       ] as [string, string][],
     },
   ],

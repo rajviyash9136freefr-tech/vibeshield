@@ -1,0 +1,109 @@
+---
+/**
+ * Shared shell for the legal documents (/terms, /privacy). Documentary page
+ * layout per the 2026-09-13 brief: a numbered-clause article on a hairline
+ * "document" sheet, a sticky clause index beside it, and a plain-language
+ * margin note up top — the spec's §7 copy law applies to legal pages too:
+ * precise, no fear-mongering, no banned words.
+ */
+import BaseLayout from './BaseLayout.astro';
+import Nav from '../components/ui/Nav.astro';
+import Footer from '../components/ui/Footer.astro';
+import { SITE } from '../data/site';
+import { baseHref } from '../lib/base';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  eyebrow: string;
+  h1: string;
+  updated: string;
+  plainNote: string;
+  /** Clause list: heading + body paragraphs (strings) or 'list' arrays. */
+  clauses: { id: string; heading: string; blocks: (string | { list: string[] })[] }[];
+  /** Root-relative path of the sibling legal doc, e.g. '/terms'. */
+  crossLink: string;
+  crossLabel: string;
+}
+
+const { title, description, canonical, eyebrow, h1, updated, plainNote, clauses, crossLink, crossLabel } = Astro.props;
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.url}${baseHref('/')}` },
+      { '@type': 'ListItem', position: 2, name: title, item: `${SITE.url}${baseHref(canonical)}` },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} schema={schema}>
+  <Nav slot="nav" />
+  <div class="wrap py-16 lg:py-24">
+    <div class="grid gap-12 lg:grid-cols-[220px_minmax(0,1fr)]">
+      <aside class="order-2 lg:order-1">
+        <nav aria-label="Clauses" class="lg:sticky lg:top-24">
+          <p class="text-sm font-semibold text-[var(--color-fg)]">Contents</p>
+          <ol class="mt-3 space-y-1 text-sm">
+            {clauses.map((c, i) => (
+              <li>
+                <a href={`#${c.id}`} class="block rounded-[var(--radius-btn)] px-3 py-1.5 text-[var(--color-muted)] transition-colors duration-150 hover:bg-[var(--color-hovered)] hover:text-[var(--color-fg)]">
+                  <span class="font-mono text-[var(--color-faint)]">{i + 1}.</span> {c.heading}
+                </a>
+              </li>
+            ))}
+          </ol>
+          <a href={baseHref(crossLink)} class="mt-6 block px-3 text-sm text-[var(--color-accent)] hover:underline">
+            {crossLabel} →
+          </a>
+        </nav>
+      </aside>
+
+      <article class="order-1 max-w-[760px] lg:order-2">
+        <p class="eyebrow">{eyebrow}</p>
+        <h1 class="mt-2 text-[36px] font-bold tracking-[-0.03em]">{h1}</h1>
+        <p class="mt-2 text-sm text-[var(--color-faint)]">
+          Last updated {updated} · VibeShield is MIT-licensed open source — this document explains the license, not a product you buy.
+        </p>
+
+        <div class="card mt-8 border-l-2 border-l-[var(--color-accent)] p-5">
+          <p class="text-[15px] leading-relaxed text-[var(--color-muted)]">
+            <span class="font-mono text-[13px] text-[var(--color-accent)]">plain-language note —</span>
+            {' '}{plainNote}
+          </p>
+        </div>
+
+        <div class="mt-12">
+          {clauses.map((c, i) => (
+            <section id={c.id} class="mb-12 scroll-mt-24">
+              <h2 class="text-[22px] font-semibold tracking-[-0.01em]">
+                <span class="mr-2 font-mono text-[var(--color-faint)]" aria-hidden="true">{i + 1}.</span>{c.heading}
+              </h2>
+              <div class="mt-3 space-y-4">
+                {c.blocks.map((b) =>
+                  typeof b === 'string'
+                    ? <p class="text-[15.5px] leading-[1.75] text-[var(--color-muted)]">{b}</p>
+                    : (
+                      <ul class="list-disc space-y-2 pl-5 text-[15.5px] leading-[1.7] text-[var(--color-muted)]">
+                        {b.list.map((li) => <li>{li}</li>)}
+                      </ul>
+                    ),
+                )}
+              </div>
+            </section>
+          ))}
+        </div>
+
+        <p class="border-t border-[var(--color-hairline)] pt-6 text-sm text-[var(--color-faint)]">
+          Questions about this document? <a class="text-[var(--color-accent)] hover:underline" href="mailto:legal@vibeshield.dev">legal@vibeshield.dev</a> — or open an issue on <a class="text-[var(--color-accent)] hover:underline" href={SITE.repo}>GitHub</a>.
+        </p>
+        <slot name="tail" />
+      </article>
+    </div>
+  </div>
+  <Footer slot="footer" />
+</BaseLayout>

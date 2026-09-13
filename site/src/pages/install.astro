@@ -1,0 +1,319 @@
+---
+// /install — the direct-install page (added 2026-09-13 at the maintainer's
+// request: one obvious command, four doors, and a page that reads like a
+// person wrote it). Copy law still applies (UIUX §7): sentence case, numbers
+// over adjectives, no exclamation marks, no fear-mongering. All commands are
+// real and come from this repo: scripts/install.sh, npm/vibeshield,
+// action/action.yml, and the pre-commit hook id in §5.2 of the PRD.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/ui/Nav.astro';
+import Footer from '../components/ui/Footer.astro';
+import CodeBlock from '../components/ui/CodeBlock.astro';
+import FinalCta from '../components/sections/FinalCta.astro';
+import { SITE } from '../data/site';
+import { baseHref } from '../lib/base';
+
+const ONELINER =
+  'curl -fsSL https://raw.githubusercontent.com/rajviyash9136freefr-tech/vibeshield/main/scripts/install.sh | bash';
+
+const DOORS = [
+  {
+    id: 'npx',
+    kicker: 'Zero install',
+    h3: 'Nothing on PATH yet? Type this',
+    body: 'Fetches the binary once, verifies the checksum, runs the scan. No global state, no prompt for anything.',
+    filename: 'terminal',
+    code: 'npx vibeshield scan .',
+    meta: 'first run ~30 s · every run after it under 2 s',
+  },
+  {
+    id: 'script',
+    kicker: 'The direct command',
+    h3: 'One line, then it is just installed',
+    body: 'The installer drops the static binary in ~/.local/bin, checks it against the release sha256sums, and — if it spots one — wires the audit skill into your coding agent. Linux, macOS, and Git Bash on Windows.',
+    filename: 'terminal',
+    code: ONELINER,
+    meta: 'no sudo · no PATH edits behind your back · --agent none to skip the skill',
+  },
+  {
+    id: 'action',
+    kicker: 'The gate',
+    h3: 'Five lines of YAML, every PR covered',
+    body: 'Drop the file, push the branch, forget about it. From the next pull request on, the VibeCheck report posts itself — in warn mode by default, so it informs before it ever blocks.',
+    filename: '.github/workflows/vibeshield.yml',
+    code: `name: VibeShield
+on: [pull_request]
+jobs:
+  vibeshield:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ${SITE.repo.replace('https://github.com/', '')}/action@v1`,
+    meta: 'runs on your runner · code never leaves it',
+  },
+  {
+    id: 'hook',
+    kicker: 'The commit-time habit',
+    h3: 'Stop it at the commit, not the PR',
+    body: 'The same rules engine, on staged files, offline. Under 1.5 seconds on a typical diff. git commit --no-verify always works — it is a seatbelt, not a hostage.',
+    filename: '.pre-commit-config.yaml',
+    code: `repos:
+  - repo: ${SITE.repo}
+    rev: v1.0.0
+    hooks:
+      - id: vibeshield`,
+    meta: 'pre-commit run --all-files to backfill',
+  },
+  {
+    id: 'go',
+    kicker: 'From source',
+    h3: 'If you read Go, read the source before you run it',
+    body: 'One module, no CGO, plain go install. Every rule pack is versioned YAML in the same repo — nothing ships compiled that you cannot diff.',
+    filename: 'terminal',
+    code: 'go install github.com/rajviyash9136freefr-tech/vibeshield/scanner/cmd/vibeshield@latest',
+    meta: 'go test ./... passes before every release tag',
+  },
+];
+
+const TRUTHS = [
+  { n: '0', label: 'accounts, API keys, or telemetry' },
+  { n: '4', label: 'lines of YAML if you want the PR gate' },
+  { n: '1.2s', label: 'median diff scan', countup: '1.2', suffix: 's' },
+  { n: '120', label: 'AI-failure-mode rules, offline', countup: '120' },
+];
+
+const HONEST_NOTES: { q: string; a: string }[] = [
+  {
+    q: 'I am on Windows. Does the one-liner work?',
+    a: 'In Git Bash, yes — it fetches vibeshield-windows-x86_64.zip and unpacks vibeshield.exe next to the rest. In plain PowerShell, use npx vibeshield scan . or go install instead; the .sh installer assumes a POSIX shell on purpose.',
+  },
+  {
+    q: 'Corporate proxy / air-gapped network?',
+    a: 'Download the archive for your platform from GitHub Releases, check it against the matching line in sha256sums.txt from the same release, and put the binary on PATH. Rules are embedded in the binary, so scans work with the network unplugged. Only the opt-in --online registry lookups need egress.',
+  },
+  {
+    q: 'I ran it and nothing printed but findings.',
+    a: 'Good. Exit code 0 means the scan completed; in the default warn mode findings never fail the run. In CI, set mode: block-on-critical in vibeshield.yml when you want the check to gate merges — the docs page walks through the four modes.',
+  },
+  {
+    q: 'How do I get rid of it?',
+    a: 'rm ~/.local/bin/vibeshield (or delete vibeshield.exe), remove the workflow file, remove the hook entry, and delete vibeshield.yml. There is no daemon, no service, and no state outside your repo to clean up.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.url}${baseHref('/')}` },
+      { '@type': 'ListItem', position: 2, name: 'Install', item: `${SITE.url}${baseHref('/install')}` },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Install — VibeShield"
+  description="Install VibeShield in one command: npx, a checksum-verified installer script, a 4-line GitHub Action, or a pre-commit hook. Free, MIT, offline-first, no account."
+  canonical="/install"
+  schema={schema}
+>
+  <Nav slot="nav" />
+
+  <!-- ============ the command, big ============ -->
+  <section class="relative overflow-hidden">
+    <div
+      class="parallax-slow pointer-events-none absolute inset-x-0 -top-40 h-[480px]"
+      style="background: radial-gradient(60% 55% at 50% 35%, rgba(45,212,191,0.12) 0%, rgba(10,10,11,0) 100%);"
+      aria-hidden="true"
+    ></div>
+    <div class="wrap relative grid items-center gap-12 py-20 lg:grid-cols-[minmax(0,55%)_minmax(0,45%)] lg:py-28">
+      <div>
+        <p class="eyebrow">// the direct install command</p>
+        <h1 class="mt-3 max-w-[18ch] text-[36px] font-bold leading-[1.14] tracking-[-0.03em] lg:text-[52px] lg:leading-[60px]">
+          One command in. Ten seconds to the first finding.
+        </h1>
+        <p class="mt-5 max-w-[56ch] text-[17px] leading-[1.65] text-[var(--color-muted)] lg:text-[19px]">
+          Security installs are supposed to be the part where you lose an afternoon.
+          This one is four lines of YAML, or a single command at a terminal. No
+          account, no agent, no sidecar — and the code being scanned never leaves
+          the machine it is running on.
+        </p>
+        <div class="relative mt-8" data-copy-host>
+          <pre
+            class="scroll-x fade-x overflow-x-auto rounded-[var(--radius-card)] border border-[var(--color-hairline)] bg-[var(--color-elevated)] p-5 pr-24 font-mono text-[14px] leading-[1.7] text-[var(--color-fg)] sm:text-[15px]"
+            tabindex="0"
+            data-code
+          ><code><span class="text-[var(--color-accent)]">$</span> npx vibeshield scan .</code></pre>
+          <button
+            type="button"
+            class="absolute top-1/2 right-4 -translate-y-1/2 rounded-[var(--radius-btn)] border border-[var(--color-hairline)] bg-[var(--color-bg)] px-3.5 py-2 text-xs font-semibold text-[var(--color-muted)] transition-colors duration-150 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+            data-copy
+            aria-label="Copy the install command"
+          >Copy</button>
+        </div>
+        <p class="mt-3 text-sm text-[var(--color-faint)]">
+          Already have the binary? <code class="font-mono text-[var(--color-muted)]">vibeshield scan --staged</code> does the pre-commit job right now.
+        </p>
+      </div>
+
+      <!-- the honesty dial: static SVG, needle at minimum, no JS, no gimmick -->
+      <div data-reveal>
+        <div class="card relative overflow-hidden p-8 text-center" data-tilt="4">
+          <p class="eyebrow">install difficulty, calibrated Sep 13, 2026</p>
+          <svg class="mx-auto mt-6 block" width="280" height="150" viewBox="0 0 280 150" role="img" aria-label="A gauge whose needle sits at the easiest setting.">
+            <path d="M30 135 A110 110 0 0 1 250 135" fill="none" stroke="var(--color-hairline)" stroke-width="10" stroke-linecap="round" />
+            <path d="M30 135 A110 110 0 0 1 62 71" fill="none" stroke="var(--color-accent)" stroke-width="10" stroke-linecap="round" />
+            {Array.from({ length: 9 }).map((_, i) => {
+              const a = Math.PI - (i / 8) * Math.PI;
+              const x1 = 140 + Math.cos(a) * 88;
+              const y1 = 135 - Math.sin(a) * 88;
+              const x2 = 140 + Math.cos(a) * 96;
+              const y2 = 135 - Math.sin(a) * 96;
+              return <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--color-hairline)" stroke-width="2" />;
+            })}
+            <!-- needle pinned at the first tick -->
+            <line x1="140" y1="135" x2="45" y2="112" stroke="var(--color-accent)" stroke-width="4" stroke-linecap="round" />
+            <circle cx="140" cy="135" r="8" fill="var(--color-elevated)" stroke="var(--color-accent)" stroke-width="3" />
+            <text x="34" y="149" fill="var(--color-faint)" font-size="11" font-family="ui-monospace, monospace">one cmd</text>
+            <text x="205" y="149" fill="var(--color-faint)" font-size="11" font-family="ui-monospace, monospace">procurement</text>
+          </svg>
+          <p class="mt-4 text-[15px] leading-relaxed text-[var(--color-muted)]">
+            The dial is here for honesty. It is not adjustable.
+          </p>
+          <div class="mt-6 grid grid-cols-2 gap-3 border-t border-[var(--color-hairline)] pt-6 text-left">
+            {TRUTHS.map((t) => (
+              <div>
+                <p class="font-mono text-[22px] font-semibold text-[var(--color-fg)]">
+                  {t.countup ? <span data-countup={t.countup} data-suffix={t.suffix ?? ''}>{t.n}</span> : t.n}
+                </p>
+                <p class="mt-0.5 text-[13px] leading-snug text-[var(--color-faint)]">{t.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ the five doors ============ -->
+  <section id="doors" class="section border-t border-[var(--color-hairline)]">
+    <div class="wrap">
+      <h2 class="scroll-tell text-[28px] font-bold tracking-[-0.02em] lg:text-[40px]">Five doors, same scanner</h2>
+      <p class="mt-3 max-w-[62ch] text-[17px] text-[var(--color-muted)]">
+        Pick the one that matches how you work. They all run the identical
+        engine — the rules pack lives inside the binary, so there is no
+        “lite” version of any of these.
+      </p>
+      <div class="mt-12 space-y-6">
+        {DOORS.map((d, i) => (
+          <div data-reveal style={`--reveal-delay: ${Math.min(i, 4) * 40}ms`}>
+            <div class="card grid gap-6 p-6 lg:grid-cols-[minmax(0,34%)_minmax(0,66%)] lg:p-8" data-tilt="2">
+              <div>
+                <p class="eyebrow">{String(i + 1).padStart(2, '0')} · {d.kicker}</p>
+                <h3 class="mt-2 text-[20px] font-semibold leading-snug">{d.h3}</h3>
+                <p class="mt-2 text-[15px] leading-relaxed text-[var(--color-muted)]">{d.body}</p>
+                <p class="mt-3 font-mono text-[12.5px] text-[var(--color-faint)]">{d.meta}</p>
+              </div>
+              <CodeBlock code={d.code} filename={d.filename} label={`Copy ${d.kicker} snippet`} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ first sixty seconds ============ -->
+  <section class="section border-t border-[var(--color-hairline)]">
+    <div class="wrap grid items-center gap-12 lg:grid-cols-[minmax(0,45%)_minmax(0,55%)]">
+      <div>
+        <h2 class="scroll-tell text-[28px] font-bold tracking-[-0.02em] lg:text-[40px]">The first sixty seconds, honestly</h2>
+        <p class="mt-4 text-[16px] leading-[1.7] text-[var(--color-muted)]">
+          Here is exactly what happens when you run the command above in a repo
+          with AI-written code in it. Nothing is phoned home, nothing is
+          installed that you did not ask for, and the scan finishes before your
+          coffee lands.
+        </p>
+        <ul class="mt-6 space-y-3 text-[15px] text-[var(--color-muted)]">
+          <li class="flex gap-3"><span class="font-mono text-[var(--color-accent)]" aria-hidden="true">1.</span><span>The binary is fetched and its sha256 is checked against the release manifest. A mismatch refuses to run — loudly.</span></li>
+          <li class="flex gap-3"><span class="font-mono text-[var(--color-accent)]" aria-hidden="true">2.</span><span>The rules pack (v1, MIT) loads from inside the binary. Zero network, zero config.</span></li>
+          <li class="flex gap-3"><span class="font-mono text-[var(--color-accent)]" aria-hidden="true">3.</span><span>Every tracked file gets pattern-matched against the ~120 AI-failure-mode rules — plus a pass over your manifest for newly added dependencies.</span></li>
+          <li class="flex gap-3"><span class="font-mono text-[var(--color-accent)]" aria-hidden="true">4.</span><span>Findings print in the VibeCheck format: why it matters for AI code, the pattern, a one-line fix. Secrets are redacted to 4+4 characters before anything is printed.</span></li>
+        </ul>
+      </div>
+      <div data-reveal>
+        <div class="card relative overflow-hidden" data-tilt="3">
+          <div class="flex items-center justify-between gap-2 border-b border-[var(--color-hairline)] px-4 py-3">
+            <span class="font-mono text-[13px] text-[var(--color-muted)]">terminal — your-project</span>
+          </div>
+          <button
+            type="button"
+            class="absolute top-2.5 right-3 rounded-[var(--radius-btn)] border border-[var(--color-hairline)] bg-[var(--color-bg)] px-2.5 py-1 text-xs text-[var(--color-muted)] transition-colors duration-150 hover:text-[var(--color-accent)]"
+            data-copy
+            aria-label="Copy first-scan transcript"
+          >Copy</button>
+          <pre
+            class="scroll-x fade-x overflow-x-auto px-4 py-4 font-mono text-[13px] leading-[1.8] sm:text-[13.5px]"
+            tabindex="0"
+            data-code
+          ><code><span class="text-[var(--color-accent)]">$</span> npx vibeshield scan .
+<span class="text-[var(--color-muted)]">  vibeshield v1.0.0 · rules core/1.0.0 (offline)
+  scanning 42 files… done in 0.9s</span>
+
+<span class="font-semibold text-[var(--color-critical)]">  🔴 CRITICAL  VS-PKG-001  hallucinated-package</span>
+<span class="text-[var(--color-fg)]">     src/utils/parse.ts:8 — fast-parse-utils-v3@2.1.4
+     9 days old · 1 maintainer · postinstall curls a host</span>
+<span class="text-[var(--color-ok)]">     → fix: node:util covers this in 12 lines</span>
+
+<span class="font-semibold text-[var(--color-high)]">  🟠 HIGH      VS-SEC-017  hardcoded-secret</span>
+<span class="text-[var(--color-fg)]">     src/lib/agent.ts:41 — OPENAI_API_KEY = "sk-proj-••••••••4a2f"</span>
+<span class="text-[var(--color-ok)]">     → fix: move to env, rotate the key now</span>
+
+<span class="text-[var(--color-muted)]">  ✓ 40 files clean · 2 findings · 0 tracked
+  run `vibeshield init` to add the PR gate + hook</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ fine print, in plain language ============ -->
+  <section class="section border-t border-[var(--color-hairline)]">
+    <div class="wrap">
+      <h2 class="scroll-tell text-[28px] font-bold tracking-[-0.02em] lg:text-[36px]">What can actually go wrong</h2>
+      <p class="mt-3 max-w-[62ch] text-[16px] text-[var(--color-muted)]">
+        Four honest answers to the four things that actually stop an install.
+        If yours is not here, open an issue — someone reads them.
+      </p>
+      <div class="mt-10 grid gap-4 md:grid-cols-2">
+        {HONEST_NOTES.map((n, i) => (
+          <details class="card px-5 py-4" open={i === 0} data-reveal style={`--reveal-delay: ${i * 60}ms`}>
+            <summary class="flex items-start justify-between gap-4">
+              <h3 class="text-[16px] font-semibold leading-7">{n.q}</h3>
+              <span class="mt-1 font-mono text-[var(--color-faint)] transition-transform duration-150" aria-hidden="true">+</span>
+            </summary>
+            <p class="mt-2 text-[15px] leading-relaxed text-[var(--color-muted)]">{n.a}</p>
+          </details>
+        ))}
+      </div>
+      <p class="mt-10 text-[15px] text-[var(--color-faint)]">
+        Want the flags, exit codes, and SARIF output?
+        <a href={baseHref('/docs/cli')} class="text-[var(--color-accent)] hover:underline">CLI reference →</a> ·
+        <a href={baseHref('/docs/github-action')} class="text-[var(--color-accent)] hover:underline">GitHub Action →</a> ·
+        <a href={baseHref('/docs/pre-commit')} class="text-[var(--color-accent)] hover:underline">pre-commit →</a>
+      </p>
+    </div>
+  </section>
+
+  <FinalCta />
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  details summary:hover + p {
+    border-color: var(--color-hairline);
+  }
+</style>

@@ -4,8 +4,13 @@
 // desktop. Two columns 5+5. Search filter = ~20 lines vanilla, content stays
 // server-rendered. The JSON-LD FAQPage is generated from the SAME data object
 // in pages/index.astro so visible text and schema can't drift.
-import { FAQ } from '../../data/site';
+import { FAQ, FAQ_EXTRA } from '../../data/site';
 import { baseHref } from '../../lib/base';
+
+// The PRD §7.2 ten ship first and verbatim (open-by-default Q1–Q3 per §3.10);
+// the six maintainer-added questions follow. Both sets serialize into the
+// FAQPage JSON-LD from the SAME objects (index.astro) — no drift (§9.4).
+const ITEMS = [...FAQ, ...FAQ_EXTRA];
 
 function linkify(text: string): string {
   const esc = text.replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -34,7 +39,7 @@ function linkify(text: string): string {
     </label>
 
     <div class="mt-8 grid items-start gap-4 lg:grid-cols-2">
-      {FAQ.map((item, i) => (
+      {ITEMS.map((item, i) => (
         <details class="faq-item card group px-5 py-4" open={i < 3} data-terms={`${item.q} ${item.a}`.toLowerCase()}>
           <summary class="flex items-start justify-between gap-4 rounded">
             <h3 class="text-[17px] font-semibold leading-7">{item.q}</h3>

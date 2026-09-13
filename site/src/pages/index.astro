@@ -14,7 +14,7 @@ import Install from '../components/sections/Install.astro';
 import Comparison from '../components/sections/Comparison.astro';
 import Faq from '../components/sections/Faq.astro';
 import FinalCta from '../components/sections/FinalCta.astro';
-import { SITE, FAQ } from '../data/site';
+import { SITE, FAQ, FAQ_EXTRA } from '../data/site';
 
 const schema = [
   {
@@ -31,7 +31,7 @@ const schema = [
   {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: FAQ.map((f) => ({
+    mainEntity: [...FAQ, ...FAQ_EXTRA].map((f) => ({
       '@type': 'Question',
       name: f.q,
       acceptedAnswer: { '@type': 'Answer', text: f.a },
