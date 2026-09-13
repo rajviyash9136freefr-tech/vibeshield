@@ -24,9 +24,82 @@ LLM-generated code fails in specific, enumerable ways that classic scanners were
 | **Insecure defaults** | CORS `*`, `debug=True`, JWT `algorithms:["none"]` | ⚠️ Not weighted for AI code |
 | **Prompt-injection changes** | Malicious README tells the agent to open a backdoor | ❌ Nobody covers this |
 
-VibeShield ships 120+ AI-specific rules (the `core` pack, MIT) across 8 languages, and runs three ways: GitHub Action, pre-commit hook, or CLI.
+VibeShield ships 120+ AI-specific rules (the `core` pack, MIT) across 8 languages, and runs four ways: one-command install → CLI, GitHub Action, pre-commit hook, or the in-agent audit skill (Claude Code, Cursor, Codex, Antigravity).
 
-## Install
+## Install — one command
+
+**Any machine (Git Bash / Linux / macOS):**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/rajviyash9136freefr-tech/vibeshield/main/scripts/install.sh | bash
+```
+
+That downloads the checksum-verified static binary from [GitHub Releases](../../releases), installs it to `~/.local/bin/vibeshield`, and drops the `vibeshield-audit` skill into every coding agent it finds on your machine (Claude Code, Cursor, Codex, Antigravity). Flags: `--agent claude|cursor|codex|antigravity|none`, `--no-skill`, `--version v1.0.0`. No sudo, no PATH edits behind your back, and the only network request is GitHub Releases over HTTPS.
+
+**Windows (PowerShell), or Node users:**
+
+```powershell
+npm install -g vibeshield        # thin launcher: fetches the binary on first run
+```
+
+**Claude Code users, plugin route:**
+
+```
+/plugin marketplace add rajviyash9136freefr-tech/vibeshield
+/plugin install vibeshield@vibeshield
+```
+
+## User guide
+
+### 1. Scan — see exactly what it reads
+
+```bash
+vibeshield scan .                # scan a project (full mode)
+vibeshield scan --staged         # pre-commit style: only staged changes
+vibeshield scan --diff main      # only changes vs a git ref
+```
+
+Every run prints which files it read, and each finding shows the file, line,
+the matched snippet (secrets redacted by the scanner), why it matters for AI
+code, and a one-line fix:
+
+```
+  🔴 CRITICAL  VS-SEC-001  hardcoded-secret
+     settings.py:5 — API_KEY = "sk-p…34"
+     Why: AI output echoes memorized example keys — and the example is often
+     a key that was real.
+     → Fix: Remove the key, rotate it, load credentials from the environment
+```
+
+`--format json` gives you the [finding contract](contracts/finding/schema.json); `--format github` gives PR annotations. Nothing leaves your machine — this is static analysis, always.
+
+### 2. Fix — VibePatch, with your permission (or your agent's)
+
+```bash
+vibeshield fix . --dry-run       # preview: which files would change, −/+ per line
+vibeshield fix .                 # ask me per file: [y/N/a/s]
+vibeshield fix . --yes           # agent mode: apply directly, no prompts
+```
+
+`fix` applies only **mechanical, rule-authored, same-line rewrites** — the
+preview shows you every file read and every line changed before anything is
+written. `--yes` is the "bypass the prompt" flag for coding agents: it applies
+directly, but **every patch still lands in `vibeshield-fixes.log`** (JSONL
+audit trail), so an agent's edits are reviewable after the fact. Secrets and
+prompt-injection findings are never auto-patched — a key needs rotation by a
+human, and an agent editing its own flagged instruction file is exactly the
+failure mode we came to catch.
+
+### 3. Inside your coding agent
+
+Install the audit skill (the one-command installer does this automatically, or
+see [skill/README.md](skill/README.md)). In Claude Code / Cursor / Codex /
+Antigravity, ask your agent to *"run vibeshield-audit"*: it hunts in parallel
+subagents, adversarially verifies, and writes `vibeshield-findings.json`.
+When you tell it to apply fixes, it routes through `vibeshield fix` — so the
+same gate and audit trail cover agent-driven patching.
+
+### 4. Gate it in CI and at commit
 
 ### GitHub Action (3 minutes, no account)
 
@@ -47,12 +120,10 @@ jobs:
 
 The next PR gets a **VibeCheck report** comment: findings by severity, the AI-origin tag on each hunk, and a suggested fix per finding.
 
-### CLI
+### CLI (alternatives to the one-command installer)
 
 ```bash
 npm install -g vibeshield        # or: npx vibeshield scan .
-vibeshield scan .                # scan a project
-vibeshield scan --staged         # pre-commit style: only staged changes
 ```
 
 Go users can skip npm entirely:
