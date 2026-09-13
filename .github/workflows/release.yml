@@ -54,7 +54,7 @@ jobs:
           else
             tar -czf "$NAME.tar.gz" vibeshield
           fi
-          sha256sum "$NAME.${{ matrix.ext }}" >> ../sha256sums-part.txt
+          sha256sum "$NAME.${{ matrix.ext }}" > ../sha256sums-${{ matrix.goos }}-${{ matrix.suffix }}.txt
       - uses: actions/upload-artifact@v4
         with:
           name: pkg-${{ matrix.goos }}-${{ matrix.suffix }}
@@ -80,7 +80,7 @@ jobs:
           path: sums
           merge-multiple: true
       - name: Merge checksums (npm wrapper verifies against this file)
-        run: cat sums/sha256sums-part.txt > assets/sha256sums.txt
+        run: cat sums/sha256sums-*.txt > assets/sha256sums.txt
       - uses: softprops/action-gh-release@v3
         with:
           files: assets/*
