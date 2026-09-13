@@ -26,7 +26,8 @@ const initialHtml = DEMO_LINES.map(
 
 <div
   class="card overflow-hidden"
-  data-tilt="4"
+  data-tilt="5"
+  data-tilt-hero
   role="img"
   aria-label="Terminal showing a VibeShield scan: one critical hallucinated-package finding and one high hardcoded-secret finding, 11 files clean"
 >
@@ -38,7 +39,7 @@ const initialHtml = DEMO_LINES.map(
   </div>
   <pre
     id="demo-body"
-    class="min-h-[340px] px-4 py-4 font-mono text-[13.5px] leading-[1.7] sm:min-h-[360px]"
+    class="scroll-x fade-x min-h-[340px] overflow-x-auto px-4 py-4 font-mono text-[13.5px] leading-[1.7] sm:min-h-[360px]"
     data-lines={JSON.stringify(DEMO_LINES.map((l) => ({ t: l.text, c: l.cls })))}
   ><code set:html={initialHtml} /></pre>
 </div>

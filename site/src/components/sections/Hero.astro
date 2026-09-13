@@ -12,7 +12,9 @@ import HeroDemo from './HeroDemo.astro';
     aria-hidden="true"
   ></div>
 
-  <div class="wrap relative grid items-center gap-12 py-20 lg:grid-cols-[60%_40%] lg:gap-8 lg:py-32">
+  {/* minmax(0,…) tracks: without it the mono <pre> blows the 40% column out
+      past the viewport (grid items have min-width:auto by default). */}
+  <div class="wrap relative grid items-center gap-12 py-20 lg:grid-cols-[minmax(0,60%)_minmax(0,40%)] lg:gap-8 lg:py-32">
     <div>
       <h1 class="max-w-[16ch] text-[36px] font-bold leading-[1.16] tracking-[-0.03em] lg:text-[56px] lg:leading-[64px]">
         {HERO.h1}

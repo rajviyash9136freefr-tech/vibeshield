@@ -70,6 +70,12 @@ const ogURL = new URL(baseHref(ogImage), SITE.url).href;
         document.documentElement.dataset.reducedMotion = '1';
       }
     </script>
+    {/* Without JS, [data-reveal] would sit at opacity 0 forever — show everything. */}
+    <noscript>
+      <style>
+        [data-reveal] { opacity: 1 !important; transform: none !important; }
+      </style>
+    </noscript>
   </head>
   <body class={bodyClass}>
     <div class="scroll-progress" aria-hidden="true"></div>

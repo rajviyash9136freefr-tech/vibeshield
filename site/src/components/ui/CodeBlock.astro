@@ -20,7 +20,7 @@ const { code, filename, label, class: cls = '' } = Astro.props;
     </div>
   )}
   <pre
-    class="scroll-x rounded-[var(--radius-card)] border border-[var(--color-hairline)] bg-[var(--color-elevated)] p-4 font-mono text-[13.5px] leading-[1.7] text-[var(--color-fg)]"
+    class="scroll-x fade-x rounded-[var(--radius-card)] border border-[var(--color-hairline)] bg-[var(--color-elevated)] p-4 font-mono text-[13.5px] leading-[1.7] text-[var(--color-fg)]"
     tabindex="0"
     data-code
   ><code set:html={code.replace(/&/g, '&amp;').replace(/</g, '&lt;')} /></pre>
