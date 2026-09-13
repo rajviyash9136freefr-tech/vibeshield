@@ -93,6 +93,28 @@ the text tokens already carry it. End with: next steps — `vibeshield init` for
 the pre-commit hook + GitHub Action gate, and one line per dismissable finding
 (`accept` / `dismiss with reason`).
 
+## Phase 4 — remediate (only when the user asks)
+
+If — and only if — the user asks for fixes applied (not just reported), route
+through the binary so every change is gated and audited:
+
+1. `vibeshield fix <path> --dry-run` — shows exactly which files were read and
+   the −/+ line for every pending change. Quote that preview back to the user.
+2. Ask the user: apply per-file interactively (`vibeshield fix <path>`, the
+   tool prompts `y/N/a/s`), or directly (`vibeshield fix <path> --yes`, the
+   agent-approved bypass — every patch still lands in `vibeshield-fixes.log`).
+   As the agent you may pass `--yes` without another confirmation round only
+   when the user asked for the fixes to be applied in this conversation.
+3. Only mechanical, rule-authored same-line autofixes are ever eligible.
+   `hardcoded-secret` and `prompt-injection` findings are excluded by contract:
+   rotate keys by hand, and never edit an instruction file the finding flags as
+   the injection payload itself — that change is always manual, by the user.
+4. Re-run `vibeshield scan` after patching and report the before/after counts.
+
+For findings without an autofix, offer the one-line `fix` as a suggestion (you
+may hand-edit them if the user asked you to, but say so explicitly and show
+the diff — never mix silent VibePatch edits with your own edits).
+
 ## Rule taxonomy (emit these IDs; full detection playbook in patterns.md)
 
 | ID prefix | Category | The AI-code failure mode |

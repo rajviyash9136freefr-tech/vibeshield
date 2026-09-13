@@ -16,14 +16,14 @@ prompt-injection traps.
 **Claude Code (recommended).** Paste into a Claude Code session:
 
 ```
-/plugin marketplace add vibeshield/vibeshield
+/plugin marketplace add rajviyash9136freefr-tech/vibeshield
 /plugin install vibeshield@vibeshield
 ```
 
 Or from your terminal:
 
 ```bash
-claude plugin marketplace add vibeshield/vibeshield && claude plugin install vibeshield@vibeshield
+claude plugin marketplace add rajviyash9136freefr-tech/vibeshield && claude plugin install vibeshield@vibeshield
 ```
 
 (The marketplace manifest lives at the repo root; the plugin itself in
@@ -34,7 +34,7 @@ Gemini CLI, Codex, Amp, …): copy this repo's `skill/skills/vibeshield-audit/`
 folder into your client's skills directory, e.g.
 
 ```bash
-git clone --depth 1 --filter=blob:none --sparse https://github.com/vibeshield/vibeshield.git /tmp/vibeshield
+git clone --depth 1 --filter=blob:none --sparse https://github.com/rajviyash9136freefr-tech/vibeshield.git /tmp/vibeshield
 cd /tmp/vibeshield && git sparse-checkout set skill
 # Claude Code (personal):
 mkdir -p ~/.claude/skills && cp -r skill/skills/vibeshield-audit ~/.claude/skills/

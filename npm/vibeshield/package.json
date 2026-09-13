@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Security & dependency auditor for AI-generated code — runs the vibeshield Go scanner (GitHub Action, pre-commit hook, CLI). Free, MIT, offline-first.",
   "license": "MIT",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rajviyash9136freefr-tech/vibeshield.git"
