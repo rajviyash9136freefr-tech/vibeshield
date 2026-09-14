@@ -1,0 +1,125 @@
+---
+const commands = [
+  {
+    title: '1. Scan Entire Project',
+    desc: 'Audit all files, manifests, and components for hallucinated packages, leaked keys, and insecure AI code.',
+    cmd: 'vibeshield scan .',
+    badge: 'Full Audit',
+  },
+  {
+    title: '2. Scan Git Diff Against Main',
+    desc: 'Audit only the changes made during your current vibe coding session before merging to main.',
+    cmd: 'vibeshield scan --diff main',
+    badge: 'PR Speed',
+  },
+  {
+    title: '3. Scan Staged Files (Pre-Commit)',
+    desc: 'Sub-second check before git commit. Blocks secrets and hallucinated packages before they hit git history.',
+    cmd: 'vibeshield scan --staged',
+    badge: 'Fast Hook',
+  },
+  {
+    title: '4. Automatically Fix Bugs',
+    desc: 'Interactively preview and apply 1-line verified fixes for flagged hallucinated imports and insecure defaults.',
+    cmd: 'vibeshield fix .',
+    badge: 'Auto-Remediate',
+  },
+];
+---
+
+<section id="how-to-scan" class="section border-t border-white/10 relative bg-[#040406]">
+  <div class="wrap" data-reveal>
+    <div class="text-center max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 backdrop-blur-md mb-4">
+        <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
+        <span class="font-mono text-xs font-medium tracking-wider text-white/80 uppercase">
+          CLI & Workflow Guide
+        </span>
+      </div>
+      <h2 class="scroll-tell text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[-0.035em] text-apple-headline">
+        How to Scan & Hunt Bugs
+      </h2>
+      <p class="mt-4 text-base sm:text-lg text-white/65 leading-relaxed">
+        Run fast, sub-second audits from your terminal or inside your agent. Copy any command below to test your vibe coding code immediately.
+      </p>
+    </div>
+
+    <!-- Commands Grid -->
+    <div class="mt-12 grid gap-6 md:grid-cols-2">
+      {commands.map((c, i) => (
+        <div class="card rounded-2xl border border-white/12 bg-[#09090c] p-6 transition-all duration-300 hover:border-white/30 hover:shadow-2xl">
+          <div class="flex items-center justify-between border-b border-white/10 pb-3">
+            <h3 class="text-base font-semibold text-white">{c.title}</h3>
+            <span class="rounded-md border border-white/20 bg-white/5 px-2 py-0.5 font-mono text-[11px] text-white/70">
+              {c.badge}
+            </span>
+          </div>
+          <p class="mt-3 text-xs sm:text-sm text-white/60 leading-relaxed min-h-[40px]">
+            {c.desc}
+          </p>
+          <div class="mt-4 relative">
+            <pre class="scroll-x rounded-xl border border-white/10 bg-black/90 p-3.5 font-mono text-xs text-white/90 pr-24 overflow-x-auto"><code>{c.cmd}</code></pre>
+            <button
+              type="button"
+              class="scan-copy-btn absolute top-2 right-2 rounded-lg border border-white/20 bg-white/10 px-3 py-1 font-mono text-xs text-white transition-all hover:bg-white hover:text-black active:scale-95"
+              data-cmd={c.cmd}
+            >
+              <span>Copy</span>
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Terminal Output Demonstration -->
+    <div class="mt-10 rounded-2xl border border-white/15 bg-black/80 p-5 sm:p-6 font-mono text-xs sm:text-sm shadow-2xl">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="h-2.5 w-2.5 rounded-full bg-white/30"></span>
+          <span class="h-2.5 w-2.5 rounded-full bg-white/20"></span>
+          <span class="h-2.5 w-2.5 rounded-full bg-white/10"></span>
+          <span class="ml-2 text-white/50 text-xs">Terminal Output Preview</span>
+        </div>
+        <span class="text-white/40 text-xs">Completed in 1.2s</span>
+      </div>
+      <div class="space-y-2 text-white/80 leading-relaxed overflow-x-auto">
+        <p class="text-white font-bold">$ vibeshield scan .</p>
+        <p class="text-white/50">&nbsp;&nbsp;Scanning 14 vibe-coded files (diff mode)… done in 1.2s</p>
+        <div class="mt-2 pl-2 border-l-2 border-white/40 space-y-1">
+          <p class="text-white font-bold"><span class="bg-white text-black px-1.5 py-0.5 rounded text-xs font-mono mr-2">CRITICAL</span>VS-PKG-001 &nbsp;hallucinated-package</p>
+          <p class="text-white/70">&nbsp;&nbsp;package.json:8 — fast-parse-utils-v3@2.1.4</p>
+          <p class="text-white/50">&nbsp;&nbsp;Why: LLM hallucinated package name. Registered 9 days ago on npm with remote curl payload.</p>
+          <p class="text-white/90">&nbsp;&nbsp;→ Fix: Replace with native node:util (clean, 12 lines, zero dependencies).</p>
+        </div>
+        <div class="mt-2 pl-2 border-l-2 border-white/40 space-y-1">
+          <p class="text-white font-bold"><span class="bg-white/20 text-white border border-white/30 px-1.5 py-0.5 rounded text-xs font-mono mr-2">HIGH</span>VS-SEC-017 &nbsp;hardcoded-secret</p>
+          <p class="text-white/70">&nbsp;&nbsp;src/agent.ts:41 — OPENAI_API_KEY = "sk-proj-••••••••••••••4a2f"</p>
+          <p class="text-white/50">&nbsp;&nbsp;Why: Copilot pasted credential echoed from chat context memory.</p>
+          <p class="text-white/90">&nbsp;&nbsp;→ Fix: Move to process.env.OPENAI_API_KEY and rotate the leaked key immediately.</p>
+        </div>
+        <p class="pt-2 text-white font-semibold">✓ 12 files clean · 2 findings · 0 leaks merged to main</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.scan-copy-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const cmd = btn.dataset.cmd;
+      if (!cmd) return;
+      try {
+        await navigator.clipboard.writeText(cmd);
+        const original = btn.innerHTML;
+        btn.innerHTML = '<span>✓ Copied!</span>';
+        btn.classList.add('bg-white', 'text-black');
+        setTimeout(() => {
+          btn.innerHTML = original;
+          btn.classList.remove('bg-white', 'text-black');
+        }, 1800);
+      } catch (e) {
+        console.error('Failed to copy', e);
+      }
+    });
+  });
+</script>

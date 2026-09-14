@@ -7,6 +7,7 @@ import QuickScanner from '../components/ui/QuickScanner.astro';
 import CinematicCrawl from '../components/ui/CinematicCrawl.astro';
 import AgentPrompts from '../components/sections/AgentPrompts.astro';
 import Install from '../components/sections/Install.astro';
+import HowToScan from '../components/sections/HowToScan.astro';
 import Faq from '../components/sections/Faq.astro';
 import FinalCta from '../components/sections/FinalCta.astro';
 import { SITE, FAQ } from '../data/site';
@@ -89,7 +90,10 @@ const schema = [
   <!-- 5. 3 Ways to Install Guide: One-line script, Agent Skill, NPX, or GitHub Action -->
   <Install />
 
-  <!-- 6. FAQ: Exactly 5 Curated Questions -->
+  <!-- 6. How to Scan: CLI commands and workflow guide -->
+  <HowToScan />
+
+  <!-- 7. FAQ: Exactly 5 Curated Questions -->
   <Faq />
 
   <!-- 7. Final Action Callout -->
