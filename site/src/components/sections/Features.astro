@@ -1,83 +1,131 @@
 ---
-// §3.6 bento grid. Each card: icon (accent, 20px), H3, one sentence, one
-// micro-visual. Verbs and numbers, no adjectives (§7 copy standards).
-// Cinematic layer: [data-reveal] wrapper owns the entrance transform, the
-// inner [data-tilt] card owns the 3D pointer tilt + spotlight (motion.ts).
+import ShowcaseCard from '../ui/ShowcaseCard.astro';
+
 const chips = ['VS-PKG-001', 'VS-SEC-017', 'VS-LIC-003', 'VS-DEP-002', 'VS-INJ-001'];
 ---
 
-<section class="section border-t border-[var(--color-hairline)]">
+<section class="section border-t border-white/10 relative">
   <div class="wrap">
-    <h2 class="scroll-tell text-[28px] font-bold tracking-[-0.02em] lg:text-[40px]">Built for how AI code actually fails</h2>
-    <div class="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <!-- Large card, 2-col span -->
-      <div class="md:col-span-2" data-reveal>
-        <div class="card relative overflow-hidden p-6" data-tilt="3">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 4 5.5V11c0 5 3.2 8.9 8 10.5 4.8-1.6 8-5.5 8-10.5V5.5L12 2Z"/></svg>
-        <h3 class="mt-3 text-[20px] font-semibold">Hallucinated package detection</h3>
-        <p class="mt-1 text-[15px] text-[var(--color-muted)]">Scores every new dependency for slopsquatting risk — age, maintainers, install scripts, name-hallucination likelihood.</p>
-        <div class="scroll-x fade-x mt-5 rounded-[var(--radius-card)] border border-[var(--color-hairline)] bg-[var(--color-bg)]">
-          <table class="w-full min-w-[480px] border-collapse text-left font-mono text-[13px]">
-            <thead class="text-[var(--color-faint)]">
-              <tr>{['package', 'age', 'maintainers', 'install hook', 'risk'].map((h) => <th scope="col" class="px-3 py-2 font-medium">{h}</th>)}</tr>
-            </thead>
-            <tbody class="border-t border-[var(--color-hairline)]">
-              <tr><td class="px-3 py-2 text-[var(--color-fg)]">fast-parse-utils-v3</td><td class="px-3 py-2"><span data-countup="9">9</span> d</td><td class="px-3 py-2">1</td><td class="px-3 py-2">curl | sh</td><td class="px-3 py-2 font-semibold text-[var(--color-critical)]">critical</td></tr>
-              <tr class="border-t border-[var(--color-hairline)]"><td class="px-3 py-2 text-[var(--color-fg)]">yargs</td><td class="px-3 py-2">13 y</td><td class="px-3 py-2">7</td><td class="px-3 py-2">none</td><td class="px-3 py-2 text-[var(--color-ok)]">ok</td></tr>
-            </tbody>
-          </table>
-        </div>
-        </div>
+    <div class="text-center max-w-3xl mx-auto" data-reveal>
+      <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1 backdrop-blur-md mb-4">
+        <span class="font-mono text-[11px] font-medium tracking-wider text-white/70 uppercase">
+          Engine Architecture
+        </span>
       </div>
+      <h2 class="scroll-tell text-[32px] font-bold tracking-[-0.035em] text-apple-headline sm:text-[44px] lg:text-[52px]">
+        Built for how AI code actually fails
+      </h2>
+      <p class="mt-4 text-base text-white/60 sm:text-lg">
+        Classic security scanners look for known CVEs. VibeShield inspects hallucinated packages, leaked keys, and prompt-injection backdoors at the PR gate.
+      </p>
+    </div>
 
+    <!-- The Flagship Showcase Card ("Best Card") -->
+    <div class="mt-14" data-reveal>
+      <ShowcaseCard />
+    </div>
+
+    <!-- Bento Grid for Capabilities -->
+    <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      <!-- Bento Card 1: 120 AI-Specific Rules -->
       <div data-reveal style="--reveal-delay: 60ms">
-        <div class="card relative overflow-hidden p-6" data-tilt="4">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m8 6-5 6 5 6M16 6l5 6-5 6"/></svg>
-        <h3 class="mt-3 text-[20px] font-semibold">120 AI-specific rules, 8 languages</h3>
-        <p class="mt-1 text-[15px] text-[var(--color-muted)]">JS/TS, Python, Go, Java, Ruby, PHP, Rust, C# — ranked by AI-likelihood, not generic severity.</p>
-        <p class="mt-4 flex flex-wrap gap-1.5">
-          {chips.map((c) => <code class="rounded-full border border-[var(--color-hairline)] bg-[var(--color-bg)] px-2.5 py-0.5 font-mono text-xs text-[var(--color-muted)]">{c}</code>)}
-        </p>
+        <div class="card relative h-full overflow-hidden p-6 sm:p-7" data-tilt="4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 border border-white/15">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="m8 6-5 6 5 6M16 6l5 6-5 6"/>
+            </svg>
+          </div>
+          <h3 class="mt-4 text-[19px] font-semibold text-white">120 AI-specific rules, 8 languages</h3>
+          <p class="mt-2 text-[14.5px] leading-relaxed text-white/60">
+            JS/TS, Python, Go, Java, Ruby, PHP, Rust, C# — ranked by AI hallucination probability, not noisy generic alerts.
+          </p>
+          <div class="mt-5 flex flex-wrap gap-1.5">
+            {chips.map((c) => (
+              <code class="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 font-mono text-[11px] text-white/75">
+                {c}
+              </code>
+            ))}
+          </div>
         </div>
       </div>
 
+      <!-- Bento Card 2: AI-Origin Attribution -->
       <div data-reveal style="--reveal-delay: 120ms">
-        <div class="card relative overflow-hidden p-6" data-tilt="4">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 3v18M5 10l7-7 7 7"/></svg>
-        <h3 class="mt-3 text-[20px] font-semibold">AI-origin attribution</h3>
-        <p class="mt-1 text-[15px] text-[var(--color-muted)]">Knows which diff hunks the bot wrote.</p>
-        <pre class="mt-4 overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-hairline)] bg-[var(--color-bg)] p-3 font-mono text-[12.5px] leading-6" aria-hidden="true"><span class="text-[var(--color-faint)]">@@ -40,2 +40,3 @@</span>
-<span class="bg-[var(--color-accent-dim)] text-[var(--color-fg)]">+ const key = "sk-proj-••••4a2f"; // AI-origin: confirmed</span></pre>
+        <div class="card relative h-full overflow-hidden p-6 sm:p-7" data-tilt="4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 border border-white/15">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="M12 3v18M5 10l7-7 7 7"/>
+            </svg>
+          </div>
+          <h3 class="mt-4 text-[19px] font-semibold text-white">AI-origin attribution</h3>
+          <p class="mt-2 text-[14.5px] leading-relaxed text-white/60">
+            Pinpoints exactly which diff hunks were written by Cursor, Copilot, or Claude Code vs your engineering team.
+          </p>
+          <pre class="mt-5 overflow-hidden rounded-xl border border-white/10 bg-black/60 p-3 font-mono text-[12px] leading-6" aria-hidden="true"><span class="text-white/40">@@ -40,2 +40,3 @@</span>
+<span class="bg-white/15 text-white px-1 rounded">+ const key = "sk-proj-••••4a2f"; // AI-origin</span></pre>
         </div>
       </div>
 
+      <!-- Bento Card 3: Secrets Re-scan -->
       <div data-reveal style="--reveal-delay: 180ms">
-        <div class="card relative overflow-hidden p-6" data-tilt="4">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-        <h3 class="mt-3 text-[20px] font-semibold">Secrets re-scan</h3>
-        <p class="mt-1 text-[15px] text-[var(--color-muted)]">Entropy + allow-list + known formats, tuned to training-data echo.</p>
-        <p class="mt-4 rounded-[var(--radius-card)] border border-[var(--color-hairline)] bg-[var(--color-bg)] px-3 py-2 font-mono text-[13px] text-[var(--color-muted)]">OPENAI_API_KEY = <span class="text-[var(--color-critical)]">sk-proj-••••••••••••4a2f</span></p>
+        <div class="card relative h-full overflow-hidden p-6 sm:p-7" data-tilt="4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 border border-white/15">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <rect x="4" y="10" width="16" height="10" rx="2"/>
+              <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+            </svg>
+          </div>
+          <h3 class="mt-4 text-[19px] font-semibold text-white">Secrets zero-echo quarantine</h3>
+          <p class="mt-2 text-[14.5px] leading-relaxed text-white/60">
+            Entropy + pattern matching tuned specifically to training-data echo and context window key leakage.
+          </p>
+          <div class="mt-5 rounded-xl border border-white/10 bg-black/60 px-3.5 py-2.5 font-mono text-[12.5px] text-white/70">
+            OPENAI_KEY = <span class="bg-white/20 text-white px-1.5 py-0.5 rounded font-bold">sk-proj-••••4a2f</span>
+          </div>
         </div>
       </div>
 
+      <!-- Bento Card 4: Diff-Speed Engine -->
       <div data-reveal style="--reveal-delay: 240ms">
-        <div class="card relative overflow-hidden p-6" data-tilt="4">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-        <h3 class="mt-3 text-[20px] font-semibold">Diff-speed</h3>
-        <p class="mt-1 text-[15px] text-[var(--color-muted)]">1.2s median. Diff-only. Offline rules.</p>
-        <p class="mt-4 font-mono text-[13px] text-[var(--color-ok)]">✓ 14 files · <span data-countup="1.2" data-suffix="s">1.2s</span> · 2 findings</p>
+        <div class="card relative h-full overflow-hidden p-6 sm:p-7" data-tilt="4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 border border-white/15">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M12 7v5l3 3"/>
+            </svg>
+          </div>
+          <h3 class="mt-4 text-[19px] font-semibold text-white">Sub-second diff speed</h3>
+          <p class="mt-2 text-[14.5px] leading-relaxed text-white/60">
+            1.2s median execution. Pure Go compiled binary. Scans PR diffs only, never stalling merge queues.
+          </p>
+          <div class="mt-5 font-mono text-[13px] text-white flex items-center gap-2">
+            <span class="flex h-2 w-2 rounded-full bg-white"></span>
+            <span>14 files · <span data-countup="1.2" data-suffix="s">1.2s</span> · 0 leaks</span>
+          </div>
         </div>
       </div>
 
-      <div data-reveal style="--reveal-delay: 300ms">
-        <div class="card relative overflow-hidden p-6" data-tilt="4">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 4h14v16l-3-2-2 2-2-2-2 2-3-2V4Z"/><path d="M9 9h6M9 13h4"/></svg>
-        <h3 class="mt-3 text-[20px] font-semibold">Explain-grade reports</h3>
-        <p class="mt-1 text-[15px] text-[var(--color-muted)]">Why it matters for AI code, the pattern, a one-line fix, accept/dismiss.</p>
-        <pre class="mt-4 overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-hairline)] bg-[var(--color-bg)] p-3 font-mono text-[12.5px] leading-6 text-[var(--color-fg)]" aria-hidden="true">🔴 CRITICAL · VS-PKG-001
-  Why this matters for AI code: LLMs
-  invent plausible package names…
-  Fix: remove it — 12 lines → node:util</pre>
+      <!-- Bento Card 5: Explain-Grade Reports -->
+      <div data-reveal style="--reveal-delay: 300ms" class="md:col-span-2 lg:col-span-2">
+        <div class="card relative h-full overflow-hidden p-6 sm:p-7" data-tilt="4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 border border-white/15">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="M5 4h14v16l-3-2-2 2-2-2-2 2-3-2V4Z"/>
+              <path d="M9 9h6M9 13h4"/>
+            </svg>
+          </div>
+          <h3 class="mt-4 text-[19px] font-semibold text-white">Explain-grade PR audit comments</h3>
+          <p class="mt-2 text-[14.5px] leading-relaxed text-white/60">
+            Every finding comes with the AI failure pattern rationale, exact diff line numbers, and a 1-line copy-paste fix that engineers can accept in seconds.
+          </p>
+          <div class="mt-5 overflow-hidden rounded-xl border border-white/10 bg-black/60 p-4 font-mono text-[12.5px] leading-6 text-white/85" aria-hidden="true">
+            <div class="flex items-center gap-2">
+              <span class="rounded bg-white text-black font-bold px-1 text-[10px]">CRITICAL</span>
+              <span class="font-bold text-white">VS-PKG-001 · hallucinated-package</span>
+            </div>
+            <div class="mt-1 text-white/60">Why this matters: LLM invented a plausible package name with 0 verified downloads.</div>
+            <div class="mt-1 text-white">→ Fix: replace with native node:util (12-line drop-in)</div>
+          </div>
         </div>
       </div>
     </div>

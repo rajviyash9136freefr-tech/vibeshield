@@ -1,26 +1,61 @@
 ---
-// §3.11 — full-width accent-dim wash band.
 import { baseHref } from '../../lib/base';
 ---
 
-<section class="border-t border-[var(--color-hairline)] relative overflow-hidden" style="background: linear-gradient(180deg, rgba(167,139,250,0.07), rgba(167,139,250,0.025));">
-  <div class="wrap section !py-24 text-center relative">
-    <!-- 3D shield rotates into plane as the band scrolls in (CSS scroll-driven) -->
-    <svg class="shield-3d mx-auto mb-6" width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 2 4 5.5V11c0 5 3.2 8.9 8 10.5 4.8-1.6 8-5.5 8-10.5V5.5L12 2Z"
-        stroke="var(--color-accent)" stroke-width="1.6" fill="var(--color-accent-dim)" />
-      <path d="m8.5 11.8 2.4 2.4 4.6-4.9" stroke="var(--color-accent)" stroke-width="1.6"
-        stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-    <h2 class="mx-auto max-w-[24ch] text-[28px] font-bold leading-tight tracking-[-0.02em] lg:text-[40px]">
+<section class="border-t border-white/10 relative overflow-hidden bg-gradient-to-b from-black via-[#0a0a0d] to-black">
+  <!-- Apple ambient specular glow -->
+  <div
+    class="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 h-[500px] opacity-60"
+    style="background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 255, 255, 0.06) 0%, rgba(0, 0, 0, 0) 100%);"
+    aria-hidden="true"
+  ></div>
+
+  <div class="wrap section !py-28 text-center relative" data-reveal>
+    <!-- 3D shield rotates into plane as the section scrolls into view -->
+    <div class="flex justify-center mb-7">
+      <div class="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/20 bg-white/5 shadow-[0_0_30px_rgba(255,255,255,0.1)] backdrop-blur-md">
+        <svg class="shield-3d" width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M12 2 4 5.5V11c0 5 3.2 8.9 8 10.5 4.8-1.6 8-5.5 8-10.5V5.5L12 2Z"
+            stroke="#ffffff"
+            stroke-width="1.8"
+            fill="rgba(255, 255, 255, 0.12)"
+          />
+          <path
+            d="m8.5 11.8 2.4 2.4 4.6-4.9"
+            stroke="#ffffff"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
+    </div>
+
+    <h2 class="mx-auto max-w-[24ch] text-[32px] font-bold leading-tight tracking-[-0.035em] text-apple-headline sm:text-[44px] lg:text-[54px]">
       Ship AI code like you'd ship a teammate's.
     </h2>
-    <p class="mt-4 text-[17px] text-[var(--color-muted)]">
-      One YAML file. Three minutes. Zero secrets in <code class="font-mono text-[15px] text-[var(--color-fg)]">main</code>.
+    <p class="mt-4 text-[17px] text-white/65 sm:text-[19px]">
+      One YAML file. Three minutes. Zero secrets or hallucinations in <code class="font-mono text-white bg-white/10 px-1.5 py-0.5 rounded">main</code>.
     </p>
-    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <a href={baseHref('/#install')} class="rounded-[var(--radius-btn)] bg-[var(--color-accent-strong)] px-6 py-3 font-semibold text-[var(--color-on-accent)] transition-transform duration-150 hover:-translate-y-px">Install free</a>
-      <a href={baseHref('/docs')} class="rounded-[var(--radius-btn)] border border-[var(--color-hairline)] px-6 py-3 font-medium hover:border-[var(--color-accent)]">Read the docs →</a>
+
+    <div class="mt-9 flex flex-wrap items-center justify-center gap-4">
+      <a
+        href={baseHref('/#install')}
+        class="rounded-full bg-white px-8 py-4 text-sm font-semibold text-black transition-all duration-200 hover:bg-neutral-200 hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_35px_rgba(255,255,255,0.3)]"
+      >
+        Install free
+      </a>
+      <a
+        href={baseHref('/docs')}
+        class="rounded-full border border-white/20 bg-white/5 px-8 py-4 text-sm font-medium text-white transition-all duration-200 hover:border-white/50 hover:bg-white/10"
+      >
+        Read the docs →
+      </a>
     </div>
+
+    <p class="mt-6 text-xs font-mono text-white/40">
+      MIT Licensed · 100% Free · No credit card · No user data stored
+    </p>
   </div>
 </section>

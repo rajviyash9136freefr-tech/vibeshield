@@ -1,60 +1,63 @@
 @import "tailwindcss";
 
-/* Design tokens — UIUX.md §2.1 (law; re-skinned 2026-09-14 to the
-   "vibe violet" system at the maintainer's direction). Severity colors
-   appear only on findings/legends; the accent is the only free color.
-   All severity + text pairings verified ≥4.5:1 on --bg except --color-faint
-   (tertiary fine print, same role as before). */
+/* Design tokens — Apple Pro Two-Color System
+   Color 1: Obsidian Jet Black (#000000 / deep space neutrals)
+   Color 2: Pure Titanium White (#FFFFFF / opacity hierarchy)
+   Surgical contrast, cinematic lighting, zero visual noise. */
 @theme {
-  /* Surfaces — ink (blue-black, violet-tinted neutrals) */
-  --color-bg: #0b0a10;
-  --color-elevated: #14121e;
-  --color-hovered: #1e1b2a;
-  --color-hairline: #2a2738;
+  /* Surfaces — Obsidian Black */
+  --color-bg: #000000;
+  --color-elevated: #0a0a0c;
+  --color-hovered: #141418;
+  --color-hairline: rgba(255, 255, 255, 0.1);
+  --color-hairline-bright: rgba(255, 255, 255, 0.25);
 
-  /* Text */
-  --color-fg: #efeef5;
-  --color-muted: #a5a2b5;
-  --color-faint: #6c6880;
+  /* Text — Pure Titanium White with Opacity Hierarchy */
+  --color-fg: #ffffff;
+  --color-muted: rgba(255, 255, 255, 0.65);
+  --color-faint: rgba(255, 255, 255, 0.38);
 
-  /* Brand — "vibe violet" (distinct from the teal-era look and from
-     every competitor's blue/red/green) */
-  --color-accent: #a78bfa;         /* violet-400 — links, chips, brand */
-  --color-accent-strong: #8b5cf6;  /* violet-500 — button fills */
-  --color-accent-dim: rgba(167, 139, 250, 0.13); /* glows, hovers */
-  --color-on-accent: #0b0a10;      /* ink text on violet fills */
+  /* Brand / Accent — Stark White / Luminous Specular Sheen */
+  --color-accent: #ffffff;
+  --color-accent-strong: #ffffff;
+  --color-accent-dim: rgba(255, 255, 255, 0.08);
+  --color-on-accent: #000000;
 
-  /* Severity (semantic-only) — re-verified on the new ink surface */
-  --color-critical: #f87171;       /* red-400   6.9:1 */
-  --color-high: #fb923c;           /* orange-400 8.5:1 */
-  --color-medium: #fbbf24;         /* amber-400 10.9:1 */
-  --color-low: #38bdf8;            /* sky-400 — moved off blue-400 so it
-                                      never reads as the violet accent 9:1 */
-  --color-info: #7c7890;           /* violet-gray ramp, 4.6:1 */
-  --color-ok: #34d399;             /* emerald-400 */
+  /* Severity / Status (Strictly Monochrome High Contrast) */
+  --color-critical: #ffffff;
+  --color-high: rgba(255, 255, 255, 0.85);
+  --color-medium: rgba(255, 255, 255, 0.70);
+  --color-low: rgba(255, 255, 255, 0.50);
+  --color-info: rgba(255, 255, 255, 0.38);
+  --color-ok: #ffffff;
 
   /* Type */
-  --font-sans: "Geist Variable", "Inter Variable", ui-sans-serif, system-ui,
-    -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "Geist Mono Variable", ui-monospace, "Cascadia Code",
+  --font-sans: "Geist Variable", "Inter Variable", -apple-system, BlinkMacSystemFont,
+    "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", "SF Mono", ui-monospace,
     "JetBrains Mono", Menlo, Consolas, monospace;
 
-  /* Shape & elevation — bordered, not shadowed (hairlines everywhere) */
-  --radius-card: 12px;
-  --radius-btn: 8px;
-  --shadow-pop: 0 8px 30px rgba(0, 0, 0, 0.45);
+  /* Shape & elevation — Apple Pro refined radius and hairlines */
+  --radius-card: 16px;
+  --radius-btn: 9999px;
+  --shadow-pop: 0 16px 40px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 40px rgba(255, 255, 255, 0.12);
 
   /* Motion */
   --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @layer base {
   :root {
     color-scheme: dark;
+    --mouse-x: 50%;
+    --mouse-y: 20%;
   }
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 80px; /* sticky nav clearance */
+    scroll-padding-top: 96px; /* sticky island nav clearance */
+    background-color: var(--color-bg);
   }
   body {
     background: var(--color-bg);
@@ -63,19 +66,22 @@
     font-size: 16px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
   h1, h2, h3, h4 {
-    letter-spacing: -0.02em;
+    letter-spacing: -0.035em;
     color: var(--color-fg);
     font-weight: 600;
   }
   ::selection {
-    background: rgba(167, 139, 250, 0.3);
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
   }
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
-    border-radius: 2px;
+    border-radius: 4px;
   }
   details > summary {
     cursor: pointer;
@@ -87,53 +93,53 @@
   a {
     color: inherit;
   }
-  /* Shiki (github-dark) inherits page bg; keep code blocks on --bg-elevated */
+  /* Shiki / code blocks */
   .astro-code {
-    background: var(--color-elevated) !important;
+    background: #08080a !important;
     font-size: 13.5px;
     line-height: 1.7;
-    padding: 16px 20px;
+    padding: 20px 24px;
     border-radius: var(--radius-card);
     border: 1px solid var(--color-hairline);
     overflow-x: auto;
   }
   /* Long-form prose (docs + blog) */
-  .prose-docs h1 { font-size: 32px; letter-spacing: -0.02em; margin-bottom: 8px; }
-  .prose-docs h2 { font-size: 22px; margin-top: 40px; margin-bottom: 10px; }
-  .prose-docs h3 { font-size: 17px; margin-top: 28px; margin-bottom: 8px; }
-  .prose-docs p, .prose-docs li { color: var(--color-muted); line-height: 1.7; }
-  .prose-docs a { color: var(--color-accent); }
-  .prose-docs a:hover { text-decoration: underline; }
-  .prose-docs code { font-family: var(--font-mono); font-size: 0.9em; background: var(--color-elevated); border: 1px solid var(--color-hairline); border-radius: 4px; padding: 1px 5px; }
+  .prose-docs h1 { font-size: 34px; letter-spacing: -0.03em; margin-bottom: 12px; }
+  .prose-docs h2 { font-size: 24px; margin-top: 44px; margin-bottom: 12px; }
+  .prose-docs h3 { font-size: 18px; margin-top: 32px; margin-bottom: 10px; }
+  .prose-docs p, .prose-docs li { color: var(--color-muted); line-height: 1.75; }
+  .prose-docs a { color: #ffffff; text-decoration: underline; text-underline-offset: 4px; }
+  .prose-docs a:hover { opacity: 0.8; }
+  .prose-docs code { font-family: var(--font-mono); font-size: 0.9em; background: var(--color-elevated); border: 1px solid var(--color-hairline); border-radius: 6px; padding: 2px 6px; }
   .prose-docs pre code { background: none; border: 0; padding: 0; font-size: 13.5px; }
-  .prose-docs table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 16px 0; display: block; overflow-x: auto; }
-  .prose-docs th, .prose-docs td { border: 1px solid var(--color-hairline); padding: 8px 12px; text-align: left; }
+  .prose-docs table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 20px 0; display: block; overflow-x: auto; }
+  .prose-docs th, .prose-docs td { border: 1px solid var(--color-hairline); padding: 10px 14px; text-align: left; }
   .prose-docs th { color: var(--color-fg); background: var(--color-elevated); }
-  .prose-docs ul, .prose-docs ol { padding-left: 22px; margin: 12px 0; }
-  .prose-docs li { margin: 4px 0; }
+  .prose-docs ul, .prose-docs ol { padding-left: 22px; margin: 16px 0; }
+  .prose-docs li { margin: 6px 0; }
   .prose-docs strong { color: var(--color-fg); }
 }
 
 @layer components {
   .wrap {
     width: 100%;
-    max-width: 1080px;
+    max-width: 1120px;
     margin-inline: auto;
     padding-inline: 24px;
   }
   .wrap-narrow {
     width: 100%;
-    max-width: 720px;
+    max-width: 760px;
     margin-inline: auto;
     padding-inline: 24px;
   }
-  /* Section rhythm — UIUX §2.3: 128 desktop / 72 mobile */
+  /* Section rhythm */
   .section {
-    padding-block: 72px;
+    padding-block: 84px;
   }
   @media (min-width: 1024px) {
     .section {
-      padding-block: 128px;
+      padding-block: 140px;
     }
   }
   .hairline {
@@ -143,16 +149,27 @@
     background: var(--color-elevated);
     border: 1px solid var(--color-hairline);
     border-radius: var(--radius-card);
+    transition: border-color 250ms var(--ease-soft), box-shadow 250ms var(--ease-soft), transform 250ms var(--ease-soft);
+  }
+  .card:hover {
+    border-color: var(--color-hairline-bright);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 255, 255, 0.04);
+  }
+  .glass-panel {
+    background: rgba(10, 10, 12, 0.72);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--color-hairline);
   }
   .skip-link {
     position: absolute;
     left: -9999px;
     top: 0;
     z-index: 100;
-    padding: 8px 16px;
-    background: var(--color-accent-strong);
-    color: var(--color-on-accent);
-    border-radius: 0 0 var(--radius-btn) 0;
+    padding: 8px 18px;
+    background: #ffffff;
+    color: #000000;
+    border-radius: 0 0 12px 0;
     font-weight: 600;
   }
   .skip-link:focus {
@@ -160,21 +177,38 @@
   }
   .eyebrow {
     font-family: var(--font-mono);
-    font-size: 13px;
-    color: var(--color-accent);
-    text-transform: none;
-    letter-spacing: 0.01em;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
   }
 }
 
 @layer utilities {
-  /* Entrance motion — UIUX §2.4: fade + 8px rise, once, staggered 60ms */
+  /* Apple title text gradient */
+  .text-apple-headline {
+    background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  /* Apple Dynamic Island styling */
+  .dynamic-island {
+    background: rgba(10, 10, 12, 0.82);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.9), 0 0 20px rgba(255, 255, 255, 0.03);
+  }
+
+  /* Entrance motion: Apple smooth rise & opacity */
   [data-reveal] {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(16px);
     transition:
-      opacity 250ms var(--ease-soft),
-      transform 250ms var(--ease-soft);
+      opacity 400ms var(--ease-soft),
+      transform 400ms var(--ease-soft);
     transition-delay: var(--reveal-delay, 0ms);
   }
   [data-reveal].revealed {
@@ -182,13 +216,10 @@
     transform: none;
   }
 
-  /* ---- Cinematic layer -------------------------------------------------
-     3D tilt cards: --tilt-x/--tilt-y are set by motion.ts on pointer-move
-     (fine pointer + lg only). The ::after spotlight follows --mx/--my.
-     Depth: children can opt in with [data-depth] to float on the z axis. */
+  /* 3D tilt cards with specular spotlight */
   [data-tilt] {
     position: relative;
-    transform: perspective(900px)
+    transform: perspective(1000px)
       rotateX(calc(var(--tilt-base-x, 0deg) + var(--tilt-x, 0deg)))
       rotateY(calc(var(--tilt-base-y, 0deg) + var(--tilt-y, 0deg)));
     transform-style: preserve-3d;
@@ -197,17 +228,14 @@
       border-color 250ms var(--ease-soft);
     will-change: transform;
   }
-  /* Hero demo rests at a slight 3D lean (lg, hover-capable only) so the
-     cinematic layer reads without interaction; pointer tilt rides on top. */
   @media (min-width: 1024px) and (hover: hover) {
     [data-tilt-hero] {
       --tilt-base-x: 1.5deg;
-      --tilt-base-y: -5deg;
+      --tilt-base-y: -4deg;
     }
   }
-  /* Accent hairline on hover so the tilt reads as a response, not a glitch */
   [data-tilt]:hover {
-    border-color: rgba(167, 139, 250, 0.35);
+    border-color: rgba(255, 255, 255, 0.35);
   }
   [data-tilt]::after {
     content: "";
@@ -218,54 +246,61 @@
     opacity: 0;
     transition: opacity 250ms var(--ease-soft);
     background: radial-gradient(
-      320px circle at var(--mx, 50%) var(--my, 50%),
-      rgba(167, 139, 250, 0.09),
-      transparent 60%
+      420px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 255, 255, 0.12),
+      transparent 65%
     );
   }
   [data-tilt]:hover::after {
     opacity: 1;
   }
   [data-depth] {
-    transform: translateZ(var(--z, 24px));
-  }
-  /* Hero demo gets a cinematic hover float on top of the tilt */
-  [data-tilt]:hover {
-    transition-duration: 150ms;
+    transform: translateZ(var(--z, 28px));
   }
 
-  /* Scroll progress hairline under the nav (CSS scroll-driven, §8: zero JS) */
+  /* Scroll progress hairline under the nav */
   .scroll-progress {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     height: 2px;
-    z-index: 60;
+    z-index: 70;
     transform-origin: 0 50%;
-    background: linear-gradient(90deg, var(--color-accent-strong), var(--color-accent));
-    opacity: 0; /* revealed by @supports below; invisible where unsupported */
+    background: #ffffff;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+    opacity: 0;
   }
 
-  /* Horizontal-scroll tables with fade-edge affordance (§6) */
+  /* Ambient flashlight layer */
+  .ambient-flashlight {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background: radial-gradient(
+      700px circle at var(--mouse-x, 50%) var(--mouse-y, 25%),
+      rgba(255, 255, 255, 0.045),
+      transparent 70%
+    );
+    transition: background 150ms ease-out;
+  }
+
+  /* Horizontal-scroll tables */
   .scroll-x {
     overflow-x: auto;
     scrollbar-width: thin;
   }
   .scroll-x::-webkit-scrollbar {
-    height: 6px;
+    height: 5px;
   }
   .scroll-x::-webkit-scrollbar-thumb {
-    background: var(--color-hairline);
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 3px;
   }
-  /* Right-edge fade telling you a scroll-x block has more content (§6).
-     Below lg the mono blocks/tables overflow; on wide screens most don't
-     and the fade would eat text — except the hero demo, whose longest line
-     (~540px) outgrows the 40% grid column at any width, so it fades always. */
   @media (max-width: 1023px) {
     .fade-x {
-      mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+      mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent);
     }
   }
   #demo-body {
@@ -279,19 +314,17 @@
   }
 }
 
-/* Scroll-driven motion — pure CSS where the browser can do it (§8 zero-JS).
-   Everything is one-shot / scroll-positioned, never looping decoration;
-   prefers-reduced-motion below shuts all of it off. */
+/* Scroll-driven motion — pure CSS where browser supports it */
 @supports (animation-timeline: view()) {
-  /* Parallax drift for the hero glow + demo card (opposite rates = depth) */
+  /* Parallax drift */
   .parallax-slow,
   .parallax-fast {
     animation: parallax-rise linear both;
     animation-timeline: scroll(root block);
-    animation-range: 0 80vh;
+    animation-range: 0 90vh;
   }
   .parallax-fast {
-    --parallax: 120px;
+    --parallax: 110px;
   }
   @keyframes parallax-rise {
     to {
@@ -299,17 +332,16 @@
     }
   }
 
-  /* Section headers: settle as they enter, lift as they leave (cinematic
-     scroll tell — Linear-style restraint, small deltas only) */
+  /* Section headers: cinematic lift & settle */
   .scroll-tell {
     animation: scroll-tell linear both;
     animation-timeline: view();
-    animation-range: entry 0% cover 40%;
+    animation-range: entry 0% cover 35%;
   }
   @keyframes scroll-tell {
     from {
       opacity: 0;
-      transform: translateY(18px) scale(0.985);
+      transform: translateY(24px) scale(0.98);
     }
     to {
       opacity: 1;
@@ -317,7 +349,7 @@
     }
   }
 
-  /* Steps: the connector line draws itself down as you scroll the section */
+  /* Steps: connector line draws itself smoothly */
   .draw-line {
     transform-origin: 50% 0;
     animation: draw-line linear both;
@@ -333,9 +365,9 @@
     }
   }
 
-  /* Scroll progress bar + rail fills ride the document scroll */
+  /* Scroll progress bar */
   .scroll-progress {
-    opacity: 0.9;
+    opacity: 1;
     animation: progress-scale linear both;
     animation-timeline: scroll(root block);
   }
@@ -348,7 +380,7 @@
     }
   }
 
-  /* Feature cards: tiny per-card scroll rotation-in (depth, not gimmick) */
+  /* Feature cards: smooth 3D scroll-in */
   .scroll-in {
     animation: scroll-in linear both;
     animation-timeline: view();
@@ -357,17 +389,15 @@
   @keyframes scroll-in {
     from {
       opacity: 0;
-      transform: perspective(900px) translateY(26px) rotateX(6deg);
+      transform: perspective(1000px) translateY(32px) rotateX(5deg);
     }
     to {
       opacity: 1;
-      /* NOTE: `perspective(900px) none` is an invalid transform (none can't
-         mix in a list) — the whole frame was dropped by browsers. */
-      transform: perspective(900px) translateY(0) rotateX(0deg);
+      transform: perspective(1000px) translateY(0) rotateX(0deg);
     }
   }
 
-  /* Final-CTA shield: 3D swing into plane, scroll-positioned */
+  /* Final-CTA shield 3D presentation */
   .shield-3d {
     animation: shield-3d linear both;
     animation-timeline: view();
@@ -376,11 +406,11 @@
   @keyframes shield-3d {
     from {
       opacity: 0;
-      transform: perspective(800px) rotateY(-70deg) translateZ(-120px);
+      transform: perspective(900px) rotateY(-60deg) translateZ(-100px);
     }
     to {
       opacity: 1;
-      transform: perspective(800px) rotateY(0deg) translateZ(0);
+      transform: perspective(900px) rotateY(0deg) translateZ(0);
     }
   }
 }
@@ -410,12 +440,14 @@
   .parallax-fast,
   .scroll-tell,
   .scroll-in,
-  .draw-line {
+  .draw-line,
+  .shield-3d {
     animation: none;
     opacity: 1;
     transform: none;
   }
-  .scroll-progress {
+  .scroll-progress,
+  .ambient-flashlight {
     display: none;
   }
 }

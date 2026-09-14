@@ -1,19 +1,48 @@
 /**
- * Cinematic layer — built on UIUX §2.4 discipline (one accent, bordered
- * elevation, reduced-motion disables everything). Three behaviors:
- *  1. [data-tilt]   3D pointer tilt + cursor spotlight (lg + fine pointer only)
- *  2. [data-countup] number roll-up on first scroll-into-view (once)
- * Scroll-driven parallax/progress/rail live in global.css (@supports
- * animation-timeline) — pure CSS where the browser can do it, no JS needed.
+ * Apple Cinematic Layer — Pure Two-Color Lighting & Motion
+ *  1. [data-tilt]   3D pointer tilt + specular edge spotlight
+ *  2. [data-countup] number roll-up on first scroll-into-view
+ *  3. Ambient flashlight tracker across the document
  */
 const reduced = document.documentElement.dataset.reducedMotion === '1';
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
 const wide = window.matchMedia('(min-width: 1024px)');
 
-// ---- 3D tilt + spotlight -------------------------------------------------
+// ---- Ambient flashlight tracking -----------------------------------------
+if (!reduced && finePointer.matches) {
+  let targetX = window.innerWidth / 2;
+  let targetY = window.innerHeight * 0.3;
+  let currentX = targetX;
+  let currentY = targetY;
+  let rafId: number | null = null;
+
+  window.addEventListener('pointermove', (e) => {
+    targetX = e.clientX;
+    targetY = e.clientY;
+    if (!rafId) {
+      rafId = requestAnimationFrame(updateGlow);
+    }
+  }, { passive: true });
+
+  function updateGlow() {
+    currentX += (targetX - currentX) * 0.15;
+    currentY += (targetY - currentY) * 0.15;
+
+    document.documentElement.style.setProperty('--mouse-x', `${currentX.toFixed(1)}px`);
+    document.documentElement.style.setProperty('--mouse-y', `${currentY.toFixed(1)}px`);
+
+    if (Math.abs(targetX - currentX) > 0.5 || Math.abs(targetY - currentY) > 0.5) {
+      rafId = requestAnimationFrame(updateGlow);
+    } else {
+      rafId = null;
+    }
+  }
+}
+
+// ---- 3D tilt + specular spotlight ---------------------------------------
 if (!reduced && finePointer.matches && wide.matches) {
   document.querySelectorAll<HTMLElement>('[data-tilt]').forEach((card) => {
-    const max = Number(card.dataset.tilt || 6);
+    const max = Number(card.dataset.tilt || 5);
     card.addEventListener('pointermove', (e) => {
       const r = card.getBoundingClientRect();
       const px = (e.clientX - r.left) / r.width;
@@ -30,7 +59,7 @@ if (!reduced && finePointer.matches && wide.matches) {
   });
 }
 
-// ---- count-up on first reveal --------------------------------------------
+// ---- Count-up on first reveal --------------------------------------------
 const counters = document.querySelectorAll<HTMLElement>('[data-countup]');
 if (!reduced && counters.length && 'IntersectionObserver' in window) {
   const io = new IntersectionObserver(
@@ -44,17 +73,17 @@ if (!reduced && counters.length && 'IntersectionObserver' in window) {
         const decimals = (raw.split('.')[1] || '').length;
         const suffix = el.dataset.suffix || '';
         const t0 = performance.now();
-        const dur = 900;
+        const dur = 1000;
         const tick = (t: number) => {
           const k = Math.min(1, (t - t0) / dur);
-          const eased = 1 - Math.pow(1 - k, 3); // matches --ease-soft feel
+          const eased = 1 - Math.pow(1 - k, 3); // Apple smooth cubic ease-out
           el.textContent = (target * eased).toFixed(decimals) + suffix;
           if (k < 1) requestAnimationFrame(tick);
         };
         requestAnimationFrame(tick);
       }
     },
-    { threshold: 0.5 },
+    { threshold: 0.4 },
   );
   counters.forEach((el) => io.observe(el));
 }

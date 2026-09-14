@@ -1,0 +1,331 @@
+---
+/**
+ * Flagship Apple Pro Inspector Showcase Card ("The Best Card")
+ * Pure two-color obsidian/titanium aesthetic, 3D gyroscopic tilt,
+ * interactive segmented mode controller, and live audit simulation.
+ */
+---
+
+<div
+  class="relative mx-auto w-full max-w-5xl rounded-[28px] border border-white/15 bg-gradient-to-b from-[#0e0e12] to-[#050507] p-6 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),0_0_40px_rgba(255,255,255,0.03)] backdrop-blur-3xl sm:p-8 lg:p-10"
+  data-tilt="4"
+  id="pro-inspector-card"
+>
+  <!-- Ambient specular edge glow inside card -->
+  <div class="pointer-events-none absolute inset-0 rounded-[28px] bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.06),transparent_60%)]" aria-hidden="true"></div>
+
+  <!-- Top Hardware Status Bar -->
+  <div class="relative z-10 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-5">
+    <div class="flex items-center gap-3">
+      <span class="relative flex h-2.5 w-2.5">
+        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
+        <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-white"></span>
+      </span>
+      <span class="font-mono text-xs font-medium tracking-wider text-white/90 uppercase">
+        VibeShield Pro Inspector
+      </span>
+      <span class="hidden rounded-full border border-white/20 bg-white/5 px-2.5 py-0.5 text-[10px] font-mono text-white/60 sm:inline-block">
+        CORE-ENGINE v1.0
+      </span>
+    </div>
+
+    <div class="flex items-center gap-2 font-mono text-[11px] text-white/50">
+      <span class="flex items-center gap-1.5">
+        <svg class="h-3 w-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>1.2s MEDIAN</span>
+      </span>
+      <span>·</span>
+      <span>0 DATA EXFIL</span>
+      <span>·</span>
+      <span class="text-white font-medium">100% LOCAL</span>
+    </div>
+  </div>
+
+  <!-- Segmented Mode Controller -->
+  <div class="relative z-10 mt-6 flex flex-wrap items-center justify-between gap-4">
+    <div class="inline-flex rounded-full border border-white/15 bg-white/5 p-1 backdrop-blur-xl" role="tablist" aria-label="Inspector Mode">
+      <button
+        type="button"
+        role="tab"
+        id="mode-slop"
+        aria-selected="true"
+        data-inspector-tab="slop"
+        class="inspector-tab rounded-full px-4 py-1.5 text-xs font-semibold tracking-tight transition-all duration-200 bg-white text-black shadow-[0_2px_12px_rgba(255,255,255,0.2)]"
+      >
+        Slopsquatting Intercept
+      </button>
+      <button
+        type="button"
+        role="tab"
+        id="mode-secrets"
+        aria-selected="false"
+        data-inspector-tab="secrets"
+        class="inspector-tab rounded-full px-4 py-1.5 text-xs font-medium tracking-tight text-white/60 transition-all duration-200 hover:text-white"
+      >
+        Secret Quarantine
+      </button>
+      <button
+        type="button"
+        role="tab"
+        id="mode-attribution"
+        aria-selected="false"
+        data-inspector-tab="attribution"
+        class="inspector-tab rounded-full px-4 py-1.5 text-xs font-medium tracking-tight text-white/60 transition-all duration-200 hover:text-white"
+      >
+        Attribution Radar
+      </button>
+    </div>
+
+    <!-- Live Simulation Trigger -->
+    <button
+      type="button"
+      id="run-audit-btn"
+      class="group inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-medium text-white transition-all duration-200 hover:border-white hover:bg-white hover:text-black hover:scale-105 active:scale-95"
+    >
+      <svg class="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+        <path d="M21 3v5h-5"/>
+      </svg>
+      <span>Run Live PR Audit</span>
+    </button>
+  </div>
+
+  <!-- Interactive Inspector Stage -->
+  <div class="relative z-10 mt-6 min-h-[300px] overflow-hidden rounded-2xl border border-white/10 bg-black/70 p-5 font-mono sm:p-6">
+    <!-- Scanner Laser Beam Overlay (animated during simulation) -->
+    <div
+      id="scan-laser"
+      class="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 shadow-[0_0_15px_#ffffff]"
+    ></div>
+
+    <!-- Panel 1: Slopsquatting Intercept -->
+    <div id="panel-slop" class="inspector-panel space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3 text-xs">
+        <div class="flex items-center gap-2">
+          <span class="rounded bg-white text-black px-1.5 py-0.5 text-[10px] font-bold">BLOCKED</span>
+          <span class="text-white/90">PR #482 · diff hunk: <code class="text-white">package.json + src/util.ts</code></span>
+        </div>
+        <span class="text-white/50">Rule: VS-PKG-001 (Slopsquatting / Hallucinated Package)</span>
+      </div>
+
+      <div class="rounded-xl border border-white/10 bg-[#08080a] p-4 text-[13px] leading-relaxed">
+        <div class="text-white/40">// Cursor / Copilot generated diff hunk:</div>
+        <div class="text-white/60">  dependencies: &#123;</div>
+        <div class="flex items-center justify-between rounded bg-white/10 px-2 py-0.5 text-white">
+          <span>+   "fast-parse-utils-v3": "^2.1.4"</span>
+          <span class="rounded border border-white/30 bg-black px-1.5 text-[10px] font-bold uppercase tracking-wider text-white">
+            🚨 Hallucinated Package
+          </span>
+        </div>
+        <div class="text-white/60">  &#125;</div>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-3">
+        <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+          <div class="text-[11px] text-white/50">Domain Age</div>
+          <div class="mt-1 text-sm font-semibold text-white">9 days ago</div>
+          <div class="text-[10px] text-white/40">Registered shortly after LLM output</div>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+          <div class="text-[11px] text-white/50">Post-install Script</div>
+          <div class="mt-1 text-sm font-semibold text-white">curl | sh binary</div>
+          <div class="text-[10px] text-white/40">Remote payload execution risk</div>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+          <div class="text-[11px] text-white/50">Automated Fix</div>
+          <div class="mt-1 text-sm font-semibold text-white">node:util</div>
+          <div class="text-[10px] text-white/40">12 lines, zero dependencies</div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-xs">
+        <span class="text-white/80">⚡ VibeShield Recommendation: Remove package and use built-in standard library.</span>
+        <span class="font-semibold text-white">Auto-Fix Available</span>
+      </div>
+    </div>
+
+    <!-- Panel 2: Secret Quarantine -->
+    <div id="panel-secrets" class="inspector-panel hidden space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3 text-xs">
+        <div class="flex items-center gap-2">
+          <span class="rounded bg-white text-black px-1.5 py-0.5 text-[10px] font-bold">QUARANTINED</span>
+          <span class="text-white/90">PR #482 · file: <code class="text-white">src/lib/agent.ts:41</code></span>
+        </div>
+        <span class="text-white/50">Rule: VS-SEC-017 (Hardcoded Secret Echo)</span>
+      </div>
+
+      <div class="rounded-xl border border-white/10 bg-[#08080a] p-4 text-[13px] leading-relaxed">
+        <div class="text-white/40">// AI agent pasted test credentials from context memory:</div>
+        <div class="flex items-center justify-between rounded bg-white/10 px-2 py-0.5 text-white">
+          <span>+ const OPENAI_API_KEY = "sk-proj-49a8f••••••••••••••4a2f";</span>
+          <span class="rounded border border-white/30 bg-black px-1.5 text-[10px] font-bold uppercase tracking-wider text-white">
+            High Entropy Token
+          </span>
+        </div>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+          <div class="text-[11px] text-white/50">Shannon Entropy Score</div>
+          <div class="mt-1 text-sm font-semibold text-white">4.88 bits/symbol (High)</div>
+          <div class="text-[10px] text-white/40">Matches OpenAI organization production token</div>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+          <div class="text-[11px] text-white/50">Action Taken</div>
+          <div class="mt-1 text-sm font-semibold text-white">Quarantine & Alert</div>
+          <div class="text-[10px] text-white/40">Commit blocked prior to remote push</div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-xs">
+        <span class="text-white/80">🔒 Protection: Key was stopped on the developer's laptop before entering GitHub.</span>
+        <span class="font-semibold text-white">Rotate Suggested</span>
+      </div>
+    </div>
+
+    <!-- Panel 3: Attribution Radar -->
+    <div id="panel-attribution" class="inspector-panel hidden space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3 text-xs">
+        <div class="flex items-center gap-2">
+          <span class="rounded bg-white text-black px-1.5 py-0.5 text-[10px] font-bold">ANALYZED</span>
+          <span class="text-white/90">Attribution Breakdown · 14 files, 512 lines changed</span>
+        </div>
+        <span class="text-white/50">VibeCheck Diff Attribution Engine</span>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <div class="flex justify-between text-xs text-white/70 mb-1">
+            <span>AI Model Generated (Cursor / Claude Code)</span>
+            <span class="text-white font-bold">78% (399 lines)</span>
+          </div>
+          <div class="h-2 w-full overflow-hidden rounded-full bg-white/10">
+            <div class="h-full bg-white transition-all duration-500" style="width: 78%"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs text-white/70 mb-1">
+            <span>Human Developer Authored</span>
+            <span class="text-white font-bold">22% (113 lines)</span>
+          </div>
+          <div class="h-2 w-full overflow-hidden rounded-full bg-white/10">
+            <div class="h-full bg-white/40 transition-all duration-500" style="width: 22%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-white/10 bg-[#08080a] p-4 text-[13px] leading-relaxed">
+        <div class="text-white/40">// Hunk origin metadata embedded into PR review comment:</div>
+        <div class="text-white/80">@@ -82,6 +82,9 @@ export async function handleWebhook(req) &#123;</div>
+        <div class="text-white bg-white/10 px-2 py-0.5 rounded">+  // AI-Origin: Claude-3.5-Sonnet (vibe-score: 0.94)</div>
+        <div class="text-white bg-white/10 px-2 py-0.5 rounded">+  const signature = req.headers['x-hub-signature-256'];</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Metric Counters Bar -->
+  <div class="relative z-10 mt-6 grid grid-cols-2 gap-4 border-t border-white/10 pt-5 sm:grid-cols-4">
+    <div>
+      <div class="text-xs text-white/50">Audit Duration</div>
+      <div class="mt-1 font-mono text-xl font-bold tracking-tight text-white"><span data-countup="1.2" data-suffix="s">1.2s</span></div>
+      <div class="text-[11px] text-white/40">sub-second diff scan</div>
+    </div>
+    <div>
+      <div class="text-xs text-white/50">Language Rulepacks</div>
+      <div class="mt-1 font-mono text-xl font-bold tracking-tight text-white"><span data-countup="120" data-suffix="+">120+</span></div>
+      <div class="text-[11px] text-white/40">8 supported languages</div>
+    </div>
+    <div>
+      <div class="text-xs text-white/50">Hallucinations Caught</div>
+      <div class="mt-1 font-mono text-xl font-bold tracking-tight text-white"><span data-countup="100" data-suffix="%">100%</span></div>
+      <div class="text-[11px] text-white/40">pre-merge prevention</div>
+    </div>
+    <div>
+      <div class="text-xs text-white/50">Cost & Licensing</div>
+      <div class="mt-1 font-mono text-xl font-bold tracking-tight text-white">MIT FREE</div>
+      <div class="text-[11px] text-white/40">zero fees forever</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Segmented Controller Switcher & Live Simulation
+  const tabs = document.querySelectorAll<HTMLButtonElement>('[data-inspector-tab]');
+  const panels: Record<string, HTMLElement | null> = {
+    slop: document.getElementById('panel-slop'),
+    secrets: document.getElementById('panel-secrets'),
+    attribution: document.getElementById('panel-attribution'),
+  };
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const mode = tab.dataset.inspectorTab;
+      if (!mode) return;
+
+      tabs.forEach((t) => {
+        const active = t === tab;
+        t.setAttribute('aria-selected', String(active));
+        if (active) {
+          t.className =
+            'inspector-tab rounded-full px-4 py-1.5 text-xs font-semibold tracking-tight transition-all duration-200 bg-white text-black shadow-[0_2px_12px_rgba(255,255,255,0.2)]';
+        } else {
+          t.className =
+            'inspector-tab rounded-full px-4 py-1.5 text-xs font-medium tracking-tight text-white/60 transition-all duration-200 hover:text-white';
+        }
+      });
+
+      Object.entries(panels).forEach(([k, panel]) => {
+        if (!panel) return;
+        if (k === mode) {
+          panel.classList.remove('hidden');
+        } else {
+          panel.classList.add('hidden');
+        }
+      });
+    });
+  });
+
+  // Live Audit simulation
+  const runBtn = document.getElementById('run-audit-btn');
+  const laser = document.getElementById('scan-laser');
+  let isAuditing = false;
+
+  runBtn?.addEventListener('click', () => {
+    if (isAuditing || !laser) return;
+    isAuditing = true;
+    runBtn.innerHTML = `
+      <svg class="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
+        <path d="M12 2a10 10 0 0 1 10 10"/>
+      </svg>
+      <span>Auditing Diff...</span>
+    `;
+
+    laser.style.opacity = '1';
+    laser.style.transition = 'top 1.2s ease-in-out';
+    laser.style.top = '100%';
+
+    setTimeout(() => {
+      laser.style.opacity = '0';
+      laser.style.top = '0';
+      runBtn.innerHTML = `
+        <svg class="h-3.5 w-3.5 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span>Audit Complete ✓</span>
+      `;
+
+      setTimeout(() => {
+        runBtn.innerHTML = `
+          <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+            <path d="M21 3v5h-5"/>
+          </svg>
+          <span>Run Live PR Audit</span>
+        `;
+        isAuditing = false;
+      }, 2000);
+    }, 1250);
+  });
+</script>

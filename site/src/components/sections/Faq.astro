@@ -1,21 +1,12 @@
 ---
-// §3.10 — the ten PRD §7.2 questions, verbatim, as real HTML <details> with
-// <h3> summaries (indexable regardless of open state; §9.4). Q1–Q3 open on
-// desktop. Two columns 5+5. Search filter = ~20 lines vanilla, content stays
-// server-rendered. The JSON-LD FAQPage is generated from the SAME data object
-// in pages/index.astro so visible text and schema can't drift.
 import { FAQ, FAQ_EXTRA } from '../../data/site';
 import { baseHref } from '../../lib/base';
 
-// The PRD §7.2 ten ship first and verbatim (open-by-default Q1–Q3 per §3.10);
-// the six maintainer-added questions follow. Both sets serialize into the
-// FAQPage JSON-LD from the SAME objects (index.astro) — no drift (§9.4).
 const ITEMS = [...FAQ, ...FAQ_EXTRA];
 
 function linkify(text: string): string {
   const esc = text.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-  // `code` spans and a single trailing link per answer (§3.10).
-  let html = esc.replace(/`([^`]+)`/g, '<code class="font-mono text-[0.92em] text-[var(--color-fg)]">$1</code>');
+  let html = esc.replace(/`([^`]+)`/g, '<code class="font-mono text-[0.92em] text-white bg-white/10 px-1.5 py-0.5 rounded">$1</code>');
   return html.replace(
     /\*([^*]+)\*/g,
     '<em>$1</em>',
@@ -23,34 +14,48 @@ function linkify(text: string): string {
 }
 ---
 
-<section id="faq" class="section border-t border-[var(--color-hairline)]">
-  <div class="wrap">
-    <h2 class="scroll-tell text-[28px] font-bold tracking-[-0.02em] lg:text-[40px]">Frequently asked questions</h2>
+<section id="faq" class="section border-t border-white/10 relative">
+  <div class="wrap" data-reveal>
+    <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1 backdrop-blur-md mb-4">
+      <span class="font-mono text-[11px] font-medium tracking-wider text-white/70 uppercase">
+        Knowledge Base
+      </span>
+    </div>
+    <h2 class="scroll-tell text-[32px] font-bold tracking-[-0.035em] text-apple-headline sm:text-[42px] lg:text-[48px]">
+      Frequently asked questions
+    </h2>
 
-    <label class="mt-6 block max-w-sm">
+    <label class="mt-8 block max-w-md">
       <span class="sr-only">Search questions</span>
-      <input
-        id="faq-search"
-        type="search"
-        placeholder="Search questions…"
-        autocomplete="off"
-        class="w-full rounded-[var(--radius-btn)] border border-[var(--color-hairline)] bg-[var(--color-elevated)] px-4 py-2.5 text-[15px] text-[var(--color-fg)] placeholder:text-[var(--color-faint)] focus:border-[var(--color-accent)]"
-      />
+      <div class="relative">
+        <input
+          id="faq-search"
+          type="search"
+          placeholder="Search questions (e.g. slopsquatting, keys, pricing)…"
+          autocomplete="off"
+          class="w-full rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm text-white placeholder:text-white/40 focus:border-white focus:bg-black/80 transition-all outline-none"
+        />
+        <svg class="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.3-4.3"/>
+        </svg>
+      </div>
     </label>
 
-    <div class="mt-8 grid items-start gap-4 lg:grid-cols-2">
+    <div class="mt-10 grid items-start gap-4 lg:grid-cols-2">
       {ITEMS.map((item, i) => (
-        <details class="faq-item card group px-5 py-4" open={i < 3} data-terms={`${item.q} ${item.a}`.toLowerCase()}>
-          <summary class="flex items-start justify-between gap-4 rounded">
-            <h3 class="text-[17px] font-semibold leading-7">{item.q}</h3>
-            <span class="mt-1 font-mono text-[var(--color-faint)] transition-transform duration-150 group-open:rotate-45" aria-hidden="true">+</span>
+        <details class="faq-item card group rounded-2xl border border-white/10 bg-[#09090c] p-5 sm:p-6 transition-all duration-200 hover:border-white/25" open={i < 2} data-terms={`${item.q} ${item.a}`.toLowerCase()}>
+          <summary class="flex items-start justify-between gap-4">
+            <h3 class="text-[16.5px] font-semibold text-white leading-snug">{item.q}</h3>
+            <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/5 font-mono text-xs text-white/70 transition-transform duration-200 group-open:rotate-45" aria-hidden="true">+</span>
           </summary>
-          <div class="faq-a mt-2 text-[15px] leading-relaxed text-[var(--color-muted)]">
+          <div class="faq-a mt-4 border-t border-white/10 pt-3 text-[14.5px] leading-relaxed text-white/65">
             <p set:html={linkify(item.a)} />
             {item.link && (
-              <p class="mt-2">
-                <a href={baseHref(item.link[1])} class="text-[var(--color-accent)] hover:underline">
-                  {item.link[0] === item.link[1] ? item.link[1] : item.link[0]} →
+              <p class="mt-3">
+                <a href={baseHref(item.link[1])} class="inline-flex items-center gap-1 text-white font-medium hover:underline text-sm">
+                  <span>{item.link[0] === item.link[1] ? item.link[1] : item.link[0]}</span>
+                  <span>→</span>
                 </a>
               </p>
             )}
@@ -58,36 +63,11 @@ function linkify(text: string): string {
         </details>
       ))}
     </div>
-    <p id="faq-empty" class="mt-6 hidden text-[var(--color-muted)]">No question matches — try “secret”, “slopsquatting”, or “install”.</p>
+    <p id="faq-empty" class="mt-8 hidden text-sm font-mono text-white/50">No question matches your search term.</p>
   </div>
 </section>
 
-<style>
-  .faq-item summary:hover {
-    background: transparent;
-  }
-  .faq-item:has(summary:hover) {
-    border-color: var(--color-hairline);
-  }
-  .faq-item summary {
-    padding: 0;
-  }
-  details.faq-item:hover {
-    background: var(--color-hovered);
-  }
-  /* open-on-desktop for first three is via [open] attribute; collapsed on
-     small screens handled by the script-free media check below */
-  @media (max-width: 1023px) {
-    details.faq-item {
-      /* keep DOM content (indexable); visually allow closed — browser keeps
-         server `open` attr, which is fine for a11y & SEO either way */
-    }
-  }
-</style>
-
 <script>
-  // Client-side FAQ filter, ~15 lines. Content is already server-rendered;
-  // this only hides non-matching <details> (UIUX §3.10 "searchable").
   const input = document.getElementById('faq-search') as HTMLInputElement | null;
   const items = [...document.querySelectorAll<HTMLDetailsElement>('.faq-item')];
   const empty = document.getElementById('faq-empty');

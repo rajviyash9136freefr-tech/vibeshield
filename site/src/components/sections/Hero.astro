@@ -4,44 +4,66 @@ import { baseHref } from '../../lib/base';
 import HeroDemo from './HeroDemo.astro';
 ---
 
-<section class="relative overflow-hidden">
-  {/* The single allowed gradient: hero glow (UIUX §2.1) — parallax-drifts on scroll */}
+<section class="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-32">
+  <!-- Apple-grade ambient radial aura (pure monochrome white/silver) -->
   <div
-    class="parallax-slow pointer-events-none absolute inset-x-0 -top-40 h-[520px]"
-    style="background: radial-gradient(60% 55% at 50% 35%, rgba(167,139,250,0.13) 0%, rgba(11,10,16,0) 100%);"
+    class="parallax-slow pointer-events-none absolute inset-x-0 -top-40 h-[640px] opacity-70"
+    style="background: radial-gradient(60% 50% at 50% 25%, rgba(255,255,255,0.08) 0%, rgba(0,0,0,0) 100%);"
     aria-hidden="true"
   ></div>
 
-  {/* minmax(0,…) tracks: without it the mono <pre> blows the 40% column out
-      past the viewport (grid items have min-width:auto by default). */}
-  <div class="wrap relative grid items-center gap-12 py-20 lg:grid-cols-[minmax(0,60%)_minmax(0,40%)] lg:gap-8 lg:py-32">
-    <div>
-      <h1 class="max-w-[16ch] text-[36px] font-bold leading-[1.16] tracking-[-0.03em] lg:text-[56px] lg:leading-[64px]">
+  <div class="wrap relative grid items-center gap-12 lg:grid-cols-[minmax(0,58%)_minmax(0,42%)] lg:gap-10">
+    <div data-reveal>
+      <!-- Eyebrow Pill -->
+      <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1 backdrop-blur-md">
+        <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
+        <span class="font-mono text-[11px] font-medium tracking-wider text-white/80 uppercase">
+          AI Code Security Gate
+        </span>
+      </div>
+
+      <!-- Main Headline -->
+      <h1 class="mt-6 text-[40px] font-bold leading-[1.12] tracking-[-0.04em] text-apple-headline sm:text-[54px] lg:text-[66px] lg:leading-[72px]">
         {HERO.h1}
       </h1>
-      <p class="mt-5 max-w-[560px] text-[18px] leading-[1.6] text-[var(--color-muted)] lg:text-[20px]">
+
+      <!-- Subtitle -->
+      <p class="mt-6 max-w-[560px] text-[18px] leading-[1.65] text-white/65 lg:text-[20px]">
         VibeShield audits every Cursor, Copilot, and Claude Code commit —
         hallucinated packages, leaked secrets, insecure boilerplate — as a
         GitHub Action, pre-commit hook, or one command. Before it hits
-        <code class="font-mono text-[0.92em] text-[var(--color-fg)]">main</code>.
+        <code class="font-mono text-[0.92em] text-white bg-white/10 px-1.5 py-0.5 rounded">main</code>.
       </p>
-      <div class="mt-8 flex flex-wrap items-center gap-4">
+
+      <!-- CTA Buttons -->
+      <div class="mt-9 flex flex-wrap items-center gap-4">
         <a
           href={baseHref('/#install')}
-          class="rounded-[var(--radius-btn)] bg-[var(--color-accent-strong)] px-6 py-3 font-semibold text-[var(--color-on-accent)] transition-transform duration-150 hover:-translate-y-px"
-        >Install free</a>
+          class="rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-black transition-all duration-200 hover:bg-neutral-200 hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_30px_rgba(255,255,255,0.25)]"
+        >
+          Install free
+        </a>
         <a
           href={baseHref('/#how')}
-          class="rounded-[var(--radius-btn)] border border-[var(--color-hairline)] px-6 py-3 font-medium text-[var(--color-fg)] transition-colors duration-150 hover:border-[var(--color-accent)]"
-        >See a live report →</a>
+          class="rounded-full border border-white/20 bg-white/5 px-7 py-3.5 text-sm font-medium text-white transition-all duration-200 hover:border-white/50 hover:bg-white/10"
+        >
+          See a live report →
+        </a>
       </div>
-      <p class="mt-6 text-sm text-[var(--color-faint)]">
-        {HERO.trust.join(' · ')}
-      </p>
+
+      <!-- Trust Strip -->
+      <div class="mt-8 flex flex-wrap items-center gap-y-2 gap-x-4 text-xs font-mono text-white/40">
+        {HERO.trust.map((item, idx) => (
+          <span class="flex items-center gap-2">
+            {idx > 0 && <span class="text-white/20">·</span>}
+            <span class="text-white/60">{item}</span>
+          </span>
+        ))}
+      </div>
     </div>
 
-    {/* reveal + parallax on separate wrappers — both own `transform` */}
-    <div data-reveal>
+    <!-- Right: Monochromatic Terminal with Parallax & 3D Tilt -->
+    <div data-reveal style="--reveal-delay: 120ms">
       <div class="parallax-fast">
         <HeroDemo />
       </div>

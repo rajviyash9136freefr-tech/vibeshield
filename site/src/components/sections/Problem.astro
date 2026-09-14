@@ -2,36 +2,45 @@
 import { PROBLEM } from '../../data/site';
 ---
 
-<section id="product" class="section">
+<section id="product" class="section border-t border-white/10 relative">
   <div class="wrap">
-    <h2 class="scroll-tell max-w-[22ch] text-[28px] font-bold leading-[1.2] tracking-[-0.02em] lg:text-[40px] lg:leading-[48px]">
-      {PROBLEM.h2}
-    </h2>
-    <div class="mt-12 grid gap-12 lg:grid-cols-2 lg:gap-16">
-      <div class="space-y-5 text-[16px] leading-[1.7] text-[var(--color-muted)] relative">
-        <!-- Cinematic scroll tell: the hairline draws itself as the section scrolls -->
-        <div class="draw-line absolute -left-6 top-1 hidden h-[calc(100%-8px)] w-px bg-[var(--color-hairline)] lg:block" aria-hidden="true"></div>
+    <div data-reveal>
+      <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1 backdrop-blur-md mb-4">
+        <span class="font-mono text-[11px] font-medium tracking-wider text-white/70 uppercase">
+          Threat Model
+        </span>
+      </div>
+      <h2 class="scroll-tell max-w-[24ch] text-[32px] font-bold leading-[1.15] tracking-[-0.035em] text-apple-headline sm:text-[42px] lg:text-[50px]">
+        {PROBLEM.h2}
+      </h2>
+    </div>
+
+    <div class="mt-14 grid gap-12 lg:grid-cols-2 lg:gap-16">
+      <div class="space-y-6 text-[16px] leading-[1.75] text-white/70 relative" data-reveal>
+        <!-- Cinematic scroll tell: laser hairline draws itself as section scrolls -->
+        <div class="draw-line absolute -left-6 top-1 hidden h-[calc(100%-8px)] w-px bg-white/20 lg:block" aria-hidden="true"></div>
         {PROBLEM.paras.map((p) => <p>{p}</p>)}
       </div>
-      <div class="scroll-in">
-        <div class="scroll-x fade-x rounded-[var(--radius-card)] border border-[var(--color-hairline)]">
+
+      <div class="scroll-in" data-reveal style="--reveal-delay: 100ms">
+        <div class="scroll-x fade-x rounded-2xl border border-white/15 bg-gradient-to-b from-[#0e0e12] to-[#040406] shadow-2xl">
           <table class="w-full min-w-[560px] border-collapse text-sm">
-            <caption class="px-4 pt-4 text-left text-[var(--color-faint)]">
+            <caption class="px-5 pt-4 text-left font-mono text-xs text-white/40">
               {PROBLEM.table.caption}
             </caption>
             <thead>
-              <tr class="border-b border-[var(--color-hairline)] text-left">
+              <tr class="border-b border-white/10 text-left font-mono text-xs text-white/50">
                 {PROBLEM.table.cols.map((c) => (
-                  <th scope="col" class="px-4 py-3 font-semibold text-[var(--color-fg)]">{c}</th>
+                  <th scope="col" class="px-5 py-3.5 font-semibold text-white/90">{c}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {PROBLEM.table.rows.map(([mode, looks, catch_]) => (
-                <tr class="border-b border-[var(--color-hairline)] last:border-0 align-top">
-                  <th scope="row" class="px-4 py-3 font-medium text-[var(--color-fg)]">{mode}</th>
-                  <td class="px-4 py-3 text-[var(--color-muted)]">{looks}</td>
-                  <td class="px-4 py-3 text-[var(--color-faint)]">{catch_}</td>
+                <tr class="border-b border-white/5 last:border-0 align-top transition-colors hover:bg-white/[0.02]">
+                  <th scope="row" class="px-5 py-3.5 font-medium text-white text-left">{mode}</th>
+                  <td class="px-5 py-3.5 text-white/65 font-mono text-[13px]">{looks}</td>
+                  <td class="px-5 py-3.5 text-white/40 text-xs">{catch_}</td>
                 </tr>
               ))}
             </tbody>

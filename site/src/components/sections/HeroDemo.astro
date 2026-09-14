@@ -1,21 +1,21 @@
 ---
 /**
  * Hero demo (UIUX §3.2): a monospace terminal card that "types" a VibeCheck
- * run. Signature motion = the only looping animation. Static final frame when
- * reduced-motion or < lg (battery, §6). Final frame doubles as OG source.
+ * run. Signature motion = the only looping animation.
+ * Recreated with Apple Pro obsidian glass & stark titanium monochrome syntax.
  */
 import { DEMO_LINES } from '../../data/site';
 
 function lineClass(cls: string): string {
   switch (cls) {
-    case 'accent': return 'text-[var(--color-accent)]';
-    case 'muted': return 'text-[var(--color-muted)]';
-    case 'faint': return 'text-[var(--color-faint)]';
-    case 'critical': return 'font-semibold text-[var(--color-critical)]';
-    case 'high': return 'font-semibold text-[var(--color-high)]';
-    case 'ok': return 'text-[var(--color-ok)]';
-    case 'fg': return 'text-[var(--color-fg)]';
-    default: return '';
+    case 'accent': return 'text-white font-bold';
+    case 'muted': return 'text-white/65';
+    case 'faint': return 'text-white/40';
+    case 'critical': return 'font-bold text-black bg-white px-1 rounded';
+    case 'high': return 'font-bold text-white bg-white/20 border border-white/30 px-1 rounded';
+    case 'ok': return 'text-white font-medium';
+    case 'fg': return 'text-white/90';
+    default: return 'text-white/80';
   }
 }
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -25,29 +25,34 @@ const initialHtml = DEMO_LINES.map(
 ---
 
 <div
-  class="card overflow-hidden"
+  class="card overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-b from-[#0c0c10] to-[#040406] shadow-[0_20px_50px_-15px_rgba(0,0,0,0.9)]"
   data-tilt="5"
   data-tilt-hero
   role="img"
   aria-label="Terminal showing a VibeShield scan: one critical hallucinated-package finding and one high hardcoded-secret finding, 11 files clean"
 >
-  <div class="flex items-center gap-2 border-b border-[var(--color-hairline)] px-4 py-3">
-    <span class="h-3 w-3 rounded-full bg-[var(--color-critical)]" aria-hidden="true"></span>
-    <span class="h-3 w-3 rounded-full bg-[var(--color-medium)]" aria-hidden="true"></span>
-    <span class="h-3 w-3 rounded-full bg-[var(--color-ok)]" aria-hidden="true"></span>
-    <span class="ml-2 font-mono text-[13px] text-[var(--color-muted)]">bash — vibeshield</span>
+  <!-- Window Control Bar -->
+  <div class="flex items-center justify-between border-b border-white/10 px-4 py-3 bg-white/[0.02]">
+    <div class="flex items-center gap-2">
+      <span class="h-2.5 w-2.5 rounded-full bg-white/30" aria-hidden="true"></span>
+      <span class="h-2.5 w-2.5 rounded-full bg-white/20" aria-hidden="true"></span>
+      <span class="h-2.5 w-2.5 rounded-full bg-white/10" aria-hidden="true"></span>
+      <span class="ml-2 font-mono text-xs text-white/50">bash — vibeshield scan</span>
+    </div>
+    <div class="flex items-center gap-1.5 font-mono text-[10px] text-white/40">
+      <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
+      <span>READY</span>
+    </div>
   </div>
+
   <pre
     id="demo-body"
-    class="scroll-x fade-x min-h-[340px] overflow-x-auto px-4 py-4 font-mono text-[13.5px] leading-[1.7] sm:min-h-[360px]"
+    class="scroll-x fade-x min-h-[340px] overflow-x-auto p-5 font-mono text-[13px] leading-[1.75] text-white/85 sm:min-h-[360px]"
     data-lines={JSON.stringify(DEMO_LINES.map((l) => ({ t: l.text, c: l.cls })))}
   ><code set:html={initialHtml} /></pre>
 </div>
 
 <script>
-  // Signature motion (UIUX §3.2): character-by-character reveal of the scan,
-  // 2.5 s hold on the final frame, loop. Off for prefers-reduced-motion and
-  // below the lg breakpoint (static final frame — server-rendered above).
   const body = document.getElementById('demo-body');
   const reduced = document.documentElement.dataset.reducedMotion === '1';
   const wide = window.matchMedia('(min-width: 1024px)');
@@ -59,7 +64,7 @@ const initialHtml = DEMO_LINES.map(
     const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
     const cursor = document.createElement('span');
     cursor.className =
-      'inline-block h-[1.05em] w-[0.55em] translate-y-[2px] bg-[var(--color-accent)]';
+      'inline-block h-[1.1em] w-[0.55em] translate-y-[2px] bg-white shadow-[0_0_8px_#ffffff]';
     cursor.setAttribute('aria-hidden', 'true');
     let stopped = false;
     const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -86,19 +91,19 @@ const initialHtml = DEMO_LINES.map(
           }
           await sleep(120);
         }
-        await sleep(2500);
+        await sleep(2600);
       }
     }
 
     function classFor(cls: string): string {
       switch (cls) {
-        case 'accent': return 'text-[var(--color-accent)]';
-        case 'muted': return 'text-[var(--color-muted)]';
-        case 'faint': return 'text-[var(--color-faint)]';
-        case 'critical': return 'font-semibold text-[var(--color-critical)]';
-        case 'high': return 'font-semibold text-[var(--color-high)]';
-        case 'ok': return 'text-[var(--color-ok)]';
-        default: return 'text-[var(--color-fg)]';
+        case 'accent': return 'text-white font-bold';
+        case 'muted': return 'text-white/65';
+        case 'faint': return 'text-white/40';
+        case 'critical': return 'font-bold text-black bg-white px-1 rounded';
+        case 'high': return 'font-bold text-white bg-white/20 border border-white/30 px-1 rounded';
+        case 'ok': return 'text-white font-medium';
+        default: return 'text-white/85';
       }
     }
 
