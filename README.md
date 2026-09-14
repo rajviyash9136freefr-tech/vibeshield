@@ -1,14 +1,41 @@
-# 🛡️ VibeShield — Bug Hunter & Security Tester for AI Vibe Coding
+<div align="center">
 
-> **Test, hunt bugs, and fix vulnerabilities in vibe-coded apps & websites.**  
-> Built for **Cursor**, **Claude Code**, **GitHub Copilot**, and **Windsurf**. Catch hallucinated packages, leaked secrets, and broken logic in AI-generated code — with instant 1-line fixes before code hits `main`.
+# 🛡️ VibeShield
+### The Bug Hunter & Tester for AI Vibe Coding
 
-[![Live Website & Demo](https://img.shields.io/badge/Website-vibeshield.dev-black?style=flat&logo=safari)](https://rajviyash9136freefr-tech.github.io/vibeshield/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-white.svg)](LICENSE)
-[![GitHub Action](https://img.shields.io/badge/GitHub_Action-v1.0.0-2088FF.svg?logo=githubactions&logoColor=white)](action/)
-[![Platforms](https://img.shields.io/badge/Platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)](#-1-command-quick-install)
-[![Agents Supported](https://img.shields.io/badge/Agents-Cursor%20%7C%20Claude%20Code%20%7C%20Copilot%20%7C%20Windsurf-purple.svg)](#-ai-agent-prompts--setup)
-[![Go Version](https://img.shields.io/badge/Go-1.24-00ADD8.svg)](scanner/go.mod)
+**Test your vibe-coded apps, hunt down hallucinated packages, leaked API keys, and insecure AI defaults — with instant 1-line verified fixes.**
+
+[![Website](https://img.shields.io/badge/🌐_Website-Live_Simulator-white?style=for-the-badge&logo=googlechrome&logoColor=black)](https://rajviyash9136freefr-tech.github.io/vibeshield/)
+[![GitHub Stars](https://img.shields.io/github/stars/rajviyash9136freefr-tech/vibeshield?style=for-the-badge&logo=github&color=white&labelColor=black)](https://github.com/rajviyash9136freefr-tech/vibeshield/stargazers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-white?style=for-the-badge)](LICENSE)
+[![GitHub Action](https://img.shields.io/badge/PR_Gate-v1.0.0-white?style=for-the-badge&logo=githubactions&logoColor=black)](action/)
+
+[![Agents Supported](https://img.shields.io/badge/Supported_Agents-Cursor_·_Claude_Code_·_Windsurf_·_Copilot-111111?style=flat-square&logo=visualstudiocode)](https://rajviyash9136freefr-tech.github.io/vibeshield/#agents)
+[![Offline & Local](https://img.shields.io/badge/100%25_Local_&_Offline-Zero_Data_Sent_Outside-success?style=flat-square)](#-frequently-asked-questions)
+[![Audit Speed](https://img.shields.io/badge/Audit_Speed-1.2s_Sub--Second-blue?style=flat-square)](#-sample-bug-hunter-output)
+
+<br/>
+
+[⚡ **Try Live Web Simulator**](https://rajviyash9136freefr-tech.github.io/vibeshield/#scanner) · [🤖 **How to Setup Agents**](#-ai-agent-prompts--setup) · [📦 **How to Install**](#-1-command-quick-install) · [🔍 **How to Scan**](#-how-to-scan--hunt-bugs) · [❓ **FAQ**](#-frequently-asked-questions) · [🌟 **Community**](#-welcome-to-the-community)
+
+<br/>
+
+```text
+  $ vibeshield scan .
+  Scanning 14 vibe-coded files… done in 1.2s
+
+  🔴 CRITICAL  VS-PKG-001  hallucinated-package
+     package.json:8 — fast-parse-utils-v3@2.1.4 (Registered 9d ago on npm)
+     → Fix: Replace with native node:util (clean, 12 lines, zero dependencies).
+
+  🟠 HIGH      VS-SEC-017  hardcoded-secret
+     src/agent.ts:41 — OPENAI_API_KEY echoed from chat context
+     → Fix: Move to process.env.OPENAI_API_KEY and rotate key now.
+
+  ✓ 12 files clean · 2 findings · 0 leaks merged to main
+```
+
+</div>
 
 ---
 
@@ -93,7 +120,7 @@ curl -fsSL https://raw.githubusercontent.com/rajviyash9136freefr-tech/vibeshield
 irm https://raw.githubusercontent.com/rajviyash9136freefr-tech/vibeshield/main/scripts/install.ps1 | iex
 ```
 
-### 📦 Node.js / NPX (Instant Zero-Install Scan)
+### 📦 Node.js / NPX (Zero-Install Scan)
 Scan your repository immediately without installing any permanent binary:
 ```bash
 npx vibeshield scan .
@@ -106,24 +133,22 @@ go install github.com/rajviyash9136freefr-tech/vibeshield/scanner/cmd/vibeshield
 
 ---
 
-## 💻 Sample Bug Hunter Output
+## 🔍 How to Scan & Hunt Bugs
 
-```text
-$ vibeshield scan .
+Run sub-second audits from your terminal or directly inside your agent:
 
-  Scanning 14 vibe-coded files (diff mode)… done in 1.2s
+```bash
+# 1. Audit your entire project
+vibeshield scan .
 
-  🔴 CRITICAL  VS-PKG-001  hallucinated-package
-     package.json:8 — fast-parse-utils-v3@2.1.4
-     Why: LLM hallucinated package name. Registered 9 days ago on npm with curl|sh install payload.
-     → Fix: Replace with native node:util (clean, 12 lines, zero dependencies).
+# 2. Audit only current vibe-coding changes against main (fast PR mode)
+vibeshield scan --diff main
 
-  🟠 HIGH      VS-SEC-017  hardcoded-secret
-     src/agent.ts:41 — OPENAI_API_KEY = "sk-proj-••••••••••••••4a2f"
-     Why: Copilot pasted credential echoed from chat context memory.
-     → Fix: Move to process.env.OPENAI_API_KEY and rotate the leaked key immediately.
+# 3. Fast pre-commit hook scan before git commit
+vibeshield scan --staged
 
-  ✓ 12 files clean · 2 findings · 0 leaks merged
+# 4. Interactively preview and apply verified 1-line fixes
+vibeshield fix .
 ```
 
 ---
@@ -131,7 +156,7 @@ $ vibeshield scan .
 ## 🛠️ Automated CI/CD Setup
 
 ### GitHub Action (Pull Request Gate)
-Add `.github/workflows/vibeshield.yml` to your repo:
+Add `.github/workflows/vibeshield.yml` to your repository:
 ```yaml
 name: VibeShield PR Gate
 on: [pull_request]
@@ -180,6 +205,17 @@ Yes. VibeShield is 100% free and open-source under the MIT license. There are no
 
 ---
 
+## 🌟 Welcome to the Community!
+
+We welcome every developer, vibe coder, and AI enthusiast! Here is how you can get involved:
+
+* ⭐ **Star this repository** to support open-source AI security tools.
+* 🧪 **Try the Live Simulator**: Visit [https://rajviyash9136freefr-tech.github.io/vibeshield/](https://rajviyash9136freefr-tech.github.io/vibeshield/) to test real AI bugs live.
+* 🐛 **Report a Bug / Suggest a Rule**: Encountered a new hallucinated package or LLM failure mode? [Open an issue](https://github.com/rajviyash9136freefr-tech/vibeshield/issues).
+* 🤝 **Contribute**: Check out [CONTRIBUTING.md](CONTRIBUTING.md) to add new agent skills or detection heuristics.
+
+---
+
 ## 📂 Repository Layout
 
 ```text
@@ -208,4 +244,4 @@ Yes. VibeShield is 100% free and open-source under the MIT license. There are no
 ---
 
 <!-- GitHub Topic Keywords for Search Ranking -->
-<!-- vibe-coding, ai-coding, cursor, claude-code, github-copilot, windsurf, bug-hunter, security-audit, slopsquatting, hallucinated-packages, pre-commit, github-action, cursorrules, ai-code-tester, devsecops -->
+<!-- vibe-coding, ai-coding, cursor, claude-code, github-copilot, windsurf, bug-hunter, security-audit, slopsquatting, hallucinated-packages, pre-commit, github-action, cursorrules, ai-code-tester, devsecops, vibe-code-tester -->

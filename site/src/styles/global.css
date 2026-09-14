@@ -31,9 +31,9 @@
   --color-info: rgba(255, 255, 255, 0.38);
   --color-ok: #ffffff;
 
-  /* Type */
+  /* Type — World-Class Developer Typography */
   --font-sans: "Geist Variable", "Inter Variable", -apple-system, BlinkMacSystemFont,
-    "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+    "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", "SF Mono", ui-monospace,
     "JetBrains Mono", Menlo, Consolas, monospace;
 
@@ -64,19 +64,45 @@
     color: var(--color-fg);
     font-family: var(--font-sans);
     font-size: 16px;
-    line-height: 1.6;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    letter-spacing: -0.012em;
     overflow-x: clip;
   }
-  h1, h2, h3, h4 {
-    letter-spacing: -0.035em;
+  h1 {
+    letter-spacing: -0.04em;
+    font-weight: 800;
+    line-height: 1.1;
     color: var(--color-fg);
+  }
+  h2 {
+    letter-spacing: -0.035em;
+    font-weight: 700;
+    line-height: 1.18;
+    color: var(--color-fg);
+  }
+  h3 {
+    letter-spacing: -0.025em;
     font-weight: 600;
+    line-height: 1.28;
+    color: var(--color-fg);
+  }
+  h4 {
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    color: var(--color-fg);
+  }
+  code, pre, kbd, samp {
+    font-family: var(--font-mono);
+    font-feature-settings: "liga" 1, "calt" 1;
+    letter-spacing: -0.015em;
   }
   ::selection {
-    background: rgba(255, 255, 255, 0.25);
-    color: #ffffff;
+    background: #ffffff;
+    color: #000000;
   }
   :focus-visible {
     outline: 2px solid var(--color-accent);
@@ -242,9 +268,9 @@
 }
 
 @layer utilities {
-  /* Apple title text gradient */
+  /* Apple title text gradient — ultra-crisp high contrast */
   .text-apple-headline {
-    background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+    background: linear-gradient(180deg, #ffffff 20%, rgba(255, 255, 255, 0.88) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
