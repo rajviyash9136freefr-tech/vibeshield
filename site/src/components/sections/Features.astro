@@ -7,15 +7,15 @@ const chips = ['VS-PKG-001', 'VS-SEC-017', 'VS-LIC-003', 'VS-DEP-002', 'VS-INJ-0
 <section class="section border-t border-white/10 relative">
   <div class="wrap">
     <div class="text-center max-w-3xl mx-auto" data-reveal>
-      <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1 backdrop-blur-md mb-4">
-        <span class="font-mono text-[11px] font-medium tracking-wider text-white/70 uppercase">
+      <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 backdrop-blur-md mb-4">
+        <span class="font-mono text-xs font-medium tracking-wider text-white/70 uppercase">
           Engine Architecture
         </span>
       </div>
-      <h2 class="scroll-tell text-[32px] font-bold tracking-[-0.035em] text-apple-headline sm:text-[44px] lg:text-[52px]">
+      <h2 class="scroll-tell text-3xl font-bold tracking-[-0.035em] text-apple-headline sm:text-4xl lg:text-5xl">
         Built for how AI code actually fails
       </h2>
-      <p class="mt-4 text-base text-white/60 sm:text-lg">
+      <p class="mt-4 text-base text-white/65 sm:text-lg">
         Classic security scanners look for known CVEs. VibeShield inspects hallucinated packages, leaked keys, and prompt-injection backdoors at the PR gate.
       </p>
     </div>
@@ -25,23 +25,23 @@ const chips = ['VS-PKG-001', 'VS-SEC-017', 'VS-LIC-003', 'VS-DEP-002', 'VS-INJ-0
       <ShowcaseCard />
     </div>
 
-    <!-- Bento Grid for Capabilities -->
+    <!-- Balanced 3-Column Bento Grid (6 Equal Cards) -->
     <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
       <!-- Bento Card 1: 120 AI-Specific Rules -->
       <div data-reveal style="--reveal-delay: 60ms">
-        <div class="card relative h-full overflow-hidden p-6 sm:p-7" data-tilt="4">
+        <div class="card relative h-full flex flex-col overflow-hidden p-6 sm:p-7" data-tilt="4">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 border border-white/15">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" aria-hidden="true">
               <path d="m8 6-5 6 5 6M16 6l5 6-5 6"/>
             </svg>
           </div>
-          <h3 class="mt-4 text-[19px] font-semibold text-white">120 AI-specific rules, 8 languages</h3>
-          <p class="mt-2 text-[14.5px] leading-relaxed text-white/60">
+          <h3 class="mt-4 text-lg font-semibold text-white">120 AI-specific rules, 8 languages</h3>
+          <p class="mt-2 text-sm leading-relaxed text-white/65 flex-1">
             JS/TS, Python, Go, Java, Ruby, PHP, Rust, C# — ranked by AI hallucination probability, not noisy generic alerts.
           </p>
           <div class="mt-5 flex flex-wrap gap-1.5">
             {chips.map((c) => (
-              <code class="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 font-mono text-[11px] text-white/75">
+              <code class="rounded-full border border-white/15 bg-white/5 px-2.5 py-0.5 font-mono text-xs text-white/75">
                 {c}
               </code>
             ))}
@@ -51,35 +51,35 @@ const chips = ['VS-PKG-001', 'VS-SEC-017', 'VS-LIC-003', 'VS-DEP-002', 'VS-INJ-0
 
       <!-- Bento Card 2: AI-Origin Attribution -->
       <div data-reveal style="--reveal-delay: 120ms">
-        <div class="card relative h-full overflow-hidden p-6 sm:p-7" data-tilt="4">
+        <div class="card relative h-full flex flex-col overflow-hidden p-6 sm:p-7" data-tilt="4">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 border border-white/15">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" aria-hidden="true">
               <path d="M12 3v18M5 10l7-7 7 7"/>
             </svg>
           </div>
-          <h3 class="mt-4 text-[19px] font-semibold text-white">AI-origin attribution</h3>
-          <p class="mt-2 text-[14.5px] leading-relaxed text-white/60">
+          <h3 class="mt-4 text-lg font-semibold text-white">AI-origin attribution</h3>
+          <p class="mt-2 text-sm leading-relaxed text-white/65 flex-1">
             Pinpoints exactly which diff hunks were written by Cursor, Copilot, or Claude Code vs your engineering team.
           </p>
-          <pre class="mt-5 overflow-hidden rounded-xl border border-white/10 bg-black/60 p-3 font-mono text-[12px] leading-6" aria-hidden="true"><span class="text-white/40">@@ -40,2 +40,3 @@</span>
+          <pre class="mt-5 overflow-hidden rounded-xl border border-white/10 bg-black/60 p-3 font-mono text-xs leading-6" aria-hidden="true"><span class="text-white/40">@@ -40,2 +40,3 @@</span>
 <span class="bg-white/15 text-white px-1 rounded">+ const key = "sk-proj-••••4a2f"; // AI-origin</span></pre>
         </div>
       </div>
 
       <!-- Bento Card 3: Secrets Re-scan -->
       <div data-reveal style="--reveal-delay: 180ms">
-        <div class="card relative h-full overflow-hidden p-6 sm:p-7" data-tilt="4">
+        <div class="card relative h-full flex flex-col overflow-hidden p-6 sm:p-7" data-tilt="4">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 border border-white/15">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" aria-hidden="true">
               <rect x="4" y="10" width="16" height="10" rx="2"/>
               <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
             </svg>
           </div>
-          <h3 class="mt-4 text-[19px] font-semibold text-white">Secrets zero-echo quarantine</h3>
-          <p class="mt-2 text-[14.5px] leading-relaxed text-white/60">
+          <h3 class="mt-4 text-lg font-semibold text-white">Secrets zero-echo quarantine</h3>
+          <p class="mt-2 text-sm leading-relaxed text-white/65 flex-1">
             Entropy + pattern matching tuned specifically to training-data echo and context window key leakage.
           </p>
-          <div class="mt-5 rounded-xl border border-white/10 bg-black/60 px-3.5 py-2.5 font-mono text-[12.5px] text-white/70">
+          <div class="mt-5 rounded-xl border border-white/10 bg-black/60 px-3.5 py-2.5 font-mono text-xs text-white/70">
             OPENAI_KEY = <span class="bg-white/20 text-white px-1.5 py-0.5 rounded font-bold">sk-proj-••••4a2f</span>
           </div>
         </div>
@@ -87,18 +87,18 @@ const chips = ['VS-PKG-001', 'VS-SEC-017', 'VS-LIC-003', 'VS-DEP-002', 'VS-INJ-0
 
       <!-- Bento Card 4: Diff-Speed Engine -->
       <div data-reveal style="--reveal-delay: 240ms">
-        <div class="card relative h-full overflow-hidden p-6 sm:p-7" data-tilt="4">
+        <div class="card relative h-full flex flex-col overflow-hidden p-6 sm:p-7" data-tilt="4">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 border border-white/15">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" aria-hidden="true">
               <circle cx="12" cy="12" r="9"/>
               <path d="M12 7v5l3 3"/>
             </svg>
           </div>
-          <h3 class="mt-4 text-[19px] font-semibold text-white">Sub-second diff speed</h3>
-          <p class="mt-2 text-[14.5px] leading-relaxed text-white/60">
+          <h3 class="mt-4 text-lg font-semibold text-white">Sub-second diff speed</h3>
+          <p class="mt-2 text-sm leading-relaxed text-white/65 flex-1">
             1.2s median execution. Pure Go compiled binary. Scans PR diffs only, never stalling merge queues.
           </p>
-          <div class="mt-5 font-mono text-[13px] text-white flex items-center gap-2">
+          <div class="mt-5 font-mono text-xs text-white flex items-center gap-2">
             <span class="flex h-2 w-2 rounded-full bg-white"></span>
             <span>14 files · <span data-countup="1.2" data-suffix="s">1.2s</span> · 0 leaks</span>
           </div>
@@ -106,25 +106,44 @@ const chips = ['VS-PKG-001', 'VS-SEC-017', 'VS-LIC-003', 'VS-DEP-002', 'VS-INJ-0
       </div>
 
       <!-- Bento Card 5: Explain-Grade Reports -->
-      <div data-reveal style="--reveal-delay: 300ms" class="md:col-span-2 lg:col-span-2">
-        <div class="card relative h-full overflow-hidden p-6 sm:p-7" data-tilt="4">
+      <div data-reveal style="--reveal-delay: 300ms">
+        <div class="card relative h-full flex flex-col overflow-hidden p-6 sm:p-7" data-tilt="4">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 border border-white/15">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" aria-hidden="true">
               <path d="M5 4h14v16l-3-2-2 2-2-2-2 2-3-2V4Z"/>
               <path d="M9 9h6M9 13h4"/>
             </svg>
           </div>
-          <h3 class="mt-4 text-[19px] font-semibold text-white">Explain-grade PR audit comments</h3>
-          <p class="mt-2 text-[14.5px] leading-relaxed text-white/60">
-            Every finding comes with the AI failure pattern rationale, exact diff line numbers, and a 1-line copy-paste fix that engineers can accept in seconds.
+          <h3 class="mt-4 text-lg font-semibold text-white">Explain-grade PR comments</h3>
+          <p class="mt-2 text-sm leading-relaxed text-white/65 flex-1">
+            Every finding comes with the AI failure pattern rationale, line numbers, and a 1-line copy-paste fix.
           </p>
-          <div class="mt-5 overflow-hidden rounded-xl border border-white/10 bg-black/60 p-4 font-mono text-[12.5px] leading-6 text-white/85" aria-hidden="true">
-            <div class="flex items-center gap-2">
-              <span class="rounded bg-white text-black font-bold px-1 text-[10px]">CRITICAL</span>
-              <span class="font-bold text-white">VS-PKG-001 · hallucinated-package</span>
+          <div class="mt-5 overflow-hidden rounded-xl border border-white/10 bg-black/60 p-3 font-mono text-xs leading-5 text-white/85" aria-hidden="true">
+            <div class="flex items-center gap-1.5">
+              <span class="rounded bg-white text-black font-bold px-1 text-xs">CRITICAL</span>
+              <span class="font-bold text-white">VS-PKG-001</span>
             </div>
-            <div class="mt-1 text-white/60">Why this matters: LLM invented a plausible package name with 0 verified downloads.</div>
-            <div class="mt-1 text-white">→ Fix: replace with native node:util (12-line drop-in)</div>
+            <div class="mt-1 text-white">→ Fix: replace with node:util</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bento Card 6: Audit Trail & Compliance -->
+      <div data-reveal style="--reveal-delay: 360ms">
+        <div class="card relative h-full flex flex-col overflow-hidden p-6 sm:p-7" data-tilt="4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 border border-white/15">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="M9 12l2 2 4-4"/>
+              <circle cx="12" cy="12" r="9"/>
+            </svg>
+          </div>
+          <h3 class="mt-4 text-lg font-semibold text-white">Audit trail & badge verification</h3>
+          <p class="mt-2 text-sm leading-relaxed text-white/65 flex-1">
+            Accept or dismiss findings with documented reasons. Merge commits carry cryptographically clean audit records.
+          </p>
+          <div class="mt-5 flex items-center justify-between rounded-xl border border-white/10 bg-black/60 p-3 font-mono text-xs">
+            <span class="text-white/60">PR status:</span>
+            <span class="rounded bg-white/10 px-2 py-0.5 text-white font-semibold">✓ Passing Check</span>
           </div>
         </div>
       </div>

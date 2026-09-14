@@ -22,15 +22,17 @@ import CodeBlock from '../ui/CodeBlock.astro';
     <div class="mt-12 grid gap-6 md:grid-cols-3">
       {STEPS.map((s, i) => (
         <div data-reveal style={`--reveal-delay: ${i * 80}ms`}>
-          <div class="card relative h-full overflow-hidden p-6 sm:p-7" data-tilt="4">
-            <div class="flex items-center justify-between">
-              <span class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 font-mono text-xs font-bold text-white">
-                0{i + 1}
-              </span>
-              <span class="font-mono text-[10px] text-white/40 uppercase tracking-widest">STEP</span>
+          <div class="card relative h-full flex flex-col overflow-hidden p-6 sm:p-7" data-tilt="4">
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 font-mono text-xs font-bold text-white">
+                  0{i + 1}
+                </span>
+                <span class="font-mono text-xs text-white/40 uppercase tracking-widest">STEP</span>
+              </div>
+              <h3 class="mt-4 text-lg font-semibold text-white leading-tight">{s.h3}</h3>
+              <p class="mt-2 text-sm text-white/65 leading-relaxed">{s.body}</p>
             </div>
-            <h3 class="mt-4 text-[19px] font-semibold text-white leading-tight">{s.h3}</h3>
-            <p class="mt-2 text-[14.5px] text-white/60 leading-relaxed">{s.body}</p>
             <CodeBlock code={s.code} class="mt-5" label={`Copy snippet: ${s.h3}`} />
           </div>
         </div>

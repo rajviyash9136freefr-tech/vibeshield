@@ -24,12 +24,12 @@
       <span class="font-mono text-xs font-medium tracking-wider text-white/90 uppercase">
         VibeShield Pro Inspector
       </span>
-      <span class="hidden rounded-full border border-white/20 bg-white/5 px-2.5 py-0.5 text-[10px] font-mono text-white/60 sm:inline-block">
+      <span class="hidden rounded-full border border-white/20 bg-white/5 px-2.5 py-0.5 text-xs font-mono text-white/60 sm:inline-block">
         CORE-ENGINE v1.0
       </span>
     </div>
 
-    <div class="flex items-center gap-2 font-mono text-[11px] text-white/50">
+    <div class="flex items-center gap-2 font-mono text-xs text-white/50">
       <span class="flex items-center gap-1.5">
         <svg class="h-3 w-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         <span>1.2s MEDIAN</span>
@@ -102,18 +102,18 @@
     <div id="panel-slop" class="inspector-panel space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3 text-xs">
         <div class="flex items-center gap-2">
-          <span class="rounded bg-white text-black px-1.5 py-0.5 text-[10px] font-bold">BLOCKED</span>
+          <span class="rounded bg-white text-black px-1.5 py-0.5 text-xs font-bold">BLOCKED</span>
           <span class="text-white/90">PR #482 · diff hunk: <code class="text-white">package.json + src/util.ts</code></span>
         </div>
         <span class="text-white/50">Rule: VS-PKG-001 (Slopsquatting / Hallucinated Package)</span>
       </div>
 
-      <div class="rounded-xl border border-white/10 bg-[#08080a] p-4 text-[13px] leading-relaxed">
+      <div class="rounded-xl border border-white/10 bg-[#08080a] p-4 text-sm leading-relaxed">
         <div class="text-white/40">// Cursor / Copilot generated diff hunk:</div>
         <div class="text-white/60">  dependencies: &#123;</div>
         <div class="flex items-center justify-between rounded bg-white/10 px-2 py-0.5 text-white">
           <span>+   "fast-parse-utils-v3": "^2.1.4"</span>
-          <span class="rounded border border-white/30 bg-black px-1.5 text-[10px] font-bold uppercase tracking-wider text-white">
+          <span class="rounded-lg border border-white/30 bg-black px-2 py-0.5 text-xs font-semibold text-white">
             🚨 Hallucinated Package
           </span>
         </div>
@@ -122,19 +122,19 @@
 
       <div class="grid gap-3 sm:grid-cols-3">
         <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-          <div class="text-[11px] text-white/50">Domain Age</div>
+          <div class="text-xs text-white/50">Domain Age</div>
           <div class="mt-1 text-sm font-semibold text-white">9 days ago</div>
-          <div class="text-[10px] text-white/40">Registered shortly after LLM output</div>
+          <div class="text-xs text-white/40">Registered shortly after LLM output</div>
         </div>
         <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-          <div class="text-[11px] text-white/50">Post-install Script</div>
+          <div class="text-xs text-white/50">Post-install Script</div>
           <div class="mt-1 text-sm font-semibold text-white">curl | sh binary</div>
-          <div class="text-[10px] text-white/40">Remote payload execution risk</div>
+          <div class="text-xs text-white/40">Remote payload execution risk</div>
         </div>
         <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-          <div class="text-[11px] text-white/50">Automated Fix</div>
+          <div class="text-xs text-white/50">Automated Fix</div>
           <div class="mt-1 text-sm font-semibold text-white">node:util</div>
-          <div class="text-[10px] text-white/40">12 lines, zero dependencies</div>
+          <div class="text-xs text-white/40">12 lines, zero dependencies</div>
         </div>
       </div>
 
@@ -148,17 +148,17 @@
     <div id="panel-secrets" class="inspector-panel hidden space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3 text-xs">
         <div class="flex items-center gap-2">
-          <span class="rounded bg-white text-black px-1.5 py-0.5 text-[10px] font-bold">QUARANTINED</span>
+          <span class="rounded bg-white text-black px-1.5 py-0.5 text-xs font-bold">QUARANTINED</span>
           <span class="text-white/90">PR #482 · file: <code class="text-white">src/lib/agent.ts:41</code></span>
         </div>
         <span class="text-white/50">Rule: VS-SEC-017 (Hardcoded Secret Echo)</span>
       </div>
 
-      <div class="rounded-xl border border-white/10 bg-[#08080a] p-4 text-[13px] leading-relaxed">
+      <div class="rounded-xl border border-white/10 bg-[#08080a] p-4 text-sm leading-relaxed">
         <div class="text-white/40">// AI agent pasted test credentials from context memory:</div>
         <div class="flex items-center justify-between rounded bg-white/10 px-2 py-0.5 text-white">
           <span>+ const OPENAI_API_KEY = "sk-proj-49a8f••••••••••••••4a2f";</span>
-          <span class="rounded border border-white/30 bg-black px-1.5 text-[10px] font-bold uppercase tracking-wider text-white">
+          <span class="rounded-lg border border-white/30 bg-black px-2 py-0.5 text-xs font-semibold text-white">
             High Entropy Token
           </span>
         </div>
@@ -166,14 +166,14 @@
 
       <div class="grid gap-3 sm:grid-cols-2">
         <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-          <div class="text-[11px] text-white/50">Shannon Entropy Score</div>
+          <div class="text-xs text-white/50">Shannon Entropy Score</div>
           <div class="mt-1 text-sm font-semibold text-white">4.88 bits/symbol (High)</div>
-          <div class="text-[10px] text-white/40">Matches OpenAI organization production token</div>
+          <div class="text-xs text-white/40">Matches OpenAI organization production token</div>
         </div>
         <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-          <div class="text-[11px] text-white/50">Action Taken</div>
+          <div class="text-xs text-white/50">Action Taken</div>
           <div class="mt-1 text-sm font-semibold text-white">Quarantine & Alert</div>
-          <div class="text-[10px] text-white/40">Commit blocked prior to remote push</div>
+          <div class="text-xs text-white/40">Commit blocked prior to remote push</div>
         </div>
       </div>
 
@@ -187,7 +187,7 @@
     <div id="panel-attribution" class="inspector-panel hidden space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3 text-xs">
         <div class="flex items-center gap-2">
-          <span class="rounded bg-white text-black px-1.5 py-0.5 text-[10px] font-bold">ANALYZED</span>
+          <span class="rounded bg-white text-black px-1.5 py-0.5 text-xs font-bold">ANALYZED</span>
           <span class="text-white/90">Attribution Breakdown · 14 files, 512 lines changed</span>
         </div>
         <span class="text-white/50">VibeCheck Diff Attribution Engine</span>

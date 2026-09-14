@@ -15,37 +15,37 @@ import HeroDemo from './HeroDemo.astro';
   <div class="wrap relative grid items-center gap-12 lg:grid-cols-[minmax(0,58%)_minmax(0,42%)] lg:gap-10">
     <div data-reveal>
       <!-- Eyebrow Pill -->
-      <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1 backdrop-blur-md">
+      <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 backdrop-blur-md">
         <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
-        <span class="font-mono text-[11px] font-medium tracking-wider text-white/80 uppercase">
+        <span class="font-mono text-xs font-medium tracking-wider text-white/80 uppercase">
           AI Code Security Gate
         </span>
       </div>
 
       <!-- Main Headline -->
-      <h1 class="mt-6 text-[40px] font-bold leading-[1.12] tracking-[-0.04em] text-apple-headline sm:text-[54px] lg:text-[66px] lg:leading-[72px]">
+      <h1 class="mt-6 text-4xl font-bold leading-[1.12] tracking-[-0.035em] text-apple-headline sm:text-5xl lg:text-6xl">
         {HERO.h1}
       </h1>
 
       <!-- Subtitle -->
-      <p class="mt-6 max-w-[560px] text-[18px] leading-[1.65] text-white/65 lg:text-[20px]">
+      <p class="mt-6 max-w-[560px] text-base leading-[1.65] text-white/70 sm:text-lg">
         VibeShield audits every Cursor, Copilot, and Claude Code commit —
         hallucinated packages, leaked secrets, insecure boilerplate — as a
         GitHub Action, pre-commit hook, or one command. Before it hits
-        <code class="font-mono text-[0.92em] text-white bg-white/10 px-1.5 py-0.5 rounded">main</code>.
+        <code class="font-mono text-sm text-white bg-white/10 px-1.5 py-0.5 rounded-lg">main</code>.
       </p>
 
       <!-- CTA Buttons -->
       <div class="mt-9 flex flex-wrap items-center gap-4">
         <a
           href={baseHref('/#install')}
-          class="rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-black transition-all duration-200 hover:bg-neutral-200 hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_30px_rgba(255,255,255,0.25)]"
+          class="btn-primary"
         >
           Install free
         </a>
         <a
           href={baseHref('/#how')}
-          class="rounded-full border border-white/20 bg-white/5 px-7 py-3.5 text-sm font-medium text-white transition-all duration-200 hover:border-white/50 hover:bg-white/10"
+          class="btn-secondary"
         >
           See a live report →
         </a>
