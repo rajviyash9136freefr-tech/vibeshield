@@ -102,23 +102,23 @@ function linkify(text: string): string {
       </label>
     </div>
 
-    <!-- Categorized FAQ Accordion List -->
-    <div class="mt-8 max-w-3xl space-y-3.5">
-      {CATEGORIZED_ITEMS.map((item, i) => (
+    <!-- Categorized FAQ Accordion List with 3D Card Tilt & Animations -->
+    <div class="mt-8 max-w-3xl space-y-4">
+      {CATEGORIZED_ITEMS.map((item) => (
         <details
-          class="faq-item card group rounded-2xl border border-white/10 bg-[#09090c] p-5 sm:p-6 transition-all duration-200 hover:border-white/25"
-          open={i === 0}
+          class="faq-item card group rounded-2xl border border-white/10 bg-[#09090c] p-5 sm:p-6 transition-all duration-300 hover:border-white/30 hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.8),0_0_20px_rgba(255,255,255,0.03)] open:border-white/35 open:bg-gradient-to-b open:from-[#111116] open:to-[#08080a] open:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.9),0_0_30px_rgba(255,255,255,0.04)]"
+          data-tilt="3"
           data-category={item.category}
           data-terms={`${item.q} ${item.a}`.toLowerCase()}
         >
-          <summary class="flex items-start justify-between gap-4">
+          <summary class="flex cursor-pointer items-start justify-between gap-4 select-none outline-none">
             <div>
               <span class="text-xs font-mono text-white/40 mb-1 block uppercase tracking-wider">{item.categoryLabel}</span>
-              <h3 class="text-base sm:text-lg font-semibold text-white leading-snug">{item.q}</h3>
+              <h3 class="text-base sm:text-lg font-semibold text-white leading-snug transition-colors group-hover:text-white group-open:text-white">{item.q}</h3>
             </div>
-            <!-- Prominent Expand/Collapse Icon with Bold Visual Affordance -->
+            <!-- Prominent 3D Expand/Collapse Icon -->
             <span
-              class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white transition-all duration-300 group-open:rotate-45 group-open:bg-white group-open:text-black"
+              class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white transition-all duration-300 group-hover:scale-110 group-hover:border-white group-open:rotate-45 group-open:bg-white group-open:text-black shadow-sm"
               aria-hidden="true"
             >
               <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -144,6 +144,26 @@ function linkify(text: string): string {
     <p id="faq-empty" class="mt-8 hidden text-sm font-mono text-white/50">No question matches your search term.</p>
   </div>
 </section>
+
+<style>
+  .faq-item {
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+  }
+  .faq-item[open] .faq-a {
+    animation: faq-card-3d 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes faq-card-3d {
+    from {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.99);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+</style>
 
 <script>
   const input = document.getElementById('faq-search') as HTMLInputElement | null;
