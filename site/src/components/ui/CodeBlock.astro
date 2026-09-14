@@ -1,7 +1,7 @@
 ---
 /**
  * Apple Pro Code Block with dedicated copy header bar + obsidian glass surface.
- * Eliminates button overlay over content.
+ * Guarantees zero clipping and full detail visibility.
  */
 interface Props {
   code: string;
@@ -12,24 +12,29 @@ interface Props {
 const { code, filename, label, class: cls = '' } = Astro.props;
 ---
 
-<div class={`rounded-2xl border border-white/10 bg-black/70 overflow-hidden flex flex-col ${cls}`}>
-  <!-- Dedicated Header Area for Filename/Label and Copy Button (Eliminates content overlay) -->
-  <div class="flex items-center justify-between border-b border-white/10 bg-white/[0.04] px-4 py-2">
-    <span class="font-mono text-xs text-white/50 truncate max-w-[220px]">
-      {filename ?? (label ? label.replace('Copy snippet: ', '') : 'Snippet')}
-    </span>
+<div class={`rounded-2xl border border-white/15 bg-gradient-to-b from-[#0c0c10] to-[#050508] overflow-hidden flex flex-col shadow-lg transition-all duration-300 hover:border-white/30 ${cls}`}>
+  <!-- Dedicated Header Area for Filename/Label and Copy Button (Zero Overlay) -->
+  <div class="flex items-center justify-between border-b border-white/10 bg-white/[0.04] px-4 py-2.5">
+    <div class="flex items-center gap-2">
+      <span class="flex h-2 w-2 rounded-full bg-white/40"></span>
+      <span class="font-mono text-xs font-medium text-white/60 truncate max-w-[200px]">
+        {filename ?? (label ? label.replace('Copy snippet: ', '') : 'Snippet')}
+      </span>
+    </div>
     <button
       type="button"
-      class="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-mono text-white/80 transition-all duration-200 hover:border-white hover:bg-white hover:text-black active:scale-95 shrink-0"
+      class="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-mono text-white/90 transition-all duration-200 hover:border-white hover:bg-white hover:text-black active:scale-95 shrink-0 shadow-sm"
       aria-label={label ? `Copy ${label}` : 'Copy code to clipboard'}
       data-copy
     >
       Copy
     </button>
   </div>
+
+  <!-- Code Container with full visibility (no fade-x cut-off) -->
   <pre
-    class="scroll-x fade-x p-4 font-mono text-xs leading-[1.7] text-white/85 flex-1 m-0"
+    class="scroll-x p-4 font-mono text-xs leading-relaxed text-white/90 flex-1 m-0 overflow-x-auto selection:bg-white/20"
     tabindex="0"
     data-code
-  ><code set:html={code.replace(/&/g, '&amp;').replace(/</g, '&lt;')} /></pre>
+  ><code class="block font-mono whitespace-pre text-xs text-white/90" set:html={code.replace(/&/g, '&amp;').replace(/</g, '&lt;')} /></pre>
 </div>

@@ -74,27 +74,30 @@ export const STEPS = [
   {
     h3: 'Add the GitHub Action',
     body: 'One file, five lines. No account, no agent, no sidecar.',
-    code: `name: CI
+    code: `name: VibeShield PR Gate
 on: [pull_request]
 jobs:
-  vibeshield:
-    uses: rajviyash9136freefr-tech/vibeshield/action@v1`,
+  audit:
+    uses: vibeshield/action@v1`,
     lang: 'yaml',
   },
   {
     h3: 'Scan AI-generated pull requests',
     body: 'The VibeCheck report lands on the PR: findings, dependency delta, AI-origin tags — in seconds.',
-    code: `🛡 VibeCheck Report — 1 critical · 1 high · 11 clean · 1.2s
-
-🔴 VS-PKG-001 hallucinated-package (AI-origin: confirmed)
-   fast-parse-utils-v3@2.1.4 — added by copilot-swe-agent
-   → Fix: replace with node:util (12-line change)`,
+    code: `🛡️ VibeCheck Report · 1.2s
+🔴 VS-PKG-001 hallucinated-pkg
+   fast-parse-utils-v3@2.1.4
+   → Fix: replace with node:util`,
     lang: 'text',
   },
   {
     h3: 'Merge with an audit trail',
     body: 'Accept or dismiss each finding; dismissals are logged with a reason. Add the badge.',
-    code: `[![VibeShield](https://vibeshield.dev/badge/passing.svg)](https://vibeshield.dev)`,
+    code: `# README.md
+[![VibeShield](passing.svg)](badge)
+
+✓ PR #482 audited & verified
+✓ Zero leaked keys to main`,
     lang: 'markdown',
   },
 ];

@@ -19,21 +19,28 @@ import CodeBlock from '../ui/CodeBlock.astro';
       </p>
     </div>
 
-    <div class="mt-12 grid gap-6 md:grid-cols-3">
+    <div class="mt-12 grid gap-6 md:grid-cols-3 items-stretch">
       {STEPS.map((s, i) => (
-        <div data-reveal style={`--reveal-delay: ${i * 80}ms`}>
-          <div class="card relative h-full flex flex-col justify-between overflow-hidden p-6 sm:p-7" data-tilt="4">
+        <div data-reveal style={`--reveal-delay: ${i * 80}ms`} class="h-full">
+          <div
+            class="card relative h-full flex flex-col justify-between overflow-hidden p-6 sm:p-7 border border-white/15 bg-gradient-to-b from-[#0e0e12] to-[#040406] shadow-xl transition-all duration-300 hover:border-white/35"
+            data-tilt="5"
+          >
             <div>
-              <div class="flex items-center justify-between">
-                <span class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 font-mono text-xs font-bold text-white">
+              <div class="flex items-center justify-between" data-depth style="--z: 24px">
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/25 bg-white/10 font-mono text-xs font-bold text-white shadow-[0_0_12px_rgba(255,255,255,0.2)]">
                   0{i + 1}
                 </span>
-                <span class="font-mono text-xs text-white/40 uppercase tracking-widest">STEP</span>
+                <span class="font-mono text-xs text-white/50 uppercase tracking-widest">STEP</span>
               </div>
-              <h3 class="mt-4 text-lg font-semibold text-white leading-tight">{s.h3}</h3>
-              <p class="mt-2 text-sm text-white/65 leading-relaxed min-h-[44px]">{s.body}</p>
+              <h3 class="mt-4 text-lg font-semibold text-white leading-tight" data-depth style="--z: 16px">
+                {s.h3}
+              </h3>
+              <p class="mt-2 text-sm text-white/70 leading-relaxed min-h-[44px]">
+                {s.body}
+              </p>
             </div>
-            <div class="mt-6">
+            <div class="mt-6" data-depth style="--z: 20px">
               <CodeBlock code={s.code} filename={`step-0${i + 1}`} label={s.h3} />
             </div>
           </div>

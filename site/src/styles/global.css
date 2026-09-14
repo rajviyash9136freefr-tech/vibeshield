@@ -277,11 +277,13 @@
     position: relative;
     transform: perspective(1000px)
       rotateX(calc(var(--tilt-base-x, 0deg) + var(--tilt-x, 0deg)))
-      rotateY(calc(var(--tilt-base-y, 0deg) + var(--tilt-y, 0deg)));
+      rotateY(calc(var(--tilt-base-y, 0deg) + var(--tilt-y, 0deg)))
+      scale3d(var(--tilt-scale, 1), var(--tilt-scale, 1), var(--tilt-scale, 1));
     transform-style: preserve-3d;
     transition:
-      transform 250ms var(--ease-soft),
-      border-color 250ms var(--ease-soft);
+      transform 200ms var(--ease-soft),
+      border-color 200ms var(--ease-soft),
+      box-shadow 200ms var(--ease-soft);
     will-change: transform;
   }
   @media (min-width: 1024px) and (hover: hover) {
@@ -291,7 +293,9 @@
     }
   }
   [data-tilt]:hover {
-    border-color: rgba(255, 255, 255, 0.35);
+    --tilt-scale: 1.015;
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.95), 0 0 30px rgba(255, 255, 255, 0.08);
   }
   [data-tilt]::after {
     content: "";
@@ -303,7 +307,7 @@
     transition: opacity 250ms var(--ease-soft);
     background: radial-gradient(
       420px circle at var(--mx, 50%) var(--my, 50%),
-      rgba(255, 255, 255, 0.12),
+      rgba(255, 255, 255, 0.15),
       transparent 65%
     );
   }
@@ -311,7 +315,19 @@
     opacity: 1;
   }
   [data-depth] {
-    transform: translateZ(var(--z, 28px));
+    transform: translateZ(var(--z, 22px));
+    transform-style: preserve-3d;
+    transition: transform 200ms var(--ease-soft);
+  }
+
+  /* Custom zero-latency mouse-following indicator */
+  #cursor-dot {
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+  #cursor-ring {
+    pointer-events: none;
+    will-change: transform, opacity, border-color, background-color, box-shadow;
   }
 
   /* Scroll progress hairline under the nav */
@@ -467,22 +483,9 @@
   html {
     scroll-behavior: auto;
   }
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
   [data-reveal] {
     opacity: 1;
     transform: none;
-  }
-  [data-tilt] {
-    transform: none;
-  }
-  [data-tilt]::after {
-    display: none;
   }
   .parallax-slow,
   .parallax-fast,
@@ -493,9 +496,5 @@
     animation: none;
     opacity: 1;
     transform: none;
-  }
-  .scroll-progress,
-  .ambient-flashlight {
-    display: none;
   }
 }

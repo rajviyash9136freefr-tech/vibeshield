@@ -15,7 +15,7 @@ import { PROBLEM } from '../../data/site';
       </h2>
     </div>
 
-    <div class="mt-14 grid gap-12 lg:grid-cols-2 lg:gap-16">
+    <div class="mt-14 grid gap-12 lg:grid-cols-2 lg:gap-16 items-start">
       <div class="space-y-6 text-base leading-[1.75] text-white/70 relative" data-reveal>
         <!-- Cinematic scroll tell: laser hairline draws itself as section scrolls -->
         <div class="draw-line absolute -left-6 top-1 hidden h-[calc(100%-8px)] w-px bg-white/20 lg:block" aria-hidden="true"></div>
@@ -23,30 +23,52 @@ import { PROBLEM } from '../../data/site';
       </div>
 
       <div class="scroll-in" data-reveal style="--reveal-delay: 100ms">
-        <div class="scroll-x fade-x rounded-2xl border border-white/15 bg-gradient-to-b from-[#0e0e12] to-[#040406] shadow-2xl">
-          <table class="w-full min-w-[560px] border-collapse text-sm">
-            <caption class="px-5 pt-4 text-left font-mono text-xs text-white/40">
-              {PROBLEM.table.caption}
-            </caption>
-            <thead>
-              <tr class="border-b border-white/10 text-left font-mono text-xs text-white/50">
-                {PROBLEM.table.cols.map((c) => (
-                  <th scope="col" class="px-5 py-3.5 font-semibold text-white/90">{c}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {PROBLEM.table.rows.map(([mode, looks, catch_]) => (
-                <tr class="border-b border-white/5 last:border-0 align-top transition-colors hover:bg-white/[0.02]">
-                  <th scope="row" class="px-5 py-3.5 font-medium text-white text-left">{mode}</th>
-                  <td class="px-5 py-3.5 text-white/65 font-mono text-xs">{looks}</td>
-                  <td class="px-5 py-3.5 text-white/40 text-xs">{catch_}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <!-- 3D Interactive Card with Zero-Clipping and Perfect Detail Visibility -->
+        <div
+          class="card relative rounded-2xl border border-white/15 bg-gradient-to-b from-[#0f0f13] via-[#09090c] to-[#040406] p-5 sm:p-6 shadow-2xl transition-all duration-300 hover:border-white/30"
+          data-tilt="4"
+        >
+          <!-- Header Bar with Specular Badge -->
+          <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4" data-depth>
+            <div class="flex items-center gap-2.5">
+              <span class="flex h-2 w-2 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"></span>
+              <span class="font-mono text-xs font-semibold uppercase tracking-wider text-white">
+                {PROBLEM.table.caption}
+              </span>
+            </div>
+            <span class="rounded-full border border-white/20 bg-white/5 px-2.5 py-0.5 font-mono text-[11px] text-white/70">
+              7 Vectors
+            </span>
+          </div>
+
+          <!-- Failure Mode Rows: 100% visible on every screen size -->
+          <div class="space-y-2.5" role="list">
+            {PROBLEM.table.rows.map(([mode, looks, catch_], idx) => (
+              <div
+                class="group rounded-xl border border-white/10 bg-white/[0.02] p-3 transition-all duration-200 hover:border-white/25 hover:bg-white/[0.05]"
+                role="listitem"
+              >
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-3">
+                  <div class="flex items-center gap-2">
+                    <span class="font-mono text-xs font-bold text-white/40">0{idx + 1}</span>
+                    <span class="font-semibold text-white text-sm tracking-tight">{mode}</span>
+                  </div>
+                  <span class="inline-flex items-center rounded border border-white/20 bg-black/80 px-2 py-0.5 font-mono text-[11px] text-white/90 shrink-0 self-start sm:self-auto">
+                    Legacy: <span class="text-white ml-1 font-semibold">{catch_}</span>
+                  </span>
+                </div>
+                <div class="mt-2 pl-5 font-mono text-xs text-white/70 flex items-start gap-1.5">
+                  <span class="text-white/40 shrink-0" aria-hidden="true">↳</span>
+                  <code class="text-white/90 bg-white/[0.06] px-1.5 py-0.5 rounded text-[11.5px] break-words">
+                    {looks}
+                  </code>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
+
