@@ -320,26 +320,47 @@
     transition: transform 200ms var(--ease-soft);
   }
 
-  /* Custom single circle cursor: center black, borders white feathered */
-  #cursor-circle {
+  /* Bespoke Aero Reticle Cursor — Laser Precision Core + Luminous Magnetic Aura */
+  #cursor-dot {
     pointer-events: none;
     will-change: transform, opacity;
-    background-color: #000000;
-    border: 1.5px solid rgba(255, 255, 255, 0.95);
-    box-shadow:
-      0 0 6px 1.5px rgba(255, 255, 255, 0.7),
-      0 0 14px 3px rgba(255, 255, 255, 0.35),
-      inset 0 0 4px rgba(255, 255, 255, 0.2);
-    transition:
-      box-shadow 150ms ease,
-      border-color 150ms ease;
+    background-color: #ffffff;
+    box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.95);
+    transition: transform 120ms var(--ease-soft), opacity 150ms ease;
   }
-  #cursor-circle.cursor-hover {
+  #cursor-aura {
+    pointer-events: none;
+    will-change: transform, opacity;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+      0 0 10px 1px rgba(255, 255, 255, 0.2),
+      inset 0 0 6px rgba(255, 255, 255, 0.1);
+    transition:
+      border-color 180ms var(--ease-soft),
+      box-shadow 180ms var(--ease-soft),
+      background-color 180ms var(--ease-soft),
+      opacity 150ms ease;
+  }
+  #cursor-aura.cursor-hover {
+    border-color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 0 18px 2px rgba(255, 255, 255, 0.45),
+      0 0 30px 4px rgba(255, 255, 255, 0.15),
+      inset 0 0 8px rgba(255, 255, 255, 0.2);
+  }
+  #cursor-aura.cursor-active {
     border-color: #ffffff;
     box-shadow:
-      0 0 10px 2.5px rgba(255, 255, 255, 0.85),
-      0 0 20px 5px rgba(255, 255, 255, 0.45),
-      inset 0 0 5px rgba(255, 255, 255, 0.3);
+      0 0 24px 4px rgba(255, 255, 255, 0.7),
+      inset 0 0 10px rgba(255, 255, 255, 0.35);
+  }
+  #cursor-aura.cursor-text {
+    opacity: 0.25 !important;
+    border-color: rgba(255, 255, 255, 0.25);
   }
 
   /* Scroll progress hairline under the nav */
