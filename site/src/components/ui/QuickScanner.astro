@@ -1,0 +1,189 @@
+---
+/**
+ * Instant AI Code Safety Checker — What VibeShield Does
+ * Solves: "add a useful for website users come and easily identify website What do for"
+ */
+---
+
+<section class="border-t border-white/10 relative py-16 lg:py-20 bg-gradient-to-b from-black via-[#08080a] to-black" data-cinematic>
+  <div class="wrap">
+    <!-- Header -->
+    <div class="text-center max-w-2xl mx-auto" data-reveal>
+      <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1 backdrop-blur-md mb-3">
+        <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
+        <span class="font-mono text-[11px] font-medium tracking-wider text-white/70 uppercase">
+          Interactive Audit Simulator
+        </span>
+      </div>
+      <h2 class="text-[28px] sm:text-[38px] font-bold tracking-[-0.035em] text-apple-headline">
+        What does VibeShield do?
+      </h2>
+      <p class="mt-3 text-sm sm:text-base text-white/60">
+        AI models hallucinate non-existent packages and paste keys. VibeShield acts as a security gate on your PRs. Test how it works below:
+      </p>
+    </div>
+
+    <!-- Interactive Simulator Card -->
+    <div class="mt-10 max-w-3xl mx-auto rounded-3xl border border-white/15 bg-[#0a0a0d] p-6 sm:p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.9)]" data-reveal>
+      <!-- Preset Buttons -->
+      <div class="text-xs font-mono text-white/50 mb-3 uppercase tracking-wider">
+        Select a real AI code scenario to test:
+      </div>
+      <div class="flex flex-wrap gap-2.5" role="tablist">
+        <button
+          type="button"
+          data-preset="slop"
+          class="preset-btn flex items-center gap-2 rounded-full border border-white bg-white text-black px-4 py-2 text-xs font-semibold shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all"
+        >
+          <span>🚨 Hallucinated Package</span>
+        </button>
+        <button
+          type="button"
+          data-preset="secret"
+          class="preset-btn flex items-center gap-2 rounded-full border border-white/20 bg-white/5 text-white/70 px-4 py-2 text-xs font-medium hover:text-white hover:border-white/40 transition-all"
+        >
+          <span>🔑 Leaked API Key</span>
+        </button>
+        <button
+          type="button"
+          data-preset="safe"
+          class="preset-btn flex items-center gap-2 rounded-full border border-white/20 bg-white/5 text-white/70 px-4 py-2 text-xs font-medium hover:text-white hover:border-white/40 transition-all"
+        >
+          <span>✓ Legitimate Package</span>
+        </button>
+      </div>
+
+      <!-- Live Inspection Box -->
+      <div id="inspector-output" class="mt-6 rounded-2xl border border-white/10 bg-black/80 p-5 font-mono text-xs sm:text-sm">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+          <div class="flex items-center gap-2">
+            <span id="badge-status" class="rounded bg-white text-black px-2 py-0.5 text-[11px] font-bold">
+              CRITICAL BLOCK
+            </span>
+            <span id="badge-source" class="text-white/80">AI PR Diff Check</span>
+          </div>
+          <span id="badge-time" class="text-white/40 text-xs">1.2s local audit</span>
+        </div>
+
+        <div class="mt-4 space-y-3">
+          <div>
+            <div class="text-white/40 text-[11px] uppercase tracking-wider">Scanned Code Line</div>
+            <div id="code-snippet" class="mt-1 rounded-lg bg-white/10 p-2.5 text-white font-semibold">
+              + import &#123; parse &#125; from "fast-parse-utils-v3";
+            </div>
+          </div>
+
+          <div>
+            <div class="text-white/40 text-[11px] uppercase tracking-wider">AI Threat Analysis</div>
+            <p id="analysis-text" class="mt-1 text-white/75 leading-relaxed">
+              Cursor agent hallucinated a plausible package name. Threat actors register these hallucinated names within hours on npm to execute remote binaries during <code class="text-white">npm install</code>.
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-white/15 bg-white/5 p-3 flex items-start gap-2.5">
+            <span class="text-white font-bold">→</span>
+            <div>
+              <div class="text-[11px] text-white/50 uppercase tracking-wider">VibeShield Recommended Fix</div>
+              <div id="fix-text" class="text-white font-medium mt-0.5">
+                Replace with native <code class="text-white underline">node:util</code> (clean, 12 lines, zero dependencies).
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Workflow Steps -->
+      <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-white/10 pt-6">
+        <div class="flex items-start gap-3">
+          <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/10 font-mono text-xs font-bold text-white">1</div>
+          <div>
+            <div class="text-xs font-semibold text-white">Write with AI</div>
+            <p class="text-[11px] text-white/50 mt-0.5">Use Cursor, Copilot, or Claude Code as usual.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/10 font-mono text-xs font-bold text-white">2</div>
+          <div>
+            <div class="text-xs font-semibold text-white">VibeShield Audits PR</div>
+            <p class="text-[11px] text-white/50 mt-0.5">Scans PR diff in 1.2s offline before merge.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/10 font-mono text-xs font-bold text-white">3</div>
+          <div>
+            <div class="text-xs font-semibold text-white">Merge Safely</div>
+            <p class="text-[11px] text-white/50 mt-0.5">Zero hallucinations or secrets ever reach main.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const presets: Record<string, {
+    status: string;
+    statusClass: string;
+    source: string;
+    code: string;
+    analysis: string;
+    fix: string;
+  }> = {
+    slop: {
+      status: 'CRITICAL BLOCK',
+      statusClass: 'bg-white text-black font-bold',
+      source: 'PR #482 · package.json',
+      code: '+ import { parse } from "fast-parse-utils-v3";',
+      analysis: 'Cursor agent hallucinated a plausible package name. Threat actors register these hallucinated names on npm within hours to execute remote payloads on install.',
+      fix: 'Replace with native node:util (clean, 12 lines, zero dependencies).',
+    },
+    secret: {
+      status: 'QUARANTINE',
+      statusClass: 'border border-white bg-white/20 text-white font-bold',
+      source: 'PR #482 · src/agent.ts:41',
+      code: '+ const OPENAI_API_KEY = "sk-proj-49a8f••••••••••••••4a2f";',
+      analysis: 'Copilot pasted test credentials echoed out of local context memory. Entropy detection identified production OpenAI token structure.',
+      fix: 'Move to process.env.OPENAI_API_KEY and rotate the leaked key immediately.',
+    },
+    safe: {
+      status: 'CLEAN CHECK',
+      statusClass: 'bg-white text-black font-bold',
+      source: 'PR #482 · package.json',
+      code: '+ import { z } from "zod";',
+      analysis: 'Legitimate library: 10+ years registered, 30M+ weekly downloads, clean maintainer history, no install hooks.',
+      fix: 'No action needed. Dependency is verified and safe to merge.',
+    },
+  };
+
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-preset]');
+  const badgeStatus = document.getElementById('badge-status');
+  const badgeSource = document.getElementById('badge-source');
+  const codeSnippet = document.getElementById('code-snippet');
+  const analysisText = document.getElementById('analysis-text');
+  const fixText = document.getElementById('fix-text');
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.preset;
+      if (!key || !presets[key]) return;
+      const data = presets[key];
+
+      buttons.forEach((b) => {
+        if (b === btn) {
+          b.className = 'preset-btn flex items-center gap-2 rounded-full border border-white bg-white text-black px-4 py-2 text-xs font-semibold shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all';
+        } else {
+          b.className = 'preset-btn flex items-center gap-2 rounded-full border border-white/20 bg-white/5 text-white/70 px-4 py-2 text-xs font-medium hover:text-white hover:border-white/40 transition-all';
+        }
+      });
+
+      if (badgeStatus) {
+        badgeStatus.textContent = data.status;
+        badgeStatus.className = `rounded px-2 py-0.5 text-[11px] font-bold ${data.statusClass}`;
+      }
+      if (badgeSource) badgeSource.textContent = data.source;
+      if (codeSnippet) codeSnippet.textContent = data.code;
+      if (analysisText) analysisText.textContent = data.analysis;
+      if (fixText) fixText.textContent = data.fix;
+    });
+  });
+</script>

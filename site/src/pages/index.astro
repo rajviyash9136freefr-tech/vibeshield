@@ -1,11 +1,10 @@
 ---
-// Home = UIUX §3 sections 1:1. All three JSON-LD graphs ship here (§9.3);
-// FAQPage text is serialized from the SAME FAQ data the <details> render
-// uses, so visible text and schema can never drift (§9.4).
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/ui/Nav.astro';
 import Footer from '../components/ui/Footer.astro';
 import Hero from '../components/sections/Hero.astro';
+import QuickScanner from '../components/ui/QuickScanner.astro';
+import CinematicCrawl from '../components/ui/CinematicCrawl.astro';
 import SocialProof from '../components/sections/SocialProof.astro';
 import Problem from '../components/sections/Problem.astro';
 import Steps from '../components/sections/Steps.astro';
@@ -16,6 +15,30 @@ import Faq from '../components/sections/Faq.astro';
 import FinalCta from '../components/sections/FinalCta.astro';
 import { SITE, FAQ, FAQ_EXTRA } from '../data/site';
 
+const upperCrawl = [
+  'CURSOR INTEGRATION',
+  'COPILOT PR GATE',
+  'CLAUDE CODE AUDIT',
+  'WINDSURF COMPATIBLE',
+  'AIDER SCANNER',
+  '1.2s MEDIAN SCAN',
+  'ZERO DATA EXFILTRATION',
+  '100% LOCAL & OFFLINE',
+  '120+ AI-SPECIFIC RULES',
+  'FREE & MIT LICENSED',
+];
+
+const lowerCrawl = [
+  'ZERO HALLUCINATIONS MERGED',
+  'ZERO SECRETS LEAKED',
+  'DIFF-SPEED ANALYSIS',
+  'ATTRIBUTION RADAR',
+  'SLOPSQUATTING SHIELD',
+  'PRE-COMMIT HOOK',
+  'GITHUB ACTION v1.0',
+  'FREE FOREVER',
+];
+
 const schema = [
   {
     '@context': 'https://schema.org',
@@ -24,7 +47,6 @@ const schema = [
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'Cross-platform',
     url: SITE.url,
-    // Fully free & open source (MIT): no offers to price, schema declares it.
     license: 'https://opensource.org/licenses/MIT',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
   },
@@ -64,7 +86,15 @@ const schema = [
 
 <BaseLayout schema={schema} canonical="/">
   <Nav slot="nav" />
+  
   <Hero />
+
+  <!-- Upper Cinematic Crawl -->
+  <CinematicCrawl items={upperCrawl} direction="left" />
+
+  <!-- Instant Value: What VibeShield does in 3 seconds -->
+  <QuickScanner />
+
   <SocialProof />
   <Problem />
   <Steps />
@@ -72,6 +102,10 @@ const schema = [
   <Install />
   <Comparison />
   <Faq />
+
+  <!-- Lower Cinematic Crawl -->
+  <CinematicCrawl items={lowerCrawl} direction="right" />
+
   <FinalCta />
   <Footer slot="footer" />
 </BaseLayout>

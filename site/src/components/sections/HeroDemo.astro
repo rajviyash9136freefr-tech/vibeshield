@@ -47,7 +47,7 @@ const initialHtml = DEMO_LINES.map(
 
   <pre
     id="demo-body"
-    class="scroll-x fade-x min-h-[340px] overflow-x-auto p-5 font-mono text-[13px] leading-[1.75] text-white/85 sm:min-h-[360px]"
+    class="min-h-[330px] overflow-hidden p-5 font-mono text-[12.5px] sm:text-[13px] leading-[1.7] text-white/85 whitespace-pre-wrap break-words sm:min-h-[340px]"
     data-lines={JSON.stringify(DEMO_LINES.map((l) => ({ t: l.text, c: l.cls })))}
   ><code set:html={initialHtml} /></pre>
 </div>

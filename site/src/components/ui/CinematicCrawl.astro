@@ -1,0 +1,57 @@
+---
+interface Props {
+  items: string[];
+  direction?: 'left' | 'right';
+  speed?: 'normal' | 'fast';
+  class?: string;
+}
+
+const {
+  items,
+  direction = 'left',
+  speed = 'normal',
+  class: cls = '',
+} = Astro.props;
+
+// Duplicate array for seamless infinite loop
+const repeated = [...items, ...items, ...items, ...items];
+---
+
+<div
+  class={`relative overflow-hidden border-y border-white/10 bg-[#050507] py-3 font-mono text-[11px] tracking-widest uppercase text-white/55 select-none ${cls}`}
+  data-cinematic-crawl
+  data-direction={direction}
+>
+  <!-- Edge gradient masks for seamless fade -->
+  <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-black to-transparent" aria-hidden="true"></div>
+  <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-black to-transparent" aria-hidden="true"></div>
+
+  <div class={`crawl-track flex w-max items-center gap-8 ${direction === 'left' ? 'animate-crawl-left' : 'animate-crawl-right'}`}>
+    {repeated.map((item, i) => (
+      <div class="flex items-center gap-6 whitespace-nowrap">
+        <span class="hover:text-white transition-colors duration-200">{item}</span>
+        <span class="text-white/20">◆</span>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  @keyframes crawlLeft {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
+  }
+  @keyframes crawlRight {
+    0% { transform: translate3d(-50%, 0, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+  }
+  .animate-crawl-left {
+    animation: crawlLeft 35s linear infinite;
+  }
+  .animate-crawl-right {
+    animation: crawlRight 35s linear infinite;
+  }
+  [data-cinematic-crawl]:hover .crawl-track {
+    animation-play-state: paused;
+  }
+</style>
