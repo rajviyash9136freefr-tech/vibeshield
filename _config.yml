@@ -1,0 +1,15 @@
+# GitHub Pages / Jekyll configuration
+# Exclude source code directories from Jekyll processing
+exclude:
+  - site
+  - scanner
+  - contracts
+  - api
+  - rules
+  - fixtures
+  - skill
+  - scripts
+  - deploy
+  - astro-monorepo
+  - node_modules
+  - vendor
