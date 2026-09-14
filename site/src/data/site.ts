@@ -6,24 +6,24 @@ export const SITE = {
   name: 'VibeShield',
   // GitHub Pages origin — see site/astro.config.mjs (base = /vibeshield/).
   url: 'https://rajviyash9136freefr-tech.github.io',
-  title: 'VibeShield — Security Scanner for AI-Generated Code | GitHub Action',
+  title: 'VibeShield — Bug Hunter & Tester for AI Vibe Coding | Cursor, Claude, Copilot',
   description:
-    'VibeShield audits Cursor, Copilot & Claude Code output for hallucinated packages, leaked secrets and insecure code. Free GitHub Action + pre-commit hook. 3-minute setup.',
+    'Test your vibe-coded apps, hunt down hallucinated packages, logic bugs, and secret leaks, and fix them in seconds. Works inside Cursor, Claude Code, GitHub Copilot, and Windsurf.',
   repo: 'https://github.com/rajviyash9136freefr-tech/vibeshield',
 };
 
 export const NAV = [
-  { label: 'Product', href: '/#product' },
+  { label: 'Agent Prompts', href: '/#agents' },
+  { label: 'How It Works', href: '/#scanner' },
+  { label: 'Install Guide', href: '/#install' },
   { label: 'Docs', href: '/docs' },
-  { label: 'Install', href: '/install' },
-  { label: 'Blog', href: '/blog' },
   { label: 'FAQ', href: '/#faq' },
 ];
 
 export const HERO = {
-  h1: 'Security for the code your AI writes',
-  sub: 'VibeShield audits every Cursor, Copilot, and Claude Code commit — hallucinated packages, leaked secrets, insecure boilerplate — as a GitHub Action, pre-commit hook, or one command. Before it hits main.',
-  trust: ['MIT licensed', '3-min setup', 'Runs locally', 'No code leaves your machine'],
+  h1: 'The Bug Hunter & Tester for AI Vibe Coding',
+  sub: 'Test your vibe-coded apps, hunt down hallucinated packages, logic bugs, and secret leaks, and fix them in seconds. Works directly inside Cursor, Claude Code, GitHub Copilot, and Windsurf.',
+  trust: ['100% Local & Offline', 'MIT Free Forever', 'Zero Code Sent Outside', 'Instant 1-Click Fixes'],
 };
 
 // Hero terminal demo (UIUX §3.2) — the final frame; JS types it in.
@@ -139,13 +139,44 @@ export const FEATURES = [
 
 export const INSTALL_TABS = [
   {
+    id: 'script',
+    label: '1-Line Install Script',
+    code: `# macOS & Linux (Bash):
+curl -fsSL https://raw.githubusercontent.com/rajviyash9136freefr-tech/vibeshield/main/scripts/install.sh | bash
+
+# Windows (PowerShell):
+irm https://raw.githubusercontent.com/rajviyash9136freefr-tech/vibeshield/main/scripts/install.ps1 | iex`,
+    lang: 'bash',
+  },
+  {
+    id: 'agent',
+    label: 'AI Agent Skill',
+    code: `# Claude Code:
+claude plugin marketplace add rajviyash9136freefr-tech/vibeshield
+claude plugin install vibeshield@vibeshield
+
+# Cursor / VS Code / Windsurf:
+# Automatic via install script, or copy .cursorrules from the Agent Prompts section above!`,
+    lang: 'bash',
+  },
+  {
+    id: 'npx',
+    label: 'Zero-Install (npx / npm)',
+    code: `# Instant scan without installation:
+npx vibeshield scan .
+
+# Or install globally via npm:
+npm install -g vibeshield`,
+    lang: 'bash',
+  },
+  {
     id: 'action',
-    label: 'GitHub Action',
+    label: 'GitHub Action (CI/CD)',
     code: `# .github/workflows/vibeshield.yml
-name: VibeShield
+name: VibeShield PR Gate
 on: [pull_request]
 jobs:
-  vibeshield:
+  audit:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -155,130 +186,116 @@ jobs:
       - uses: rajviyash9136freefr-tech/vibeshield/action@v1`,
     lang: 'yaml',
   },
+];
+
+export interface AgentPrompt {
+  id: string;
+  name: string;
+  badge: string;
+  filename: string;
+  description: string;
+  prompt: string;
+  cliCommand?: string;
+}
+
+export const AGENT_PROMPTS: AgentPrompt[] = [
   {
-    id: 'precommit',
-    label: 'pre-commit',
-    code: `# .pre-commit-config.yaml
-repos:
-  - repo: https://github.com/rajviyash9136freefr-tech/vibeshield
-    rev: v1.0.0
-    hooks:
-      - id: vibeshield`,
-    lang: 'yaml',
+    id: 'cursor',
+    name: 'Cursor',
+    badge: 'IDE Rules & Agent',
+    filename: '.cursorrules',
+    description: 'Paste into your project root as `.cursorrules` to instruct Cursor to hunt and fix AI bugs automatically before saving.',
+    prompt: `# VibeShield Bug Hunter Rule for Cursor
+You are an adversarial code auditor and bug hunter for vibe-coded applications.
+Before finalizing, applying, or committing any code in this project:
+1. HALLUCINATION CHECK: Audit every imported package, module, or API. If a library is not well-established, flag it and replace with standard library or verified packages.
+2. SECRET SCAN: Ensure NO OpenAI, Anthropic, Stripe, AWS, or database credentials are leaked in client-side code or git diffs.
+3. LOGIC & COMPONENT TESTING: Inspect state updates, race conditions, async error handling, and broken edge cases in UI components.
+4. INSECURE DEFAULTS: Never scaffold wildcard CORS (*), debug=True, weak session secrets, or JWT algorithms:["none"].
+5. ATOMIC FIX: For every bug found, provide an immediate one-line diff replacement.`,
   },
   {
-    id: 'cli',
-    label: 'CLI',
-    code: `# scan the current project
-npx vibeshield scan .
+    id: 'claude',
+    name: 'Claude Code',
+    badge: 'Terminal Skill / Plugin',
+    filename: '~/.claude/skills or /plugin',
+    description: 'Install the official VibeShield bug-hunting skill or run direct audit prompts in your Claude Code sessions.',
+    cliCommand: '/plugin marketplace add rajviyash9136freefr-tech/vibeshield && /plugin install vibeshield@vibeshield',
+    prompt: `/vibeshield:vibeshield-audit --quick
 
-# or set up hook + workflow + config in one command
-npx vibeshield init`,
-    lang: 'bash',
+Please audit this vibe-coded project:
+1. Hunt for hallucinated npm/pip packages and unverified imports.
+2. Check for leaked API tokens, hardcoded secrets, and insecure endpoints.
+3. Test component logic, broken state flows, and unhandled exceptions.
+4. Output a verified VibeCheck report and apply 1-line fixes.`,
+  },
+  {
+    id: 'windsurf',
+    name: 'Windsurf (Cascade)',
+    badge: 'Cascade Rules',
+    filename: '.windsurfrules',
+    description: 'Add to `.windsurfrules` in your workspace so Cascade constantly tests output for vibe coding bugs.',
+    prompt: `# VibeShield Security & Bug Hunter for Windsurf Cascade
+When generating or refactoring code in this repository:
+1. Verify all dependencies against hallucinated package names (slopsquatting).
+2. Scan all generated code for credentials, API tokens, and private environment variables.
+3. Test edge-case logic, error handling, and component state transitions.
+4. Reject insecure boilerplate: wildcard CORS, disabled auth, and unsafe evals.
+5. Provide safe, production-grade replacements for any identified vulnerability.`,
+  },
+  {
+    id: 'copilot',
+    name: 'GitHub Copilot',
+    badge: 'Copilot Instructions',
+    filename: '.github/copilot-instructions.md',
+    description: 'Commit to `.github/copilot-instructions.md` to guide Copilot Chat & Agent PR reviews.',
+    prompt: `# VibeShield Bug Hunter Instructions for GitHub Copilot
+Act as VibeShield Bug Hunter and adversarial code reviewer for AI-generated diffs:
+1. Identify hallucinated packages and unpinned supply chain risks in package manifests.
+2. Quarantine any hardcoded secrets, API tokens, or credentials echoed from context.
+3. Scrutinize component state, edge cases, and asynchronous error boundaries.
+4. Flag insecure defaults (CORS *, debug flags, permissive JWTs) and suggest clean diff fixes.`,
+  },
+  {
+    id: 'terminal',
+    name: 'Aider / Terminal CLI',
+    badge: 'CLI Command',
+    filename: 'Terminal / Bash',
+    description: 'Run directly in your terminal or pass to Aider / custom agent scripts.',
+    cliCommand: 'npx vibeshield scan --diff main',
+    prompt: `npx vibeshield scan --diff main
+
+# Or run full repository bug-hunt audit:
+npx vibeshield scan .`,
   },
 ];
 
-export const COMPARISON = {
-  h2: 'VibeShield vs. your current stack',
-  cols: ['Dependabot', 'Snyk', 'Semgrep', 'Socket', 'Gitleaks', 'VibeShield'],
-  rows: [
-    { label: 'AI-specific detections', vals: ['❌', '❌', '❌', '⚠️', '⚠️', '✅'] },
-    { label: 'Hallucinated-package scoring', vals: ['❌', '❌', '❌', '⚠️', '❌', '✅'] },
-    { label: 'Pre-commit hook', vals: ['❌', '❌', '✅', '✅', '✅', '✅'] },
-    { label: 'Diff-speed PR scan', vals: ['⚠️', '⚠️', '⚠️', '✅', '✅', '✅'] },
-    { label: 'Free tier', vals: ['✅', '❌', '✅', '❌', '✅', '✅'] },
-  ] as { label: string; vals: string[] }[],
-};
-
-// PRD §7.2 — verbatim. Rendered as <details> AND serialized into FAQPage JSON-LD;
-// the two must match character-for-character.
+// Exactly 5 Curated FAQs as explicitly requested:
 export const FAQ: { q: string; a: string; link?: [string, string] }[] = [
   {
-    q: 'What is VibeShield?',
-    a: 'VibeShield is a security and dependency auditor built specifically for AI-generated code. It runs as a GitHub Action, a pre-commit hook, and a CLI, catching hallucinated packages, pasted secrets, insecure AI boilerplate, and risky new dependencies the moment your AI agent writes them — before they reach main.',
-    link: ['Get started with VibeShield', '/#install'],
+    q: 'What is VibeShield and how does it test vibe-coded apps?',
+    a: 'VibeShield is an adversarial bug hunter and security tester built specifically for AI vibe coding. When AI agents (Cursor, Claude Code, GitHub Copilot, Windsurf) generate hundreds of lines of code, they introduce hallucinated packages, leaked keys, and broken component logic. VibeShield inspects code the moment it is written, hunts these specific bugs, and gives you instant 1-click fixes before you commit or merge.',
+    link: ['Explore Agent Prompts', '/#agents'],
   },
   {
-    q: "Why isn't Dependabot or Snyk enough for AI-generated code?",
-    a: 'Because they look for known vulnerabilities, and most AI-code risk isn\x27t "known" yet. When an LLM invents a package name and an attacker registers it the same week, there is no CVE to match — the package *is* brand-new. VibeShield scores every newly-added dependency on supply-chain signals (age, maintainers, install scripts, name-hallucination likelihood) instead of waiting for someone to report abuse. It complements Dependabot; it doesn\x27t replace it.',
-    link: ['Compare AI failure modes', '/#product'],
+    q: 'How do I install VibeShield and use it with my AI coding agent?',
+    a: 'You can use VibeShield in three ways: (1) Copy our dedicated agent prompt into your `.cursorrules`, `.windsurfrules`, or Claude Code skill; (2) Run our 1-command installer on macOS/Linux (`curl -fsSL ... | bash`) or Windows (`irm ... | iex`); or (3) Add our automated GitHub Action to audit every Pull Request in under 1.2 seconds.',
+    link: ['View Installation Options', '/#install'],
   },
   {
-    q: 'What is slopsquatting (package hallucination)?',
-    a: "LLMs confidently cite packages that don't exist. Attackers harvest those invented names, publish malicious versions to npm/PyPI/crates, and wait for a developer's AI agent to `npm install` them — a documented attack class (see the Boston University and Veracode studies on package hallucination). VibeShield's model flags names that look generated and packages that appeared suspiciously recently, and blocks the install path at PR time.",
-    link: ['Read the slopsquatting guide', '/blog/slopsquatting-explained'],
+    q: 'What specific bugs and vulnerabilities does VibeShield hunt down?',
+    a: 'VibeShield targets failure modes unique to LLM-generated code: hallucinated npm/pip packages (slopsquatting attacks where attackers pre-register names invented by LLMs), leaked API keys and passwords echoed in boilerplate, insecure wildcard CORS (*), broken JWT auth, unhandled UI state bugs, and prompt-injection backdoors.',
+    link: ['Test with Live Simulator', '/#scanner'],
   },
   {
-    q: 'Does VibeShield work with Cursor, Copilot, and Claude Code?',
-    a: 'Yes. It doesn\x27t plug into the agents themselves — it gates what they output. Anything written by Cursor, GitHub Copilot, Copilot Workspace, Claude Code, Windsurf, Aider, Devin, or an agent-authored PR (`copilot-swe-agent`, custom bots) is scanned at commit and at PR. Findings are attributed to likely-AI hunks using bot-author metadata and writing-pattern heuristics.',
-    link: ['Explore the bug-hunting skill', '/docs/skill'],
+    q: 'Does my source code or prompt data leave my machine?',
+    a: 'No. Never. VibeShield is designed for zero data exfiltration. The CLI, agent skills, and pre-commit hooks execute 100% locally and offline on your machine using static analysis. Your code, API keys, and prompts are never sent to external servers and are never used for model training.',
+    link: ['Read Security Model', '/security'],
   },
   {
-    q: 'Will it slow down my CI or flood me with false positives?',
-    a: 'Diff-only scanning takes seconds, not minutes — most PRs finish under 10s in the Action and under 1.5s in the pre-commit hook. The ruleset is deliberately narrow (AI failure modes, not general linting): ~120 rules versus thousands in general SAST tools. Default mode is warn; you choose when it can block a merge.',
-    link: ['Review the precision bar', '/security'],
-  },
-  {
-    q: 'Does my source code leave my machine?',
-    a: 'No. The CLI and pre-commit hook run fully local analysis. In GitHub Action mode, only findings metadata (file paths, rule IDs, symbol names) is sent to your dashboard — file contents are never persisted, and private-repo analysis results are never used for model training. Ever.',
-    link: ['Read our security model', '/security'],
-  },
-  {
-    q: 'How much does VibeShield cost?',
-    a: 'Nothing. VibeShield is fully open source under the MIT license — the scanner, the GitHub Action, the pre-commit hook, and every rules pack. No tiers, no seats, no credit card, no account. Install takes one YAML file, and it works offline forever.',
-    link: ['View GitHub repository', SITE.repo],
-  },
-  {
-    q: 'How do I get started in 3 minutes?',
-    a: 'Add `uses: rajviyash9136freefr-tech/vibeshield/action@v1` to your workflow (or run `npx vibeshield init` for the hook + workflow + config in one command). VibeShield scans the next PR, comments a VibeCheck report, and you can enable the badge on your README. No account, no signup — it is MIT-licensed and free for every repo.',
-    link: ['View install options', '/#install'],
-  },
-  {
-    q: 'Can VibeShield fix the code automatically?',
-    a: 'v1 explains and suggests — every finding includes a one-line fix — but never rewrites your code. Auto-fix ("VibePatch") is on the roadmap behind an explicit opt-in with diff preview, because trusting an AI to fix AI code without a human gate is exactly the problem we\x27re here to reduce, not reinvent.',
-    link: ['Read the product roadmap', '/docs'],
-  },
-  {
-    q: 'Who is responsible for the security of AI-generated code?',
-    a: 'Legally and practically, still you — the shipping team. Standards bodies and enterprise procurement are converging on "AI-authored changes need the same gate as human-authored changes"; VibeShield gives you that gate plus the audit trail (who shipped what, when, with what risk) that questions like this require.',
-    link: ['Explore the audit trail', '/#how'],
-  },
-];
-
-// Extra questions beyond PRD §7.2's verbatim ten (added 2026-09-13 at the
-// maintainer's request — "create them according to you"). Kept in a separate
-// array so the PRD-sourced ten stay auditable; both ship in the grid AND the
-// FAQPage JSON-LD (answers must match visible text — UIUX §9.4).
-export const FAQ_EXTRA: { q: string; a: string; link?: [string, string] }[] = [
-  {
-    q: 'Do I need an account, token, or API key to run VibeShield?',
-    a: 'No. The CLI and pre-commit hook need nothing — no signup, no key, no telemetry. In GitHub Action mode the workflow uses the built-in `GITHUB_TOKEN` that every runner already has, only to post the VibeCheck comment on your PR. The rules pack is embedded in the binary, so a first scan works fully offline.',
-    link: ['View installation options', '/install'],
-  },
-  {
-    q: 'Which languages and package registries does it check?',
-    a: 'Eight languages in v1: JavaScript/TypeScript, Python, Go, Java, Ruby, PHP, Rust, and C#. Newly-added dependencies are scored against npm, PyPI, crates.io, and the Go module index — live registry signals with `--online`, or the offline heuristics baked into the binary when you are air-gapped.',
-    link: ['Read the CLI reference', '/docs/cli'],
-  },
-  {
-    q: 'What permissions does the GitHub Action need?',
-    a: '`contents: read` and `pull-requests: write` — that is the whole list. Analysis runs on your GitHub runner; findings metadata (file paths, rule IDs, symbol names, severities) is posted to your PR. File contents never leave the runner and are never persisted by us.',
-    link: ['Read our security model', '/security'],
-  },
-  {
-    q: 'Can I pin the version or run air-gapped?',
-    a: 'Yes, and we recommend pinning in CI. The scanner is a single static Go binary published with sha256sums on every release; pin it with `rev: v1.0.0` in pre-commit, a versioned `go install`, or a downloaded archive checked against the published checksums. Rules ship inside the binary and as versioned YAML packs, so offline scanning keeps working.',
-    link: ['View installation options', '/install'],
-  },
-  {
-    q: 'Does VibeShield work on GitLab, Azure DevOps, or Bitbucket?',
-    a: 'Not yet — v1 is GitHub-first by design. The CLI is host-agnostic though: pipe any diff through `vibeshield scan --diff -`, get pretty, JSON, or SARIF out, and gate any CI that way. Pluggable hosts are on the roadmap.',
-    link: ['Read the product roadmap', '/docs'],
-  },
-  {
-    q: 'What are the terms, and what happens to my data?',
-    a: 'Everything — scanner, Action, hook, rules — is MIT-licensed and provided as-is, with no warranty; the plain-language terms are on the terms page. The short privacy answer: your code never leaves your machine in CLI/hook mode, and the Action sends findings metadata only, never file contents.',
-    link: ['Read our terms of service', '/terms'],
+    q: 'Is VibeShield free, and can I use it for private repositories?',
+    a: 'Yes. VibeShield is 100% free and open-source under the MIT license. There are no paid tiers, no seat limits, no tokens, and no account required. You can freely use it on unlimited personal, public, and private commercial repositories forever.',
+    link: ['View GitHub Repository', SITE.repo],
   },
 ];
 

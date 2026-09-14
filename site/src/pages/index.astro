@@ -5,38 +5,23 @@ import Footer from '../components/ui/Footer.astro';
 import Hero from '../components/sections/Hero.astro';
 import QuickScanner from '../components/ui/QuickScanner.astro';
 import CinematicCrawl from '../components/ui/CinematicCrawl.astro';
-import SocialProof from '../components/sections/SocialProof.astro';
-import Problem from '../components/sections/Problem.astro';
-import Steps from '../components/sections/Steps.astro';
-import Features from '../components/sections/Features.astro';
+import AgentPrompts from '../components/sections/AgentPrompts.astro';
 import Install from '../components/sections/Install.astro';
-import Comparison from '../components/sections/Comparison.astro';
 import Faq from '../components/sections/Faq.astro';
 import FinalCta from '../components/sections/FinalCta.astro';
-import { SITE, FAQ, FAQ_EXTRA } from '../data/site';
+import { SITE, FAQ } from '../data/site';
 
-const upperCrawl = [
+const agentTicker = [
   'Cursor Integration',
-  'Copilot PR Gate',
-  'Claude Code Audit',
-  'Windsurf Compatible',
-  'Aider Scanner',
-  '1.2s Median Scan',
-  'Zero Data Exfiltration',
+  'Claude Code Plugin',
+  'Windsurf Cascade Rules',
+  'GitHub Copilot Gate',
+  'Aider Terminal Audit',
+  'Hunt Hallucinated Packages',
+  'Catch Leaked API Secrets',
   '100% Local & Offline',
-  '120+ AI-Specific Rules',
-  'Free & MIT Licensed',
-];
-
-const lowerCrawl = [
-  'Zero Hallucinations Merged',
-  'Zero Secrets Leaked',
-  'Diff-Speed Analysis',
-  'Attribution Radar',
-  'Slopsquatting Shield',
-  'Pre-Commit Hook',
-  'GitHub Action v1.0',
-  'Free & Open Source',
+  'Sub-Second Diff Scan',
+  'Free & Open Source (MIT)',
 ];
 
 const schema = [
@@ -53,7 +38,7 @@ const schema = [
   {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: [...FAQ, ...FAQ_EXTRA].map((f) => ({
+    mainEntity: FAQ.map((f) => ({
       '@type': 'Question',
       name: f.q,
       acceptedAnswer: { '@type': 'Answer', text: f.a },
@@ -62,22 +47,22 @@ const schema = [
   {
     '@context': 'https://schema.org',
     '@type': 'HowTo',
-    name: 'How to scan AI-generated code before committing',
+    name: 'How to test and bug hunt vibe-coded apps with AI agents',
     step: [
       {
         '@type': 'HowToStep',
-        name: 'Add the GitHub Action',
-        text: 'Add uses: vibeshield/action@v1 to your pull_request workflow.',
+        name: 'Copy your AI Agent Prompt or install the skill',
+        text: 'Add the VibeShield rules to your .cursorrules, Claude Code plugin, or .windsurfrules.',
       },
       {
         '@type': 'HowToStep',
-        name: 'Open a pull request',
-        text: 'VibeShield scans the diff and posts a VibeCheck report.',
+        name: 'Run VibeShield local audit',
+        text: 'VibeShield tests your vibe-coded files for hallucinated packages, leaked keys, and component bugs.',
       },
       {
         '@type': 'HowToStep',
-        name: 'Merge with an audit trail',
-        text: 'Accept or dismiss each finding; dismissals are logged.',
+        name: 'Apply 1-line verified fixes',
+        text: 'Review atomic diff fixes and merge safely to production with zero regressions.',
       },
     ],
   },
@@ -87,25 +72,28 @@ const schema = [
 <BaseLayout schema={schema} canonical="/">
   <Nav slot="nav" />
   
+  <!-- 1. Hero: Main Motive — Bug Hunter & Tester for AI Vibe Coding -->
   <Hero />
 
-  <!-- Upper Cinematic Crawl -->
-  <CinematicCrawl items={upperCrawl} direction="left" />
+  <!-- 2. Ambient Ticker: High-impact agent compatibility list -->
+  <CinematicCrawl items={agentTicker} direction="left" />
 
-  <!-- Instant Value: What VibeShield does in 3 seconds -->
-  <QuickScanner />
+  <!-- 3. How It Works: Interactive Bug Hunter Demo / Simulator -->
+  <div id="scanner">
+    <QuickScanner />
+  </div>
 
-  <SocialProof />
-  <Problem />
-  <Steps />
-  <Features />
+  <!-- 4. Agent Prompts Hub: Copy-Paste Prompts for Cursor, Claude, Windsurf, Copilot -->
+  <AgentPrompts />
+
+  <!-- 5. 3 Ways to Install Guide: One-line script, Agent Skill, NPX, or GitHub Action -->
   <Install />
-  <Comparison />
+
+  <!-- 6. FAQ: Exactly 5 Curated Questions -->
   <Faq />
 
-  <!-- Lower Cinematic Crawl -->
-  <CinematicCrawl items={lowerCrawl} direction="right" />
-
+  <!-- 7. Final Action Callout -->
   <FinalCta />
+
   <Footer slot="footer" />
 </BaseLayout>
