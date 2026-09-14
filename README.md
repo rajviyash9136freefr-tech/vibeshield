@@ -39,6 +39,47 @@
 
 ---
 
+## 🧩 The VibeShield Ecosystem: How Everything Works Together
+
+To test and secure vibe-coded applications, VibeShield consists of three interconnected components:
+
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           1. THE WEBSITE & SIMULATOR                        │
+│                https://rajviyash9136freefr-tech.github.io/vibeshield/        │
+│  • Test real AI bug scenarios live in the browser                           │
+│  • 1-Click copy prompts for Cursor, Claude Code, Windsurf & Copilot         │
+│  • 1-Line automated terminal install commands & 5 curated FAQs              │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          2. THE IN-AGENT SKILL                              │
+│       Cursor (.cursorrules) · Claude Code (/plugin) · Windsurf (.windsurfrules)│
+│  • Sits directly inside your coding agent                                    │
+│  • Intercepts hallucinated dependencies & leaked keys in real time          │
+│  • Suggests verified 1-line standard library fixes before code is saved     │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         3. THE SCANNER & PR GATE                            │
+│                 CLI (vibeshield scan .) · GitHub Action (CI/CD)             │
+│  • 100% offline, local Go static analysis binary (runs in 1.2s)             │
+│  • Pre-commit hooks block secrets from ever entering git history            │
+│  • Posts clear VibeCheck review reports directly on pull requests           │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+| Component | What It Does | Where It Runs | How to Use |
+|:---|:---|:---|:---|
+| **🌐 The Website** | Interactive visual simulator, agent prompts hub, install guide, and FAQ | Web Browser | [Open Live Simulator](https://rajviyash9136freefr-tech.github.io/vibeshield/) |
+| **🤖 The Agent Skill** | Intercepts hallucinations & leaked secrets inside the AI agent before code is saved | Cursor, Claude, Windsurf, Copilot | Copy prompts into `.cursorrules` or install plugin |
+| **⚡ The CLI Scanner** | Sub-second offline static analysis engine (1.2s) hunting supply-chain flaws | Local Terminal (macOS/Linux/Windows) | `vibeshield scan .` or `npx vibeshield scan` |
+| **🛡️ GitHub Action** | Automated Pull Request gate blocking dangerous diffs before merge | GitHub CI/CD | `uses: rajviyash9136freefr-tech/vibeshield/action@v1` |
+
+---
+
 ## ⚡ Why VibeShield for AI Vibe Coding?
 
 When vibe coding, developers ship hundreds of lines of AI-generated code every session without reading every single character. Classic security linters were built for human code and known CVE databases — they completely miss **AI-specific failure modes**:

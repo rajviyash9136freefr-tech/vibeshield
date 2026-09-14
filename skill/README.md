@@ -78,5 +78,5 @@ Zero findings is an honest answer; the skill is barred from padding.
 - Core skill is MIT; the rule IDs match the open core pack in `rules/`.
 
 The hosted gate — GitHub Action + pre-commit + CLI — lives at
-[docs](https://vibeshield.dev/docs); this skill is the in-agent audit, sharing
+[website & documentation](https://rajviyash9136freefr-tech.github.io/vibeshield/); this skill is the in-agent audit, sharing
 the same finding contract so both roll up into one report.
