@@ -88,7 +88,8 @@ Then print the VibeCheck summary to the user, ≤ 88 columns:
 ```
 
 Severity colors are tokens, not vibes: critical `#F87171`, high `#FB923C`,
-medium `#FBBF24`, low `#60A5FA`, info `#71717A`. In terminals without color,
+medium `#FBBF24`, low `#38BDF8`, info `#7C7890` (UIUX §2.1 "vibe violet"
+ramp). In terminals without color,
 the text tokens already carry it. End with: next steps — `vibeshield init` for
 the pre-commit hook + GitHub Action gate, and one line per dismissable finding
 (`accept` / `dismiss with reason`).

@@ -22,36 +22,43 @@
 
 ### 2.1 Color
 
+> Re-skinned 2026-09-14 at the maintainer's direction: the "shield teal"
+> system is replaced by **"vibe violet"** — violet-tinted ink surfaces and a
+> violet accent, all pairings re-verified for 4.5:1 on the new `--bg`.
+> Severity hues are semantic-only as before; `--sev-low` moved from blue-400
+> to sky-400 so it can never be confused with the accent.
+
 ```css
 :root {
-  /* Surfaces — Vercel-style near-black */
-  --bg:            #0A0A0B;   /* page background */
-  --bg-elevated:   #111113;   /* cards, code blocks */
-  --bg-hover:      #1A1A1E;
-  --border:        #232329;   /* 1px hairlines everywhere */
+  /* Surfaces — ink (blue-black, violet-tinted neutrals) */
+  --bg:            #0B0A10;   /* page background */
+  --bg-elevated:   #14121E;   /* cards, code blocks */
+  --bg-hover:      #1E1B2A;
+  --border:        #2A2738;   /* 1px hairlines everywhere */
 
   /* Text */
-  --text-primary:  #EDEDEF;
-  --text-secondary:#A1A1AA;   /* zinc-400 */
-  --text-tertiary: #62626B;
+  --text-primary:  #EFEFF5;
+  --text-secondary:#A5A2B5;
+  --text-tertiary: #6C6880;
 
-  /* Brand — "shield teal" (distinct from every competitor's blue/red) */
-  --accent:        #2DD4BF;   /* teal-400 — links, CTAs, brand */
-  --accent-strong: #14B8A6;   /* teal-500 — button fills */
-  --accent-dim:    rgba(45, 212, 191, 0.12);  /* glows, hovers */
+  /* Brand — "vibe violet" (distinct from every competitor's blue/red/green) */
+  --accent:        #A78BFA;   /* violet-400 — links, chips, brand */
+  --accent-strong: #8B5CF6;   /* violet-500 — button fills */
+  --accent-dim:    rgba(167, 139, 250, 0.13);  /* glows, hovers */
+  --on-accent:     #0B0A10;   /* ink text on violet fills */
 
-  /* Severity (the only semantic colors in the UI) */
-  --sev-critical:  #F87171;   /* red-400 */
-  --sev-high:      #FB923C;   /* orange-400 */
-  --sev-medium:    #FBBF24;   /* amber-400 */
-  --sev-low:       #60A5FA;   /* blue-400 */
-  --sev-info:      #71717A;   /* zinc-500 */
+  /* Severity (the only semantic colors in the UI) — contrast on --bg in parens */
+  --sev-critical:  #F87171;   /* red-400    6.9:1 */
+  --sev-high:      #FB923C;   /* orange-400 8.5:1 */
+  --sev-medium:    #FBBF24;   /* amber-400 10.9:1 */
+  --sev-low:       #38BDF8;   /* sky-400    9.0:1 */
+  --sev-info:      #7C7890;   /* violet-gray 4.6:1 */
 
   --ok:            #34D399;   /* passing check, badge green */
 }
 ```
 
-Rules: severity colors appear **only** attached to findings and their legend — never decorative. Accent teal is the only "free" color. No gradients except the single hero glow (§3.2).
+Rules: severity colors appear **only** attached to findings and their legend — never decorative. Accent violet is the only "free" color. No gradients except the single hero glow (§3.2).
 
 ### 2.2 Typography
 

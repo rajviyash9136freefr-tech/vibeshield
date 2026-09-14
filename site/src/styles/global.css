@@ -1,31 +1,37 @@
 @import "tailwindcss";
 
-/* Design tokens — UIUX.md §2.1 (law). Severity colors appear only on
-   findings/legends; accent teal is the only free color. */
+/* Design tokens — UIUX.md §2.1 (law; re-skinned 2026-09-14 to the
+   "vibe violet" system at the maintainer's direction). Severity colors
+   appear only on findings/legends; the accent is the only free color.
+   All severity + text pairings verified ≥4.5:1 on --bg except --color-faint
+   (tertiary fine print, same role as before). */
 @theme {
-  /* Surfaces */
-  --color-bg: #0a0a0b;
-  --color-elevated: #111113;
-  --color-hovered: #1a1a1e;
-  --color-hairline: #232329;
+  /* Surfaces — ink (blue-black, violet-tinted neutrals) */
+  --color-bg: #0b0a10;
+  --color-elevated: #14121e;
+  --color-hovered: #1e1b2a;
+  --color-hairline: #2a2738;
 
   /* Text */
-  --color-fg: #ededef;
-  --color-muted: #a1a1aa;
-  --color-faint: #62626b;
+  --color-fg: #efeef5;
+  --color-muted: #a5a2b5;
+  --color-faint: #6c6880;
 
-  /* Brand — shield teal */
-  --color-accent: #2dd4bf;
-  --color-accent-strong: #14b8a6;
-  --color-accent-dim: rgba(45, 212, 191, 0.12);
+  /* Brand — "vibe violet" (distinct from the teal-era look and from
+     every competitor's blue/red/green) */
+  --color-accent: #a78bfa;         /* violet-400 — links, chips, brand */
+  --color-accent-strong: #8b5cf6;  /* violet-500 — button fills */
+  --color-accent-dim: rgba(167, 139, 250, 0.13); /* glows, hovers */
+  --color-on-accent: #0b0a10;      /* ink text on violet fills */
 
-  /* Severity (semantic-only) */
-  --color-critical: #f87171;
-  --color-high: #fb923c;
-  --color-medium: #fbbf24;
-  --color-low: #60a5fa;
-  --color-info: #71717a;
-  --color-ok: #34d399;
+  /* Severity (semantic-only) — re-verified on the new ink surface */
+  --color-critical: #f87171;       /* red-400   6.9:1 */
+  --color-high: #fb923c;           /* orange-400 8.5:1 */
+  --color-medium: #fbbf24;         /* amber-400 10.9:1 */
+  --color-low: #38bdf8;            /* sky-400 — moved off blue-400 so it
+                                      never reads as the violet accent 9:1 */
+  --color-info: #7c7890;           /* violet-gray ramp, 4.6:1 */
+  --color-ok: #34d399;             /* emerald-400 */
 
   /* Type */
   --font-sans: "Geist Variable", "Inter Variable", ui-sans-serif, system-ui,
@@ -64,7 +70,7 @@
     font-weight: 600;
   }
   ::selection {
-    background: rgba(45, 212, 191, 0.25);
+    background: rgba(167, 139, 250, 0.3);
   }
   :focus-visible {
     outline: 2px solid var(--color-accent);
@@ -145,7 +151,7 @@
     z-index: 100;
     padding: 8px 16px;
     background: var(--color-accent-strong);
-    color: #06231f;
+    color: var(--color-on-accent);
     border-radius: 0 0 var(--radius-btn) 0;
     font-weight: 600;
   }
@@ -201,7 +207,7 @@
   }
   /* Accent hairline on hover so the tilt reads as a response, not a glitch */
   [data-tilt]:hover {
-    border-color: rgba(45, 212, 191, 0.35);
+    border-color: rgba(167, 139, 250, 0.35);
   }
   [data-tilt]::after {
     content: "";
@@ -213,7 +219,7 @@
     transition: opacity 250ms var(--ease-soft);
     background: radial-gradient(
       320px circle at var(--mx, 50%) var(--my, 50%),
-      rgba(45, 212, 191, 0.08),
+      rgba(167, 139, 250, 0.09),
       transparent 60%
     );
   }
