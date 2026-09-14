@@ -151,16 +151,16 @@ function linkify(text: string): string {
     backface-visibility: hidden;
   }
   .faq-item[open] .faq-a {
-    animation: faq-card-3d 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: faq-card-3d 200ms ease-out both;
   }
   @keyframes faq-card-3d {
     from {
       opacity: 0;
-      transform: translateY(-8px) scale(0.99);
+      transform: translateY(-4px);
     }
     to {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translateY(0);
     }
   }
 </style>

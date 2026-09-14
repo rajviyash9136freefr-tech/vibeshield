@@ -1,27 +1,25 @@
 /**
- * Apple Cinematic Layer — Pure Two-Color Lighting & Motion
- *  1. Zero-latency custom mouse follower circle
- *  2. Full 3D card tilt [data-tilt] + specular edge spotlight + [data-depth]
- *  3. Ambient flashlight tracker across the document
+ * Medium Apple Cinematic Layer — Pure Two-Color Lighting & Motion
+ *  1. Single Custom Circle Cursor (black center, feathered white border)
+ *  2. Balanced medium 3D card tilt [data-tilt] + subtle specular spotlight
+ *  3. Subtle ambient flashlight tracker across the document
  *  4. [data-countup] number roll-up on first scroll-into-view
  */
 
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
 
-// ---- 1. Zero-Latency Custom Mouse Follower Circle -----------------------
+// ---- 1. Single Circle Cursor (Center Black, Feathered White Border) -----
 if (finePointer.matches && typeof window !== 'undefined') {
-  const dot = document.getElementById('cursor-dot');
-  const ring = document.getElementById('cursor-ring');
+  const cursor = document.getElementById('cursor-circle');
 
-  if (dot && ring) {
+  if (cursor) {
     let mouseX = -100;
     let mouseY = -100;
-    let ringX = -100;
-    let ringY = -100;
+    let currentX = -100;
+    let currentY = -100;
     let isHovering = false;
     let isVisible = false;
 
-    // Immediate zero-latency update for the center dot
     window.addEventListener(
       'pointermove',
       (e) => {
@@ -29,33 +27,28 @@ if (finePointer.matches && typeof window !== 'undefined') {
         mouseY = e.clientY;
 
         if (!isVisible) {
-          dot.style.opacity = '1';
-          ring.style.opacity = '1';
-          ringX = mouseX;
-          ringY = mouseY;
+          cursor.style.opacity = '1';
+          currentX = mouseX;
+          currentY = mouseY;
           isVisible = true;
         }
-
-        // Hardware-accelerated 0ms direct positioning
-        dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
       },
       { passive: true }
     );
 
-    // Fluid RAF loop for the trailing magnetic ring
+    // Highly responsive, smooth RAF loop (0.45 lerp factor: zero noticeable lag, velvety glide)
     function renderCursor() {
-      // 0.32 lerp factor guarantees ultra-responsive, zero noticeable lag feel
-      ringX += (mouseX - ringX) * 0.32;
-      ringY += (mouseY - ringY) * 0.32;
+      currentX += (mouseX - currentX) * 0.45;
+      currentY += (mouseY - currentY) * 0.45;
 
-      const scale = isHovering ? 1.55 : 1;
-      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) scale(${scale})`;
+      const scale = isHovering ? 1.25 : 1;
+      cursor.style.transform = `translate3d(${currentX.toFixed(1)}px, ${currentY.toFixed(1)}px, 0) scale(${scale})`;
 
       requestAnimationFrame(renderCursor);
     }
     requestAnimationFrame(renderCursor);
 
-    // Interactive element detection (hover state expands the ring)
+    // Interactive element detection (hover state gently expands feathered white circle)
     const interactiveSelector =
       'a, button, [data-tilt], input, select, textarea, summary, [data-copy], .card';
 
@@ -65,9 +58,7 @@ if (finePointer.matches && typeof window !== 'undefined') {
         const target = e.target as HTMLElement | null;
         if (target && target.closest(interactiveSelector)) {
           isHovering = true;
-          ring.style.borderColor = 'rgba(255, 255, 255, 0.9)';
-          ring.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
-          ring.style.boxShadow = '0 0 16px rgba(255, 255, 255, 0.2)';
+          cursor.classList.add('cursor-hover');
         }
       },
       { passive: true }
@@ -79,9 +70,7 @@ if (finePointer.matches && typeof window !== 'undefined') {
         const target = e.target as HTMLElement | null;
         if (target && target.closest(interactiveSelector)) {
           isHovering = false;
-          ring.style.borderColor = 'rgba(255, 255, 255, 0.4)';
-          ring.style.backgroundColor = 'transparent';
-          ring.style.boxShadow = 'none';
+          cursor.classList.remove('cursor-hover');
         }
       },
       { passive: true }
@@ -89,24 +78,25 @@ if (finePointer.matches && typeof window !== 'undefined') {
 
     // Fade out when pointer leaves browser window
     document.addEventListener('mouseleave', () => {
-      dot.style.opacity = '0';
-      ring.style.opacity = '0';
+      cursor.style.opacity = '0';
       isVisible = false;
     });
   }
 }
 
-// ---- 2. Full 3D Tilt + Specular Spotlight + Depth -----------------------
+// ---- 2. Balanced Medium 3D Card Tilt + Specular Edge -------------------
 if (finePointer.matches) {
   document.querySelectorAll<HTMLElement>('[data-tilt]').forEach((card) => {
-    const max = Number(card.dataset.tilt || 5);
+    // Restrained medium tilt angle (max 1.5 - 1.8 degrees for subtle tactile response)
+    const configured = Number(card.dataset.tilt || 2);
+    const max = Math.min(1.8, Math.max(1.0, configured * 0.4));
 
     card.addEventListener('pointermove', (e) => {
       const r = card.getBoundingClientRect();
       const px = (e.clientX - r.left) / r.width;
       const py = (e.clientY - r.top) / r.height;
 
-      // Dynamic 3D tilt calculation
+      // Subtle, tactile 3D tilt calculation
       const rotX = ((py - 0.5) * -2 * max).toFixed(2);
       const rotY = ((px - 0.5) * 2 * max).toFixed(2);
 

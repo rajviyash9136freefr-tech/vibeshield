@@ -288,14 +288,14 @@
   }
   @media (min-width: 1024px) and (hover: hover) {
     [data-tilt-hero] {
-      --tilt-base-x: 1.5deg;
-      --tilt-base-y: -4deg;
+      --tilt-base-x: 0.5deg;
+      --tilt-base-y: -1.5deg;
     }
   }
   [data-tilt]:hover {
-    --tilt-scale: 1.015;
-    border-color: rgba(255, 255, 255, 0.4);
-    box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.95), 0 0 30px rgba(255, 255, 255, 0.08);
+    --tilt-scale: 1.006;
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(255, 255, 255, 0.04);
   }
   [data-tilt]::after {
     content: "";
@@ -306,8 +306,8 @@
     opacity: 0;
     transition: opacity 250ms var(--ease-soft);
     background: radial-gradient(
-      420px circle at var(--mx, 50%) var(--my, 50%),
-      rgba(255, 255, 255, 0.15),
+      360px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 255, 255, 0.08),
       transparent 65%
     );
   }
@@ -315,19 +315,31 @@
     opacity: 1;
   }
   [data-depth] {
-    transform: translateZ(var(--z, 22px));
+    transform: translateZ(calc(var(--z, 8px) * 0.35));
     transform-style: preserve-3d;
     transition: transform 200ms var(--ease-soft);
   }
 
-  /* Custom zero-latency mouse-following indicator */
-  #cursor-dot {
+  /* Custom single circle cursor: center black, borders white feathered */
+  #cursor-circle {
     pointer-events: none;
     will-change: transform, opacity;
+    background-color: #000000;
+    border: 1.5px solid rgba(255, 255, 255, 0.95);
+    box-shadow:
+      0 0 6px 1.5px rgba(255, 255, 255, 0.7),
+      0 0 14px 3px rgba(255, 255, 255, 0.35),
+      inset 0 0 4px rgba(255, 255, 255, 0.2);
+    transition:
+      box-shadow 150ms ease,
+      border-color 150ms ease;
   }
-  #cursor-ring {
-    pointer-events: none;
-    will-change: transform, opacity, border-color, background-color, box-shadow;
+  #cursor-circle.cursor-hover {
+    border-color: #ffffff;
+    box-shadow:
+      0 0 10px 2.5px rgba(255, 255, 255, 0.85),
+      0 0 20px 5px rgba(255, 255, 255, 0.45),
+      inset 0 0 5px rgba(255, 255, 255, 0.3);
   }
 
   /* Scroll progress hairline under the nav */
@@ -352,7 +364,7 @@
     z-index: 1;
     background: radial-gradient(
       700px circle at var(--mouse-x, 50%) var(--mouse-y, 25%),
-      rgba(255, 255, 255, 0.045),
+      rgba(255, 255, 255, 0.02),
       transparent 70%
     );
     transition: background 150ms ease-out;
@@ -378,7 +390,7 @@
   }
 }
 
-/* Scroll-driven motion — pure CSS where browser supports it */
+/* Scroll-driven motion — medium, elegant transitions */
 @supports (animation-timeline: view()) {
   /* Parallax drift */
   .parallax-slow,
@@ -387,16 +399,19 @@
     animation-timeline: scroll(root block);
     animation-range: 0 90vh;
   }
+  .parallax-slow {
+    --parallax: 12px;
+  }
   .parallax-fast {
-    --parallax: 110px;
+    --parallax: 25px;
   }
   @keyframes parallax-rise {
     to {
-      transform: translateY(calc(var(--parallax, 60px) * -1));
+      transform: translateY(calc(var(--parallax, 20px) * -1));
     }
   }
 
-  /* Section headers: cinematic lift & settle */
+  /* Section headers: subtle lift */
   .scroll-tell {
     animation: scroll-tell linear both;
     animation-timeline: view();
@@ -404,8 +419,8 @@
   }
   @keyframes scroll-tell {
     from {
-      opacity: 0;
-      transform: translateY(24px) scale(0.98);
+      opacity: 0.3;
+      transform: translateY(12px);
     }
     to {
       opacity: 1;
@@ -444,7 +459,7 @@
     }
   }
 
-  /* Feature cards: smooth 3D scroll-in */
+  /* Feature cards: smooth medium scroll-in */
   .scroll-in {
     animation: scroll-in linear both;
     animation-timeline: view();
@@ -452,16 +467,16 @@
   }
   @keyframes scroll-in {
     from {
-      opacity: 0;
-      transform: perspective(1000px) translateY(32px) rotateX(5deg);
+      opacity: 0.3;
+      transform: translateY(14px);
     }
     to {
       opacity: 1;
-      transform: perspective(1000px) translateY(0) rotateX(0deg);
+      transform: translateY(0);
     }
   }
 
-  /* Final-CTA shield 3D presentation */
+  /* Final-CTA shield medium presentation */
   .shield-3d {
     animation: shield-3d linear both;
     animation-timeline: view();
@@ -469,12 +484,12 @@
   }
   @keyframes shield-3d {
     from {
-      opacity: 0;
-      transform: perspective(900px) rotateY(-60deg) translateZ(-100px);
+      opacity: 0.4;
+      transform: translateY(16px) scale(0.98);
     }
     to {
       opacity: 1;
-      transform: perspective(900px) rotateY(0deg) translateZ(0);
+      transform: translateY(0) scale(1);
     }
   }
 }

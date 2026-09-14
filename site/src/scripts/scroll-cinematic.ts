@@ -22,12 +22,12 @@ if (typeof window !== 'undefined') {
       progressBar.style.opacity = scrollY > 30 ? '1' : '0';
     }
 
-    // 2. Dynamic Island Nav elevation
+    // 2. Dynamic Island Nav elevation (medium, subtle scale)
     if (nav) {
       if (scrollY > 40) {
-        nav.style.transform = 'scale(0.97)';
-        nav.style.boxShadow = '0 20px 40px -10px rgba(0,0,0,0.95), 0 0 25px rgba(255,255,255,0.06)';
-        nav.style.borderColor = 'rgba(255, 255, 255, 0.22)';
+        nav.style.transform = 'scale(0.99)';
+        nav.style.boxShadow = '0 18px 38px -10px rgba(0,0,0,0.92), 0 0 20px rgba(255,255,255,0.04)';
+        nav.style.borderColor = 'rgba(255, 255, 255, 0.18)';
       } else {
         nav.style.transform = 'scale(1)';
         nav.style.boxShadow = '0 16px 36px -10px rgba(0,0,0,0.9), 0 0 20px rgba(255,255,255,0.03)';

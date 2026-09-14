@@ -68,19 +68,18 @@ const trackItems = [...items, ...items];
   }
 
   .animate-crawl-left {
-    animation: crawlLeft 22s linear infinite;
+    animation: crawlLeft 48s linear infinite;
     will-change: transform;
   }
 
   .animate-crawl-right {
-    animation: crawlRight 22s linear infinite;
+    animation: crawlRight 48s linear infinite;
     will-change: transform;
   }
 
-  /* Keep running continuously with graceful slight slow-down on hover instead of jarring pause */
+  /* Keep running continuously at smooth medium pace without jarring effects */
   [data-cinematic-crawl]:hover .crawl-track {
     animation-play-state: running;
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
   }
 </style>
 

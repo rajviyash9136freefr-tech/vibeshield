@@ -80,9 +80,8 @@ const ogURL = new URL(baseHref(ogImage), SITE.url).href;
   <body class={bodyClass}>
     <div class="scroll-progress" aria-hidden="true"></div>
     <div class="ambient-flashlight" aria-hidden="true"></div>
-    <!-- Zero-Latency Mouse Following Indicator (Desktop/Fine-Pointer Only) -->
-    <div id="cursor-dot" class="pointer-events-none fixed top-0 left-0 z-[9999] h-2 w-2 -ml-1 -mt-1 rounded-full bg-white opacity-0 transition-opacity duration-150 shadow-[0_0_8px_rgba(255,255,255,0.9)]" aria-hidden="true"></div>
-    <div id="cursor-ring" class="pointer-events-none fixed top-0 left-0 z-[9998] h-8 w-8 -ml-4 -mt-4 rounded-full border border-white/40 opacity-0 transition-[opacity,border-color,background-color] duration-150" aria-hidden="true"></div>
+    <!-- Custom Circle Cursor: Black Center with Feathered White Border (Desktop/Fine-Pointer Only) -->
+    <div id="cursor-circle" class="pointer-events-none fixed top-0 left-0 z-[9999] h-6 w-6 -ml-3 -mt-3 rounded-full opacity-0 transition-opacity duration-150" aria-hidden="true"></div>
     <a class="skip-link" href="#main">Skip to content</a>
     <slot name="nav" />
     <main id="main" class="pt-16 sm:pt-20">
