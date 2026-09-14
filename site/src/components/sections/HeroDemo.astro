@@ -39,7 +39,7 @@ const initialHtml = DEMO_LINES.map(
       <span class="h-2.5 w-2.5 rounded-full bg-white/10" aria-hidden="true"></span>
       <span class="ml-2 font-mono text-xs text-white/50">bash — vibeshield scan</span>
     </div>
-    <div class="flex items-center gap-1.5 font-mono text-[10px] text-white/40">
+    <div class="flex items-center gap-1.5 font-mono text-xs text-white/50">
       <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
       <span>READY</span>
     </div>
@@ -47,7 +47,7 @@ const initialHtml = DEMO_LINES.map(
 
   <pre
     id="demo-body"
-    class="min-h-[330px] overflow-hidden p-5 font-mono text-[12.5px] sm:text-[13px] leading-[1.7] text-white/85 whitespace-pre-wrap break-words sm:min-h-[340px]"
+    class="min-h-[330px] overflow-hidden p-5 font-mono text-xs sm:text-sm leading-[1.7] text-white/85 whitespace-pre-wrap break-words sm:min-h-[340px]"
     data-lines={JSON.stringify(DEMO_LINES.map((l) => ({ t: l.text, c: l.cls })))}
   ><code set:html={initialHtml} /></pre>
 </div>

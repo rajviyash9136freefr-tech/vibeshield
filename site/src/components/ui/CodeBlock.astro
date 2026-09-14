@@ -1,6 +1,7 @@
 ---
 /**
- * Apple Pro Code Block with copy pill + obsidian glass surface.
+ * Apple Pro Code Block with dedicated copy header bar + obsidian glass surface.
+ * Eliminates button overlay over content.
  */
 interface Props {
   code: string;
@@ -11,21 +12,24 @@ interface Props {
 const { code, filename, label, class: cls = '' } = Astro.props;
 ---
 
-<div class={`relative ${cls}`}>
-  {filename && (
-    <div class="mb-[-1px] inline-block rounded-t-xl border border-b-0 border-white/15 bg-white/5 px-3 py-1 font-mono text-xs text-white/60">
-      {filename}
-    </div>
-  )}
+<div class={`rounded-2xl border border-white/10 bg-black/70 overflow-hidden flex flex-col ${cls}`}>
+  <!-- Dedicated Header Area for Filename/Label and Copy Button (Eliminates content overlay) -->
+  <div class="flex items-center justify-between border-b border-white/10 bg-white/[0.04] px-4 py-2">
+    <span class="font-mono text-xs text-white/50 truncate max-w-[220px]">
+      {filename ?? (label ? label.replace('Copy snippet: ', '') : 'Snippet')}
+    </span>
+    <button
+      type="button"
+      class="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-mono text-white/80 transition-all duration-200 hover:border-white hover:bg-white hover:text-black active:scale-95 shrink-0"
+      aria-label={label ? `Copy ${label}` : 'Copy code to clipboard'}
+      data-copy
+    >
+      Copy
+    </button>
+  </div>
   <pre
-    class="scroll-x fade-x rounded-2xl border border-white/10 bg-black/60 p-4 font-mono text-[13px] leading-[1.7] text-white/85"
+    class="scroll-x fade-x p-4 font-mono text-xs leading-[1.7] text-white/85 flex-1 m-0"
     tabindex="0"
     data-code
   ><code set:html={code.replace(/&/g, '&amp;').replace(/</g, '&lt;')} /></pre>
-  <button
-    type="button"
-    class="absolute top-3 right-3 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[11px] font-mono text-white/70 transition-all duration-200 hover:border-white hover:bg-white hover:text-black active:scale-95"
-    aria-label={label ?? 'Copy code to clipboard'}
-    data-copy
-  >Copy</button>
 </div>

@@ -5,18 +5,18 @@ import { PROBLEM } from '../../data/site';
 <section id="product" class="section border-t border-white/10 relative">
   <div class="wrap">
     <div data-reveal>
-      <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1 backdrop-blur-md mb-4">
-        <span class="font-mono text-[11px] font-medium tracking-wider text-white/70 uppercase">
+      <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 backdrop-blur-md mb-4">
+        <span class="font-mono text-xs font-medium tracking-normal text-white/80">
           Threat Model
         </span>
       </div>
-      <h2 class="scroll-tell max-w-[24ch] text-[32px] font-bold leading-[1.15] tracking-[-0.035em] text-apple-headline sm:text-[42px] lg:text-[50px]">
+      <h2 class="scroll-tell max-w-[24ch] text-3xl font-bold leading-[1.15] tracking-[-0.035em] text-apple-headline sm:text-4xl lg:text-5xl">
         {PROBLEM.h2}
       </h2>
     </div>
 
     <div class="mt-14 grid gap-12 lg:grid-cols-2 lg:gap-16">
-      <div class="space-y-6 text-[16px] leading-[1.75] text-white/70 relative" data-reveal>
+      <div class="space-y-6 text-base leading-[1.75] text-white/70 relative" data-reveal>
         <!-- Cinematic scroll tell: laser hairline draws itself as section scrolls -->
         <div class="draw-line absolute -left-6 top-1 hidden h-[calc(100%-8px)] w-px bg-white/20 lg:block" aria-hidden="true"></div>
         {PROBLEM.paras.map((p) => <p>{p}</p>)}
@@ -39,7 +39,7 @@ import { PROBLEM } from '../../data/site';
               {PROBLEM.table.rows.map(([mode, looks, catch_]) => (
                 <tr class="border-b border-white/5 last:border-0 align-top transition-colors hover:bg-white/[0.02]">
                   <th scope="row" class="px-5 py-3.5 font-medium text-white text-left">{mode}</th>
-                  <td class="px-5 py-3.5 text-white/65 font-mono text-[13px]">{looks}</td>
+                  <td class="px-5 py-3.5 text-white/65 font-mono text-xs">{looks}</td>
                   <td class="px-5 py-3.5 text-white/40 text-xs">{catch_}</td>
                 </tr>
               ))}
