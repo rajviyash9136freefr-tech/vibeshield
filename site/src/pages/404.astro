@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/ui/Nav.astro';
+import Footer from '../components/ui/Footer.astro';
+import { baseHref } from '../lib/base';
+---
+
+<BaseLayout title="404 — Route Not Found | VibeShield" canonical="/404">
+  <Nav slot="nav" />
+
+  <main id="main" class="relative min-h-[85vh] flex items-center justify-center overflow-hidden py-24 sm:py-32">
+    <!-- Ambient Specular Glow -->
+    <div
+      class="pointer-events-none absolute inset-0 opacity-40"
+      style="background: radial-gradient(ellipse 60% 40% at 50% 35%, rgba(255, 255, 255, 0.08) 0%, rgba(0, 0, 0, 0) 100%);"
+      aria-hidden="true"
+    ></div>
+
+    <div class="wrap text-center relative z-10 max-w-2xl mx-auto px-4" data-reveal>
+      <!-- Eyebrow Pill -->
+      <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3.5 py-1.5 backdrop-blur-md mb-6">
+        <span class="h-2 w-2 rounded-full bg-white animate-pulse"></span>
+        <span class="font-mono text-xs font-semibold tracking-wider text-white uppercase">
+          404 Finding · Hallucinated Route
+        </span>
+      </div>
+
+      <!-- Main Headline -->
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-[-0.04em] text-white">
+        Route Not Found
+      </h1>
+
+      <p class="mt-4 text-base sm:text-lg text-white/70 leading-relaxed max-w-lg mx-auto">
+        The URL you requested does not exist, was moved, or was hallucinated during a vibe coding session.
+      </p>
+
+      <!-- Terminal Inspection Finding Card -->
+      <div class="mt-8 text-left rounded-2xl border border-white/15 bg-[#09090c] p-5 sm:p-6 shadow-2xl font-mono text-xs sm:text-sm">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-4 text-white/50 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="h-2.5 w-2.5 rounded-full bg-white/30"></span>
+            <span class="h-2.5 w-2.5 rounded-full bg-white/20"></span>
+            <span class="h-2.5 w-2.5 rounded-full bg-white/10"></span>
+            <span class="ml-2 font-mono text-white/60">bash — vibeshield inspect</span>
+          </div>
+          <span class="rounded bg-white/10 px-2 py-0.5 text-white/80">HTTP 404</span>
+        </div>
+
+        <div class="space-y-2 text-white/85 leading-relaxed">
+          <p class="text-white font-bold">$ vibeshield inspect <span id="current-url-display" class="text-white/60">route</span></p>
+          <div class="pl-2 border-l-2 border-white/40 space-y-1.5 mt-2">
+            <p class="text-white font-bold">
+              <span class="bg-white text-black px-1.5 py-0.5 rounded text-xs font-mono mr-2">404 ERROR</span>
+              VS-ROUTE-001 &nbsp;unresolved-endpoint
+            </p>
+            <p class="text-white/70">
+              Path: <span id="current-path" class="text-white underline">/unknown-route</span>
+            </p>
+            <p class="text-white/50">
+              Why: LLM generated an unmapped URL or link target was moved.
+            </p>
+            <p class="text-white font-medium">
+              → Fix: Return to home or test real AI bugs on the live scanner demo.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3.5">
+        <a
+          href={baseHref('/')}
+          class="rounded-full bg-white px-6 py-2.5 text-xs sm:text-sm font-bold text-black shadow-[0_0_20px_rgba(255,255,255,0.25)] hover:bg-neutral-200 transition-all active:scale-95 flex items-center gap-2"
+        >
+          <span>← Back to Home</span>
+        </a>
+        <a
+          href={baseHref('/#scanner')}
+          class="rounded-full border border-white/20 bg-white/5 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white hover:border-white/40 hover:bg-white/10 transition-all flex items-center gap-2"
+        >
+          <span>Live Bug Hunter Demo</span>
+          <span>→</span>
+        </a>
+        <a
+          href="https://github.com/rajviyash9136freefr-tech/vibeshield"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="rounded-full border border-white/15 bg-white/[0.03] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white/70 hover:text-white hover:border-white/30 transition-all"
+        >
+          GitHub Repo
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<script>
+  // Dynamically populate actual path if rendered in browser
+  if (typeof window !== 'undefined') {
+    const pathEl = document.getElementById('current-path');
+    const urlEl = document.getElementById('current-url-display');
+    const path = window.location.pathname || '/unknown';
+    if (pathEl) pathEl.textContent = path;
+    if (urlEl) urlEl.textContent = path;
+  }
+</script>
