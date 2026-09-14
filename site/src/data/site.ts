@@ -46,97 +46,6 @@ export const DEMO_LINES = [
   { text: '  Report → PR #482 review comment posted', cls: 'faint' },
 ];
 
-export const PROBLEM = {
-  h2: 'Your AI ships 500 lines a day. Who reads them?',
-  paras: [
-    'AI agents now write a third to a half of new code in adopting teams. The same developers who would never merge a teammate\x27s unread diff accept a model\x27s output after a five-second glance. The industry calls it vibe coding; the security consequence is simply that the review step went missing.',
-    'LLMs fail in specific, enumerable ways. They invent package names that look plausible — and attackers register those names within hours. They echo secrets out of training data. They scaffold debug mode, wildcard CORS, and accept-alg-none JWTs because that code once worked in a tutorial.',
-    'Classic scanners were built for a world where a human wrote the code and risk meant known CVEs. A hallucinated package has no CVE. A pasted key has no advisory. A dropped license header leaves no trace. These defects fall between the seats of tools tuned to a different era.',
-    'The fix is not more scanning. It is a gate that understands how AI code fails, attributes findings to the hunks the model wrote, and posts them where the decision gets made: the pull request.',
-  ],
-  // PRD §2.1 failure-mode table — semantic <table> for `is AI generated code safe`
-  table: {
-    caption: 'AI-code failure modes and how classic scanners treat them',
-    cols: ['Failure mode', 'What it looks like', 'Classic scanners'],
-    rows: [
-      ['Hallucinated packages', 'Model invents `fast-parse-utils-v3`; attacker pre-registers it', 'Not flagged — no CVE yet'],
-      ['Secrets in boilerplate', 'API key pasted out of training data or chat context', 'Partial (generic secret tools)'],
-      ['Outdated insecure APIs', 'md5 passwords, eval on input, SQL string concat', 'Rule-dependent, noisy'],
-      ['License stripping', 'GPL snippet arrives with the header removed', 'Not detected'],
-      ['Insecure defaults', 'CORS *, debug=True, JWT algorithms:["none"]', 'Buried in noise'],
-      ['Transitive blowout', 'One added library, 200 new packages nobody saw', 'Later, via npm audit — not at PR'],
-      ['Prompt-injection changes', 'Malicious README instructs the agent to open a backdoor', 'Nobody covers this'],
-    ] as [string, string, string][],
-  },
-};
-
-export const STEPS = [
-  {
-    h3: 'Add the GitHub Action',
-    body: 'One file, five lines. No account, no agent, no sidecar.',
-    code: `name: VibeShield PR Gate
-on: [pull_request]
-jobs:
-  audit:
-    uses: vibeshield/action@v1`,
-    lang: 'yaml',
-  },
-  {
-    h3: 'Scan AI-generated pull requests',
-    body: 'The VibeCheck report lands on the PR: findings, dependency delta, AI-origin tags — in seconds.',
-    code: `🛡️ VibeCheck Report · 1.2s
-🔴 VS-PKG-001 hallucinated-pkg
-   fast-parse-utils-v3@2.1.4
-   → Fix: replace with node:util`,
-    lang: 'text',
-  },
-  {
-    h3: 'Merge with an audit trail',
-    body: 'Accept or dismiss each finding; dismissals are logged with a reason. Add the badge.',
-    code: `# README.md
-[![VibeShield](passing.svg)](badge)
-
-✓ PR #482 audited & verified
-✓ Zero leaked keys to main`,
-    lang: 'markdown',
-  },
-];
-
-export const FEATURES = [
-  {
-    title: 'Hallucinated package detection',
-    body: 'Scores every new dependency for slopsquatting risk — age, maintainers, install scripts, name-hallucination likelihood.',
-    large: true,
-    visual: 'deps',
-  },
-  {
-    title: '120 AI-specific rules, 8 languages',
-    body: 'A deliberately narrow ruleset — AI failure modes, not general linting.',
-    chips: ['VS-PKG-001', 'VS-SEC-017', 'VS-LIC-003', 'VS-DEP-002', 'VS-INJ-001'],
-    visual: 'chips',
-  },
-  {
-    title: 'AI-origin attribution',
-    body: 'Knows which diff hunks the bot wrote, via bot-author metadata and writing-pattern heuristics.',
-    visual: 'hunk',
-  },
-  {
-    title: 'Secrets re-scan',
-    body: 'Entropy + known-format checks tuned to training-data echo.',
-    visual: 'secret',
-  },
-  {
-    title: 'Diff-speed',
-    body: '1.2s median. Diff-only. Offline rules.',
-    visual: 'speed',
-  },
-  {
-    title: 'Explain-grade reports',
-    body: 'Every finding: why it matters for AI code, the pattern, a one-line fix, and a dismiss flow.',
-    visual: 'report',
-  },
-];
-
 export const INSTALL_TABS = [
   {
     id: 'script',
@@ -290,7 +199,7 @@ export const FAQ: { q: string; a: string; link?: [string, string] }[] = [
   {
     q: 'Does my source code or prompt data leave my machine?',
     a: 'No. Never. VibeShield is designed for zero data exfiltration. The CLI, agent skills, and pre-commit hooks execute 100% locally and offline on your machine using static analysis. Your code, API keys, and prompts are never sent to external servers and are never used for model training.',
-    link: ['Read Security Model', '/security'],
+    link: ['100% Local & Offline', SITE.repo],
   },
   {
     q: 'Is VibeShield free, and can I use it for private repositories?',
@@ -302,43 +211,34 @@ export const FAQ: { q: string; a: string; link?: [string, string] }[] = [
 export const FOOTER = {
   cols: [
     {
-      title: 'Product',
+      title: 'Navigation',
       links: [
-        ['Docs', '/docs'],
-        ['Install', '/install'],
-        ['Changelog', '/changelog'],
-        ['Roadmap', '/docs#roadmap'],
-        ['Status', 'https://status.vibeshield.dev'],
+        ['How to Setup', '/#agents'],
+        ['How to Install', '/#install'],
+        ['How to Scan', '/#how-to-scan'],
+        ['Live Demo', '/#scanner'],
+        ['FAQ', '/#faq'],
       ] as [string, string][],
     },
     {
-      title: 'Resources',
+      title: 'Agents Supported',
       links: [
-        ['Blog', '/blog'],
-        ['Threat model', '/security'],
-        ['Slopsquatting guide', '/blog/slopsquatting-explained'],
-        ['Bug-hunting skill', '/docs/skill'],
+        ['Cursor (.cursorrules)', '/#agents'],
+        ['Claude Code (/plugin)', '/#agents'],
+        ['Windsurf (.windsurfrules)', '/#agents'],
+        ['GitHub Copilot Gate', '/#agents'],
+        ['Terminal / Aider', '/#how-to-scan'],
       ] as [string, string][],
     },
     {
-      title: 'Compare',
+      title: 'Open Source',
       links: [
-        ['vs Snyk', '/compare/snyk'],
-        ['vs Socket', '/compare/socket'],
-        ['vs Dependabot', '/compare/dependabot'],
-      ] as [string, string][],
-    },
-    {
-      title: 'Company',
-      links: [
-        ['GitHub', 'https://github.com/rajviyash9136freefr-tech/vibeshield'],
-        ['X', 'https://x.com/vibeshield'],
-        ['Contact', 'mailto:hi@vibeshield.dev'],
-        ['Privacy', '/privacy'],
-        ['Terms', '/terms'],
+        ['GitHub Repository', 'https://github.com/rajviyash9136freefr-tech/vibeshield'],
+        ['Issue Tracker', 'https://github.com/rajviyash9136freefr-tech/vibeshield/issues'],
+        ['Releases & Binaries', 'https://github.com/rajviyash9136freefr-tech/vibeshield/releases'],
+        ['MIT License', 'https://github.com/rajviyash9136freefr-tech/vibeshield/blob/main/LICENSE'],
       ] as [string, string][],
     },
   ],
-  bottom: '© 2026 VibeShield · MIT open source',
-  langs: ['en', 'es', 'de', 'fr'],
+  bottom: '© 2026 VibeShield · Bug Hunter & Tester for AI Vibe Coding · Free & Open Source under MIT License',
 };
