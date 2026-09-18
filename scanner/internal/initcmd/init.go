@@ -286,7 +286,9 @@ func actionRef(version string) string {
 // The path is normalised to forward slashes: the hook runs under sh, where a
 // Windows path like C:\Users\... would be read literally (backslashes are not
 // separators), while C:/Users/... resolves in Git Bash, MSYS and every POSIX
-// shell.
+// shell. The replacement is explicit rather than filepath.ToSlash, which is a
+// no-op on Unix — there the separator is already "/", so backslashes survive
+// and the behaviour would differ by platform.
 func renderHook(binaryPath string) string {
 	var b strings.Builder
 	b.WriteString("#!/bin/sh\n")
@@ -296,7 +298,8 @@ func renderHook(binaryPath string) string {
 	b.WriteString("  exec vibeshield scan --staged\n")
 	b.WriteString("fi\n")
 	if binaryPath != "" {
-		fmt.Fprintf(&b, "exec %s scan --staged\n", shellQuote(filepath.ToSlash(binaryPath)))
+		posix := strings.ReplaceAll(binaryPath, `\`, "/")
+		fmt.Fprintf(&b, "exec %s scan --staged\n", shellQuote(posix))
 	} else {
 		b.WriteString("echo 'vibeshield: not found on PATH — install it or edit this hook' >&2\n")
 		b.WriteString("exit 0\n")
