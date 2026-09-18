@@ -35,13 +35,13 @@ var skipDirs = map[string]bool{
 var extLangs = map[string]string{
 	".js": "javascript", ".jsx": "javascript", ".mjs": "javascript", ".cjs": "javascript",
 	".ts": "typescript", ".tsx": "typescript",
-	".py": "python",
-	".go": "go",
+	".py":   "python",
+	".go":   "go",
 	".java": "java",
-	".rb": "ruby",
-	".php": "php",
-	".rs": "rust",
-	".cs": "csharp",
+	".rb":   "ruby",
+	".php":  "php",
+	".rs":   "rust",
+	".cs":   "csharp",
 	".yaml": "yaml", ".yml": "yaml",
 }
 

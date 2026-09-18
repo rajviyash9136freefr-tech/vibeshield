@@ -23,7 +23,7 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - uses: vibeshield/action@v1
+      - uses: vibeshield/action@v2.0.0
 ```
 
 Push the branch and open a PR. Within seconds VibeShield posts a
@@ -40,7 +40,7 @@ Add to `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/rajviyash9136freefr-tech/vibeshield
-    rev: v1.0.0
+    rev: v2.0.0
     hooks:
       - id: vibeshield
 ```

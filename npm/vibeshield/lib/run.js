@@ -15,7 +15,7 @@ import { tmpdir, homedir } from 'node:os';
 import { join } from 'node:path';
 
 const REPO = 'rajviyash9136freefr-tech/vibeshield';
-const VERSION = process.env.VIBESHIELD_VERSION || 'v1.0.0';
+const VERSION = process.env.VIBESHIELD_VERSION || 'v2.0.0';
 
 function cacheDir() {
   if (process.env.VIBESHIELD_HOME) return process.env.VIBESHIELD_HOME;

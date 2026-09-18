@@ -3,7 +3,7 @@
 # wide CORS, debug servers, signature-bypass JWTs, TLS verification off.
 schema: vibeshield.rules/v1
 id: core
-version: 1.0.0
+version: 2.0.0
 license: MIT
 rules:
   - id: VS-SEC-014

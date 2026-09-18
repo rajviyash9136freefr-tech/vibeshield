@@ -47,7 +47,7 @@ inputs:
       Falls back to "go build ./scanner" if the download fails and Go is on
       the runner.
     required: false
-    default: 'v1.0.0'
+    default: 'v2.0.0'
 
 outputs:
   critical:

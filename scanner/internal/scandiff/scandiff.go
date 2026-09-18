@@ -13,15 +13,15 @@ import (
 
 // Diff is a parsed unified diff: per file, the added line numbers.
 type Diff struct {
-	Ref     string // ref scanned against, or "staged"/"stdin"
-	Added   map[string]map[int]bool
-	Files   []string // stable order
+	Ref   string // ref scanned against, or "staged"/"stdin"
+	Added map[string]map[int]bool
+	Files []string // stable order
 }
 
 var (
-	hunkRe  = regexp.MustCompile(`^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@`)
-	fileRe  = regexp.MustCompile(`^\+\+\+ b/(.+)$`)
-	devRe   = regexp.MustCompile(`^\+\+\+ /dev/null`)
+	hunkRe = regexp.MustCompile(`^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@`)
+	fileRe = regexp.MustCompile(`^\+\+\+ b/(.+)$`)
+	devRe  = regexp.MustCompile(`^\+\+\+ /dev/null`)
 )
 
 // FromGit runs `git diff` for the given spec args and parses the output.

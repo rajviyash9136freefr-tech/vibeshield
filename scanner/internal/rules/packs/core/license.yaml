@@ -1,6 +1,6 @@
 schema: vibeshield.rules/v1
 id: core
-version: 1.0.0
+version: 2.0.0
 license: MIT
 # VS-LIC-001..024 — license patterns for AI-generated code.
 # Focus: copyleft text that survives model "header stripping" (PRD §2.1 row 4),

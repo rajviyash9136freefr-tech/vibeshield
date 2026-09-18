@@ -1,0 +1,112 @@
+name: ci
+
+# The repo had no PR gate of its own. This one runs the same checks the release
+# workflow depends on, so a broken main never reaches a tag:
+#   - Go tests + vet for the scanner
+#   - the two sync checks (rule packs, generated agent rule files)
+#   - gofmt on every tracked Go file
+#   - a cross-compile for all six release targets (raw-terminal code lives in
+#     per-platform files, so a build failure is easy to introduce and hard to
+#     notice locally)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scanner:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: scanner
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: scanner/go.mod
+          cache-dependency-path: scanner/go.sum
+
+      - name: gofmt
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "::error::gofmt needed on:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: vet
+        run: go vet ./...
+
+      - name: test
+        run: go test ./...
+
+  cross-compile:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { goos: linux, goarch: amd64 }
+          - { goos: linux, goarch: arm64 }
+          - { goos: darwin, goarch: amd64 }
+          - { goos: darwin, goarch: arm64 }
+          - { goos: windows, goarch: amd64 }
+          - { goos: windows, goarch: arm64 }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: scanner/go.mod
+          cache-dependency-path: scanner/go.sum
+      - name: Build ${{ matrix.goos }}/${{ matrix.goarch }}
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: '0'
+        run: |
+          mkdir -p out
+          cd scanner
+          go build -trimpath -o ../out/vibeshield ./cmd/vibeshield
+
+  repo-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # The scanner embeds rules/core/; drift means the binary would ship a
+      # different rule set than the repository documents.
+      - name: Rule packs in sync
+        run: node scripts/sync-rules.mjs --check
+
+      # AGENTS.md and friends are generated from AgentRulesBody in the Go
+      # source, so the docs cannot claim support the code does not ship.
+      - name: Agent rule files in sync
+        run: node scripts/sync-agent-rules.mjs --check
+
+      - name: Every agent recipe has a matching file
+        run: |
+          node -e "
+            const { readFileSync } = require('node:fs');
+            const src = readFileSync('scanner/internal/cli/catalog.go', 'utf8');
+            const files = [
+              'AGENTS.md', '.agents/rules/vibeshield.md',
+              '.cursor/rules/vibeshield.mdc', '.cursorrules',
+              '.windsurf/rules/vibeshield.md', '.windsurfrules',
+              '.github/copilot-instructions.md',
+            ];
+            const missing = files.filter((f) => !src.includes(f) && !require('node:fs').existsSync(f));
+            if (missing.length) {
+              console.error('missing agent files:', missing.join(', '));
+              process.exit(1);
+            }
+            console.log('all ' + files.length + ' agent files present');
+          "

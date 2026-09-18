@@ -6,7 +6,7 @@ Core pack ships embedded (MIT). A pack file looks like:
 ```yaml
 schema: vibeshield.rules/v1
 id: core
-version: 1.0.0
+version: 2.0.0
 license: MIT
 rules:
   - id: VS-SEC-014

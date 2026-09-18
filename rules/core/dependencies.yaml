@@ -1,6 +1,6 @@
 schema: vibeshield.rules/v1
 id: core
-version: 1.0.0
+version: 2.0.0
 license: MIT
 # VS-DEP-001..019 — dependency-tree risk for AI-generated code (PRD §2.1 row 6).
 # Focus: unpinned manifests, wildcard/"latest" ranges, floating VCS refs,
