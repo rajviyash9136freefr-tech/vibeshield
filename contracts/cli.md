@@ -7,9 +7,31 @@ Binary name: `vibeshield` (Go, single static binary, pure Go — no CGO).
 ```
 vibeshield scan [path]     Scan a directory (full mode) or diff (diff mode)
 vibeshield fix [path]      VibePatch: preview + apply mechanical autofixes (opt-in, gated)
-vibeshield init            Detect frameworks, write vibeshield.yml + hook + workflow, run first scan
+vibeshield init [path]     Detect frameworks, write vibeshield.yml + hook + workflow, run first scan
+vibeshield search [query]  Search the rule packs and the console catalog
+vibeshield agents [name]   Print per-agent setup recipes (Codex, Claude Code, Antigravity, …)
+vibeshield ui              Open the interactive console (same as a bare `vibeshield`)
 vibeshield version         Print version + embedded rule-pack versions
 ```
+
+## Init flags
+
+```
+--mode <mode>      Initial gate mode written to vibeshield.yml (default: warn)
+--dry-run          Show what would be written; change nothing
+--force            Overwrite files that already exist
+--no-hook          Skip the git pre-commit hook
+--no-workflow      Skip the GitHub Action workflow
+--no-scan          Skip the first scan
+--no-color         Disable color
+```
+
+Init law: it writes at most three files — `vibeshield.yml`,
+`.github/workflows/vibeshield.yml`, `.git/hooks/pre-commit` — and never
+overwrites any of them (least of all a git hook) without `--force`. With no
+git repository present it skips the hook and still writes the other two. The
+workflow pins the Action to the release the running binary came from, not to a
+moving major tag.
 
 ## Fix flags (VibePatch)
 

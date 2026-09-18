@@ -29,3 +29,6 @@ Thumbs.db
 # test scratch
 /tmp/
 coverage/
+
+# local agent tooling state (project notes, not a build input)
+.workbuddy-ai/

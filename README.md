@@ -48,9 +48,11 @@ v1 was a scanner you piped into CI. **v2 is a workspace you sit in.**
 | | v1.0.0 | **v2.0.0** |
 |:---|:---|:---|
 | Bare `vibeshield` | printed usage | **opens a searchable interactive console** |
+| Project setup | wire it up by hand | **`vibeshield init` — detects the stack, writes config + PR gate + hook** |
 | Finding a rule | read the YAML | **`vibeshield search "aws key"`** |
 | Agent setup | one prompt in the README | **7 generated, drift-checked rule files** |
 | Agents covered | Cursor · Claude Code · Windsurf · Copilot | **+ Codex · Google Antigravity · Claude Code Desktop · any `AGENTS.md` client** |
+| Action downloads | unverified | **verified against the release `sha256sums.txt`** |
 | Rule packs | `core 1.0.0` | `core 2.0.0` |
 
 Full details in [CHANGELOG.md](CHANGELOG.md).
@@ -199,6 +201,10 @@ Pure Go, `CGO_ENABLED=0`, no third-party runtime dependencies.
 ## 🔍 How to scan & hunt bugs
 
 ```bash
+# 0. Set the project up — detects the stack, writes vibeshield.yml,
+#    a PR-gate workflow and a pre-commit hook, then runs the first scan
+vibeshield init
+
 # 1. Audit the whole project
 vibeshield scan .
 
@@ -216,6 +222,22 @@ vibeshield fix . --dry-run
 
 # 6. Apply them, with every patch written to vibeshield-fixes.log
 vibeshield fix . --yes
+```
+
+`vibeshield init` is deliberately conservative — `--dry-run` prints the whole
+plan, nothing is overwritten without `--force`, and an existing git hook is
+never touched:
+
+```text
+  $ vibeshield init --dry-run
+  VibeShield 2.0.0 — project setup
+  Detected   javascript, typescript
+  Ecosystem  npm
+  Framework  Next.js, React
+
+  would write  vibeshield.yml
+  would write  .github/workflows/vibeshield.yml
+  would write  .git/hooks/pre-commit
 ```
 
 | Flag | Meaning |

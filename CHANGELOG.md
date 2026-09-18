@@ -12,8 +12,16 @@ AI agents through `vibeshield search`.
 
 ### Added
 
+- **`vibeshield init`.** The setup command that `contracts/cli.md` has always
+  specified but the binary never implemented. Detects the stack from manifests
+  (language, ecosystem, framework), writes a `vibeshield.yml`, a pull-request
+  gate workflow pinned to the release this binary came from, and a POSIX
+  pre-commit hook, then runs the first scan. Conservative by design: it never
+  overwrites a file without `--force`, never touches an existing git hook, and
+  `--dry-run` prints the whole plan first. Flags: `--mode`, `--dry-run`,
+  `--force`, `--no-hook`, `--no-workflow`, `--no-scan`, `--no-color`.
 - **Interactive console (`vibeshield`, `vibeshield ui`).** One search box over
-  11 actions, 7 agent setup recipes and all 122 core rules. Arrow keys / `Tab`
+  the actions, 7 agent setup recipes and all 122 core rules. Arrow keys / `Tab`
   to move, `Enter` to open, `Esc` to clear then quit, `Ctrl+U` to reset.
   Selecting an action hands the terminal back and runs the real command, so the
   menu can never drift from the documented flags.
@@ -59,7 +67,7 @@ AI agents through `vibeshield search`.
 - Cross-compiles clean for linux/amd64, linux/arm64, darwin/amd64,
   darwin/arm64, windows/amd64 and windows/arm64.
 
-## [1.0.0] — 2026-09-14
+## [1.0.0] — 2026-09-13
 
 First public release: Go scanner with the embedded MIT core rule pack, GitHub
 Action PR gate, pre-commit hook, npm launcher, Claude Code audit skill, and the

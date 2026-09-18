@@ -153,6 +153,23 @@ func Catalog(pack *rules.Pack, version string) []Item {
 func actionItems(version string) []Item {
 	return []Item{
 		{
+			Kind: KindAction, Group: "Setup",
+			Title:   "Set up this project",
+			Summary: "Detect the stack, write vibeshield.yml, a PR gate and a hook.",
+			Keywords: []string{
+				"init", "setup", "install", "configure", "configure", "start", "onboard",
+				"workflow", "hook", "pre commit", "scaffold", "bootstrap", "ci", "yml",
+			},
+			Args: []string{"init", ".", "--dry-run"},
+		},
+		{
+			Kind: KindAction, Group: "Setup",
+			Title:    "Set up this project (write the files)",
+			Summary:  "Same as above, without the dry-run preview.",
+			Keywords: []string{"init", "setup", "write", "apply", "configure", "workflow", "hook", "ci"},
+			Args:     []string{"init", "."},
+		},
+		{
 			Kind: KindAction, Group: "Scan",
 			Title:   "Scan this project",
 			Summary: "Full offline audit of the current directory.",

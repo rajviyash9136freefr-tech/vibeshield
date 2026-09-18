@@ -7,14 +7,28 @@ import Footer from '../components/ui/Footer.astro';
 
 const ENTRIES = [
   {
+    version: 'v2.0.0',
+    date: '2026-09-18',
+    title: 'The terminal workspace',
+    items: [
+      '`vibeshield init` — detects the stack from your manifests and writes a `vibeshield.yml`, a pull-request gate workflow and a POSIX pre-commit hook, then runs the first scan. Never overwrites a file without `--force`, never touches an existing git hook.',
+      'Interactive console — running `vibeshield` with no arguments opens a searchable, keyboard-driven menu over every action, rule and agent recipe. Arrow keys, Tab to jump groups, Enter to open.',
+      '`vibeshield search [query]` — the same ranking on stdout, with `--list`, `--rules`, `--agents`, `--limit` and `--format json` (`vibeshield.search/v1`) for scripts and agent tool-calls.',
+      '`vibeshield agents [name]` — setup recipes for Codex, Claude Code (CLI and Desktop), Google Antigravity, Cursor, Windsurf, GitHub Copilot and any `AGENTS.md` client, with `--body` and `--markdown`.',
+      'Agent rule files generated from one source of truth, with CI failing on drift: `AGENTS.md`, `.agents/rules/`, `.cursor/rules/`, `.cursorrules`, `.windsurf/rules/`, `.windsurfrules`, `.github/copilot-instructions.md`.',
+      'The GitHub Action now verifies the downloaded scanner against the release `sha256sums.txt` before executing it.',
+      'Core rules pack v2.0.0 (MIT): 122 rules across 6 categories. Rule IDs and semantics unchanged.',
+    ],
+  },
+  {
     version: 'v1.0.0',
-    date: '2026-09-15',
+    date: '2026-09-13',
     title: 'Launch',
     items: [
       'GitHub Action (`vibeshield/action@v1`) — diff-mode PR scans, consolidated VibeCheck report, accept/dismiss commands, badge.',
-      'Pre-commit hook — staged-files scan, < 1.5 s typical, fully offline rules.',
-      'CLI — `scan | init | version`, `--format pretty|json|sarif|github`.',
-      'Core rules pack v1.0.0 (MIT): ~120 rules across 8 languages in the 7 AI-code failure modes.',
+      'Pre-commit hook — staged-files scan, fully offline rules.',
+      'CLI — `scan | fix | version`, `--format pretty|json|github`.',
+      'Core rules pack v1.0.0 (MIT): 122 rules across the AI-code failure modes, 11 languages.',
       'Bug-hunting skill (`/vibeshield:vibeshield-audit`) — in-agent audit with parallel hunter subagents, same finding contract.',
     ],
   },

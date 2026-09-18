@@ -15,6 +15,7 @@ import (
 	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/cli"
 	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/config"
 	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/fix"
+	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/initcmd"
 	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/output"
 	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/rules"
 	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/scan"
@@ -32,6 +33,8 @@ Usage:
                               when stdin is not a terminal.
   vibeshield scan [path]      Scan a directory (full) or a git diff (--diff/--staged)
   vibeshield fix [path]       VibePatch: preview + apply mechanical fixes from scan findings
+  vibeshield init [path]      Set up a project: detect the stack, write vibeshield.yml,
+                              a PR-gate workflow and a pre-commit hook, then scan
   vibeshield search [query]   Search the rule packs and the console catalog
   vibeshield agents [name]    Print the per-agent setup recipe (Codex, Claude Code,
                               Antigravity, Cursor, Windsurf, Copilot, …)
@@ -53,6 +56,16 @@ Fix flags (VibePatch — opt-in, human-gated):
   --yes              Apply without prompting (for coding agents / CI);
                      every patch still lands in vibeshield-fixes.log
   --report <file>    Reuse an existing --format json scan instead of rescanning
+
+Init flags:
+  --mode <mode>      Initial gate mode written to vibeshield.yml (default: warn)
+  --dry-run          Show what would be written, change nothing
+  --force            Overwrite files that already exist (never touches a hook
+                     unless you pass this)
+  --no-hook          Skip the git pre-commit hook
+  --no-workflow      Skip the GitHub Action workflow
+  --no-scan          Skip the first scan
+  --no-color         Disable color
 
 Search flags:
   --list             List every catalog entry instead of searching
@@ -99,6 +112,8 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return cmdScan(args[1:], stdout, stderr)
 	case "fix":
 		return cmdFix(args[1:], os.Stdin, stdout, stderr)
+	case "init":
+		return cmdInit(args[1:], stdout, stderr)
 	case "search", "find":
 		return cmdSearch(args[1:], stdout, stderr)
 	case "agents", "agent":
@@ -145,6 +160,126 @@ func cmdVersion(w io.Writer) int {
 	fmt.Fprintf(w, "rule packs: %s %s (%s, %d rules)\n", pack.ID, pack.Version, pack.License, len(pack.Rules))
 	fmt.Fprintf(w, "no code leaves this machine: static analysis only\n")
 	return 0
+}
+
+// cmdInit is the setup path documented in contracts/cli.md: detect the stack,
+// write vibeshield.yml + a PR-gate workflow + a pre-commit hook, then run a
+// first scan. It is deliberately conservative — it never overwrites a file
+// (least of all a git hook) without --force, and --dry-run prints the whole
+// plan first so nothing is a surprise.
+func cmdInit(args []string, stdout, stderr io.Writer) int {
+	args = normalizeScanArgs(args)
+	fl := flag.NewFlagSet("init", flag.ContinueOnError)
+	fl.SetOutput(stderr)
+	var (
+		mode       = fl.String("mode", "warn", "initial gate mode written to vibeshield.yml")
+		dryRun     = fl.Bool("dry-run", false, "show what would be written, change nothing")
+		force      = fl.Bool("force", false, "overwrite files that already exist")
+		noHook     = fl.Bool("no-hook", false, "skip the git pre-commit hook")
+		noWorkflow = fl.Bool("no-workflow", false, "skip the GitHub Action workflow")
+		noScan     = fl.Bool("no-scan", false, "skip the first scan")
+		noColor    = fl.Bool("no-color", false, "disable color")
+	)
+	fl.Usage = func() {
+		fmt.Fprint(stderr, "usage: vibeshield init [flags] [path]\n\n"+
+			"  --mode <mode>   off | warn | block-on-critical | block-on-high+ (default warn)\n"+
+			"  --dry-run       Show what would be written, change nothing\n"+
+			"  --force         Overwrite existing files\n"+
+			"  --no-hook       Skip the git pre-commit hook\n"+
+			"  --no-workflow   Skip the GitHub Action workflow\n"+
+			"  --no-scan       Skip the first scan\n"+
+			"  --no-color      Disable color\n")
+	}
+	if err := fl.Parse(args); err != nil {
+		return 2
+	}
+	if !config.AllowedModes[*mode] {
+		fmt.Fprintf(stderr, "vibeshield: bad --mode %q (off|warn|block-on-critical|block-on-high+)\n", *mode)
+		return 2
+	}
+	path := "."
+	if fl.NArg() > 0 {
+		path = fl.Arg(0)
+	}
+	self, err := os.Executable()
+	if err != nil {
+		self = ""
+	}
+
+	plan, err := initcmd.BuildPlan(initcmd.Options{
+		Dir: path, Mode: *mode, Version: Version,
+		Force: *force, Hook: !*noHook, Workflow: !*noWorkflow,
+		BinaryPath: self,
+	})
+	if err != nil {
+		fmt.Fprintf(stderr, "vibeshield: %v\n", err)
+		return 2
+	}
+
+	color := !*noColor && output.IsTTY(stdout)
+	paint := func(code, s string) string {
+		if !color {
+			return s
+		}
+		return code + s + "\x1b[0m"
+	}
+	const (
+		cBold   = "\x1b[1m"
+		cDim    = "\x1b[90m"
+		cGreen  = "\x1b[32m"
+		cYellow = "\x1b[33m"
+	)
+
+	fmt.Fprintf(stdout, "\n  %s\n", paint(cBold, "VibeShield "+Version+" — project setup"))
+	if plan.Stack.Empty() {
+		fmt.Fprintf(stdout, "  %s\n", paint(cDim, "No manifest recognised at the root — every language will be scanned."))
+	} else {
+		fmt.Fprintf(stdout, "  Detected   %s\n", strings.Join(plan.Stack.Languages, ", "))
+		if len(plan.Stack.Ecosystems) > 0 {
+			fmt.Fprintf(stdout, "  Ecosystem  %s\n", strings.Join(plan.Stack.Ecosystems, ", "))
+		}
+		if len(plan.Stack.Frameworks) > 0 {
+			fmt.Fprintf(stdout, "  Framework  %s\n", strings.Join(plan.Stack.Frameworks, ", "))
+		}
+	}
+	fmt.Fprintln(stdout)
+
+	verb := cGreen
+	verbWord := "wrote"
+	if *dryRun {
+		verb, verbWord = cYellow, "would write"
+	}
+	for _, f := range plan.Files {
+		fmt.Fprintf(stdout, "  %s  %s\n", paint(verb, verbWord), f.Rel)
+	}
+	if len(plan.Files) == 0 {
+		fmt.Fprintf(stdout, "  %s\n", paint(cDim, "nothing to write"))
+	}
+	for _, s := range plan.Skips {
+		fmt.Fprintf(stdout, "  %s  %s — %s\n", paint(cDim, "skipped"), s.Rel, s.Reason)
+	}
+	if plan.NoRepo {
+		fmt.Fprintf(stdout, "  %s  no git repository here, so no pre-commit hook\n", paint(cDim, "skipped"))
+	}
+
+	if *dryRun {
+		fmt.Fprintf(stdout, "\n  %s\n\n", paint(cDim, "--dry-run: nothing was written. Re-run without it to apply."))
+		return 0
+	}
+
+	written, err := plan.Apply()
+	if err != nil {
+		fmt.Fprintf(stderr, "vibeshield: %v\n", err)
+		return 2
+	}
+	fmt.Fprintf(stdout, "\n  %d file(s) written.\n", len(written))
+
+	if *noScan {
+		fmt.Fprintf(stdout, "\n  Next: vibeshield scan %s\n\n", path)
+		return 0
+	}
+	fmt.Fprintf(stdout, "\n  Running the first scan…\n")
+	return run([]string{"scan", path}, stdout, stderr)
 }
 
 // cmdSearch is the scriptable half of the console: the same ranking, on
