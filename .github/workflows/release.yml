@@ -42,7 +42,10 @@ jobs:
         run: |
           mkdir -p out
           cd scanner
-          go build -trimpath -ldflags "-s -w -X main.Version=${GITHUB_REF_NAME}" \
+          # Strip the leading "v" so a released binary reports the same
+          # version string as a local build: "vibeshield 2.0.0", not "v2.0.0".
+          VERSION="${GITHUB_REF_NAME#v}"
+          go build -trimpath -ldflags "-s -w -X main.Version=${VERSION}" \
             -o ../out/vibeshield ./cmd/vibeshield
       - name: Package
         run: |
