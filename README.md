@@ -338,10 +338,10 @@ Yes — MIT, end to end: scanner, action, hooks, console, all rule packs. No tie
 ---
 
 <!--
-Search keywords (GitHub topics to set in repo Settings → Topics):
+Search keywords. These are live as GitHub topics on this repo; keep the two in
+sync if you fork it (Settings → Topics):
 vibe-coding, ai-coding, ai-agents, ai-security, claude-code, codex, cursor, antigravity,
 github-copilot, windsurf, agents-md, slopsquatting, hallucinated-packages,
-ai-generated-code, llm-security, secret-scanning, supply-chain-security, pre-commit,
-github-action, devsecops, sast, static-analysis, terminal-ui, go, cli, developer-tools,
-code-review, dependency-audit, mit-license
+secret-scanning, supply-chain-security, pre-commit, github-action, devsecops, sast,
+static-analysis
 -->
