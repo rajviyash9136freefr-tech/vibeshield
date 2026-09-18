@@ -123,6 +123,31 @@ resolve_binary() {
     local auth=()
     [ -n "$GH_TOKEN" ] && auth=(-H "Authorization: Bearer $GH_TOKEN")
     if curl -fsSL --max-time 120 "${auth[@]}" -o "$dl" "$url" 2>/dev/null; then
+      # Verify the archive against the release's sha256sums.txt before
+      # extracting it. Downloading and executing an unverified binary on a
+      # runner is the exact supply-chain failure mode this tool exists to catch.
+      # A missing sums file is a warning (older releases predate it); a
+      # mismatched hash is always fatal.
+      local asset="vibeshield-$OS-$ARCH.$ext"
+      if curl -fsSL --max-time 60 "${auth[@]}" \
+        -o "$RUNNER_TEMP/vs-sums.txt" \
+        "$GITHUB_SERVER_URL/rajviyash9136freefr-tech/vibeshield/releases/download/$VERSION/sha256sums.txt" 2>/dev/null; then
+        local want got
+        want="$(awk -v f="$asset" '{ n=$2; sub(/^\*/, "", n); if (n == f) { print $1; exit } }' "$RUNNER_TEMP/vs-sums.txt")"
+        if [ -z "$want" ]; then
+          err "sha256sums.txt for $VERSION has no entry for $asset — refusing to run an unverified binary"
+          exit 2
+        fi
+        got="$(sha256sum "$dl" 2>/dev/null | awk '{print $1}')"
+        [ -n "$got" ] || got="$(shasum -a 256 "$dl" 2>/dev/null | awk '{print $1}')"
+        if [ "$want" != "$got" ]; then
+          err "checksum mismatch for $asset (expected $want, got ${got:-none}) — refusing to run"
+          exit 2
+        fi
+        dbg "checksum verified for $asset"
+      else
+        warn "no sha256sums.txt for $VERSION — continuing without checksum verification"
+      fi
       mkdir -p "$RUNNER_TEMP/vibeshield-bin"
       if [ "$ext" = zip ]; then unzip -qo "$dl" -d "$RUNNER_TEMP/vibeshield-bin" 2>/dev/null
       else tar -xzf "$dl" -C "$RUNNER_TEMP/vibeshield-bin" 2>/dev/null; fi

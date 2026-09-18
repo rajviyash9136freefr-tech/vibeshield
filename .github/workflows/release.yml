@@ -66,7 +66,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: sums-${{ matrix.goos }}-${{ matrix.suffix }}
-          path: sha256sums-part.txt
+          # Must match the filename the Package step writes. A mismatched path
+          # used to be skipped silently (upload-artifact only warns), which left
+          # the release job with an empty sums/ directory and no sha256sums.txt
+          # in the published release — so the npm wrapper had nothing to verify
+          # against. if-no-files-found: error makes that failure loud.
+          path: sha256sums-${{ matrix.goos }}-${{ matrix.suffix }}.txt
+          if-no-files-found: error
 
   release:
     needs: build
@@ -83,7 +89,19 @@ jobs:
           path: sums
           merge-multiple: true
       - name: Merge checksums (npm wrapper verifies against this file)
-        run: cat sums/sha256sums-*.txt > assets/sha256sums.txt
+        run: |
+          shopt -s nullglob
+          parts=(sums/sha256sums-*.txt)
+          if [ ${#parts[@]} -eq 0 ]; then
+            echo "::error::no checksum parts were uploaded — check the sums-* upload path in the build job"
+            exit 1
+          fi
+          if [ ${#parts[@]} -ne 6 ]; then
+            echo "::warning::expected 6 checksum parts, found ${#parts[@]}"
+          fi
+          cat "${parts[@]}" > assets/sha256sums.txt
+          echo "merged ${#parts[@]} part(s):"
+          cat assets/sha256sums.txt
       - uses: softprops/action-gh-release@v3
         with:
           files: assets/*
