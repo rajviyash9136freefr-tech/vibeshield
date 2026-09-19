@@ -8,7 +8,7 @@ import { baseHref } from '../../lib/base';
   style="background-color: var(--ink-strong); color: var(--on-ink); border-top: 1px solid var(--border-on-ink);"
 >
   <div class="wrap py-14 lg:py-16">
-    <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
       <!-- Col 1: Brand & Purpose -->
       <div>
         <div class="flex items-center gap-2.5 font-bold tracking-tight text-sm font-display" style="color: var(--on-ink)">
@@ -46,7 +46,7 @@ import { baseHref } from '../../lib/base';
         </div>
       </div>
 
-      <!-- Cols 2-4: Navigation Links -->
+      <!-- Cols 2-5: Navigation Links -->
       {FOOTER.cols.map((col) => (
         <nav aria-label={col.title}>
           <h2 class="text-xs font-display font-bold uppercase tracking-wider" style="color: var(--on-ink)">{col.title}</h2>
@@ -77,7 +77,7 @@ import { baseHref } from '../../lib/base';
       style="border-top: 1px solid var(--border-on-ink); color: var(--on-ink-soft);"
     >
       <span>{FOOTER.bottom}</span>
-      <div class="flex items-center gap-3">
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
         <a
           href={baseHref('/privacy')}
           class="hover:underline transition-colors"
@@ -101,6 +101,38 @@ import { baseHref } from '../../lib/base';
           onmouseover="this.style.color='var(--on-ink)'"
           onmouseout="this.style.color='var(--on-ink-soft)'"
         >Security</a>
+        <span aria-hidden="true" style="color: var(--border-on-ink)">·</span>
+        <a
+          href={baseHref('/blog')}
+          class="hover:underline transition-colors"
+          style="color: var(--on-ink-soft);"
+          onmouseover="this.style.color='var(--on-ink)'"
+          onmouseout="this.style.color='var(--on-ink-soft)'"
+        >Blog</a>
+        <span aria-hidden="true" style="color: var(--border-on-ink)">·</span>
+        <a
+          href={baseHref('/changelog')}
+          class="hover:underline transition-colors"
+          style="color: var(--on-ink-soft);"
+          onmouseover="this.style.color='var(--on-ink)'"
+          onmouseout="this.style.color='var(--on-ink-soft)'"
+        >Changelog</a>
+        <span aria-hidden="true" style="color: var(--border-on-ink)">·</span>
+        <a
+          href={baseHref('/docs')}
+          class="hover:underline transition-colors"
+          style="color: var(--on-ink-soft);"
+          onmouseover="this.style.color='var(--on-ink)'"
+          onmouseout="this.style.color='var(--on-ink-soft)'"
+        >Docs</a>
+        <span aria-hidden="true" style="color: var(--border-on-ink)">·</span>
+        <a
+          href={baseHref('/install')}
+          class="hover:underline transition-colors"
+          style="color: var(--on-ink-soft);"
+          onmouseover="this.style.color='var(--on-ink)'"
+          onmouseout="this.style.color='var(--on-ink-soft)'"
+        >Install</a>
       </div>
       <span class="flex items-center gap-2">
         <span class="h-1.5 w-1.5 rounded-full" style="background: var(--ok-on-ink)"></span>
