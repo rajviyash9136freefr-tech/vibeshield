@@ -1,6 +1,7 @@
 // Package output renders a scan report in the contracts/cli.md formats:
-// pretty (the VibeCheck terminal format), json, and github (:error /
-// :warning annotations for runner logs). sarif is on the roadmap.
+// pretty (the VibeCheck terminal format), json, github (:error / :warning
+// annotations for runner logs) and sarif (GitHub code-scanning uploads, see
+// sarif.go).
 package output
 
 import (

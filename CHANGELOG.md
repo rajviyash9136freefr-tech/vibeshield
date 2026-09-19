@@ -12,6 +12,22 @@ AI agents through `vibeshield search`.
 
 ### Added
 
+- **`--format sarif`.** SARIF 2.1.0 output, which `contracts/cli.md` has listed
+  as a supported format since v1.0.0 while the binary answered "lands in v2.1".
+  Findings now upload to GitHub code scanning via
+  `github/codeql-action/upload-sarif` and appear in a repository's Security tab
+  with the rule text, the one-line fix, and a `partialFingerprints` entry built
+  from the contract's own dismiss hash so an alert survives reformatting.
+  Severity maps to SARIF levels (`critical`/`high` → `error`, `medium` →
+  `warning`, `low`/`info` → `note`); line-less findings omit the region rather
+  than emitting the invalid `startLine: 0`.
+- **`-v` / `--verbose`** on `scan` and `fix` — the global flag
+  `contracts/cli.md` documented but the binary never accepted. Reports the
+  resolved config, mode, languages, pack version and rule count, plus the walk
+  result, on stderr.
+- **`scripts/audit-contract.mjs`** — probes the built binary for every command,
+  flag and format value the docs promise, and fails when one is missing. This
+  is how `init` and `--format sarif` were found.
 - **`vibeshield init`.** The setup command that `contracts/cli.md` has always
   specified but the binary never implemented. Detects the stack from manifests
   (language, ecosystem, framework), writes a `vibeshield.yml`, a pull-request

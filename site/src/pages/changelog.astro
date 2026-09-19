@@ -11,6 +11,8 @@ const ENTRIES = [
     date: '2026-09-18',
     title: 'The terminal workspace',
     items: [
+      '`--format sarif` — SARIF 2.1.0 output for GitHub code scanning, so findings land in your repository\'s Security tab via `github/codeql-action/upload-sarif`, with the rule text, the one-line fix and a stable fingerprint.',
+      '`-v` / `--verbose` on `scan` and `fix` — reports the resolved config, mode, languages, pack version and walk result.',
       '`vibeshield init` — detects the stack from your manifests and writes a `vibeshield.yml`, a pull-request gate workflow and a POSIX pre-commit hook, then runs the first scan. Never overwrites a file without `--force`, never touches an existing git hook.',
       'Interactive console — running `vibeshield` with no arguments opens a searchable, keyboard-driven menu over every action, rule and agent recipe. Arrow keys, Tab to jump groups, Enter to open.',
       '`vibeshield search [query]` — the same ranking on stdout, with `--list`, `--rules`, `--agents`, `--limit` and `--format json` (`vibeshield.search/v1`) for scripts and agent tool-calls.',

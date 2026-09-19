@@ -62,8 +62,12 @@ instruction file is the injection we came to catch.
 --mode <mode>          Override config mode: off | warn | block-on-critical | block-on-high+
 --max-cols <n>         Output width cap (default 88 in TTY)
 --no-color             Disable color (also: NO_COLOR env, non-TTY auto)
--v / --verbose
+-v, --verbose          Explain what was scanned, on stderr (scan, fix)
 ```
+
+`--verbose` is a subcommand flag, not a top-level one: bare `vibeshield -v` is
+the version alias (see Commands), while `vibeshield scan -v` is verbose. The
+scopes do not overlap.
 
 ## Exit codes (law — documented in --help)
 

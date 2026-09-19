@@ -43,13 +43,16 @@ Usage:
 Scan flags:
   --diff <ref|->     Diff mode: scan changes vs a git ref, or "-" for stdin
   --staged           Pre-commit mode: scan git staged changes
-  --format <fmt>     pretty (default) | json | github        (sarif: v2.1)
+  --format <fmt>     pretty (default) | json | github | sarif
+                     github = ::error/::warning annotations · sarif = GitHub
+                     code-scanning upload (github/codeql-action/upload-sarif)
   --config <file>    Config path (default: vibeshield.yml if present)
   --mode <mode>      off | warn | block-on-critical | block-on-high+
   --rules <dir>      Load extra rule packs from a directory
   --online           (reserved) allow package-intel network lookups
   --max-cols <n>     Output width cap (default 88)
   --no-color         Disable color (also: NO_COLOR env, non-TTY auto)
+  -v, --verbose      Explain what was scanned, on stderr
 
 Fix flags (VibePatch — opt-in, human-gated):
   --dry-run          Preview the diff, change nothing
@@ -541,7 +544,9 @@ func cmdFix(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		cfgPath  = fl.String("config", "vibeshield.yml", "config file path")
 		rulesDir = fl.String("rules", "", "directory of extra rule pack YAML files")
 		noColor  = fl.Bool("no-color", false, "disable color")
+		verbose  = fl.Bool("verbose", false, "explain what was scanned, to stderr")
 	)
+	fl.BoolVar(verbose, "v", false, "alias of --verbose")
 	fl.Usage = func() { fmt.Fprintf(stderr, usage, Version) }
 	if err := fl.Parse(args); err != nil {
 		return 2
@@ -572,6 +577,10 @@ func cmdFix(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 			return 2
 		}
 		pack.Rules = append(pack.Rules, extra.Rules...)
+	}
+	if *verbose {
+		fmt.Fprintf(stderr, "vibeshield: config %s · pack %s %s · %d rules\n",
+			*cfgPath, pack.ID, pack.Version, len(pack.Rules))
 	}
 
 	var rep *scan.Report
@@ -670,7 +679,9 @@ func cmdScan(args []string, stdout, stderr io.Writer) int {
 		online   = fl.Bool("online", false, "(reserved) package-intel network lookups")
 		maxCols  = fl.Int("max-cols", 88, "output width cap")
 		noColor  = fl.Bool("no-color", false, "disable color")
+		verbose  = fl.Bool("verbose", false, "explain what was scanned, to stderr")
 	)
+	fl.BoolVar(verbose, "v", false, "alias of --verbose")
 	fl.Usage = func() { fmt.Fprintf(stderr, usage, Version) }
 	if err := fl.Parse(args); err != nil {
 		return 2
@@ -739,12 +750,26 @@ func cmdScan(args []string, stdout, stderr io.Writer) int {
 	if len(cfg.Languages) > 0 {
 		opts.Languages = cfg.Languages
 	}
+	if *verbose {
+		fmt.Fprintf(stderr, "vibeshield: config %s · mode %s\n", *cfgPath, effMode)
+		if len(cfg.Languages) > 0 {
+			fmt.Fprintf(stderr, "vibeshield: languages %s\n", strings.Join(cfg.Languages, ", "))
+		} else {
+			fmt.Fprintln(stderr, "vibeshield: languages all supported")
+		}
+		fmt.Fprintf(stderr, "vibeshield: pack %s %s · %d rules · %d ignore(s)\n",
+			pack.ID, pack.Version, len(pack.Rules), len(opts.Ignores))
+	}
 
 	// Full scan, then optionally filter to diff hunks.
 	rep, err := scan.Dir(path, pack, Version, opts)
 	if err != nil {
 		fmt.Fprintf(stderr, "vibeshield: scan failed: %v\n", err)
 		return 2
+	}
+	if *verbose {
+		fmt.Fprintf(stderr, "vibeshield: walked %s · %d files in %dms\n",
+			filepath.ToSlash(path), rep.Scan.FilesScanned, rep.Scan.DurationMs)
 	}
 	if *staged || *diffRef != "" {
 		var d *scandiff.Diff
@@ -785,8 +810,13 @@ func cmdScan(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "vibeshield: %d critical, %d high, %d medium, %d low\n",
 			rep.Summary.Critical, rep.Summary.High, rep.Summary.Medium, rep.Summary.Low)
 	case "sarif":
-		fmt.Fprintln(stderr, "vibeshield: --format sarif lands in v2.1 (see contracts/cli.md)")
-		return 2
+		// contracts/cli.md: "targets GitHub code-scanning uploads".
+		if err := output.SARIF(stdout, rep); err != nil {
+			fmt.Fprintf(stderr, "vibeshield: %v\n", err)
+			return 2
+		}
+		fmt.Fprintf(stderr, "vibeshield: %d critical, %d high, %d medium, %d low\n",
+			rep.Summary.Critical, rep.Summary.High, rep.Summary.Medium, rep.Summary.Low)
 	case "", "pretty":
 		output.Pretty(stdout, rep, color, *maxCols)
 	default:

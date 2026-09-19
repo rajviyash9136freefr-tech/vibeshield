@@ -208,6 +208,13 @@ func actionItems(version string) []Item {
 			Args:     []string{"scan", ".", "--format", "github"},
 		},
 		{
+			Kind: KindAction, Group: "Scan",
+			Title:    "Scan as SARIF",
+			Summary:  "SARIF 2.1.0 for GitHub code scanning (Security tab).",
+			Keywords: []string{"scan", "sarif", "code scanning", "security tab", "codeql", "upload", "github", "alerts", "ci", "sast", "integration"},
+			Args:     []string{"scan", ".", "--format", "sarif"},
+		},
+		{
 			Kind: KindAction, Group: "Fix",
 			Title:    "Preview fixes (VibePatch dry run)",
 			Summary:  "Show the exact −/+ diff without changing a single file.",

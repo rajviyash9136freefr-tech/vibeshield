@@ -244,13 +244,27 @@ never touched:
 |:---|:---|
 | `--diff <ref\|->` | Scan changes vs a git ref, or a unified diff on stdin |
 | `--staged` | Scan staged changes (what the pre-commit hook runs) |
-| `--format <fmt>` | `pretty` · `json` · `github` |
+| `--format <fmt>` | `pretty` · `json` · `github` · `sarif` |
 | `--mode <mode>` | `off` · `warn` · `block-on-critical` · `block-on-high+` |
 | `--rules <dir>` | Load extra rule packs |
 | `--config <file>` | Config path (default `vibeshield.yml`) |
+| `-v`, `--verbose` | Explain what was scanned, on stderr |
 | `--no-color` | Disable colour (also `NO_COLOR`, auto on non-TTY) |
 
 **Exit codes** — `0` clean or warn-mode findings · `1` block threshold met · `2` config or usage error.
+
+### GitHub code scanning (Security tab)
+
+`--format sarif` emits SARIF 2.1.0, so findings show up as native code-scanning
+alerts — with the rule text, the one-line fix, and a stable fingerprint that
+survives reformatting:
+
+```yaml
+- run: vibeshield scan . --format sarif > vibeshield.sarif
+- uses: github/codeql-action/upload-sarif@v3
+  with:
+    sarif_file: vibeshield.sarif
+```
 
 ---
 

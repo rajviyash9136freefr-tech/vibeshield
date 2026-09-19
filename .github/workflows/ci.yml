@@ -74,6 +74,28 @@ jobs:
           cd scanner
           go build -trimpath -o ../out/vibeshield ./cmd/vibeshield
 
+  contract-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: scanner/go.mod
+          cache-dependency-path: scanner/go.sum
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build the scanner
+        run: cd scanner && go build -o vibeshield ./cmd/vibeshield
+
+      # The docs promised `vibeshield init` and `--format sarif` for a whole
+      # release cycle while the binary answered "unknown command". This gate
+      # runs every documented command, flag and format value against the real
+      # binary so that cannot happen again.
+      - name: Every documented surface exists
+        run: node scripts/audit-contract.mjs scanner/vibeshield
+
   repo-sync:
     runs-on: ubuntu-latest
     steps:
