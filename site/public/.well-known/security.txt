@@ -1,5 +1,7 @@
 Contact: mailto:security@vibeshield.dev
-Encryption: never paste secrets into issues; PGP on request
-Acknowledgements: yes — reporters credited in release notes
-Policy: https://vibeshield.dev/security
+Contact: https://github.com/rajviyash9136freefr-tech/vibeshield/security/advisories/new
+Expires: 2027-09-19T00:00:00.000Z
+Canonical: https://rajviyash9136freefr-tech.github.io/vibeshield/.well-known/security.txt
+Policy: https://rajviyash9136freefr-tech.github.io/vibeshield/security
+Acknowledgments: https://github.com/rajviyash9136freefr-tech/vibeshield/releases
 Preferred-Languages: en

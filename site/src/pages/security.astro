@@ -1,70 +1,151 @@
 ---
-// /security — the trust page security buyers check (UIUX §10 #7).
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Nav from '../components/ui/Nav.astro';
-import Footer from '../components/ui/Footer.astro';
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { siteConfig } from '../config/site';
+
+const title = "Security & Threat Model — VibeShield";
+const description = "VibeShield security architecture, local offline execution model, trust boundaries, and responsible vulnerability disclosure policy.";
 ---
 
-<BaseLayout
-  title="Security & threat model — VibeShield"
-  description="What VibeShield sees, where analysis results go, how findings are stored, and how to disclose a vulnerability. The threat model, in plain text."
+<LegalLayout
+  title={title}
+  description={description}
   canonical="/security"
+  eyebrow="Trust & Architecture"
+  h1="Security & Threat Model"
+  updated={siteConfig.legalLastUpdated}
+  summary="VibeShield is built on a zero-trust, zero-egress architecture. All code parsing and rule evaluation occurs 100% locally in-process or on your CI runner. No source code, secrets, or file contents leave your machine."
 >
-  <Nav slot="nav" />
-  <div class="wrap-narrow section">
-    <p class="eyebrow">Trust</p>
-    <h1 class="mt-2 text-[36px] font-bold tracking-[-0.03em]">Security & threat model</h1>
-
-    <h2 class="mt-10 text-[24px] font-semibold">What leaves your machine</h2>
-    <ul class="mt-4 list-disc space-y-2 pl-5 text-[var(--color-muted)]">
-      <li><strong class="text-[var(--color-fg)]">Nothing, on every surface.</strong> The CLI, the console, the pre-commit hook and the GitHub Action all run the same static analysis from the pack embedded in the binary. There is no telemetry, no account, no upload, and no server component to send anything to.</li>
-      <li><strong class="text-[var(--color-fg)]">There is no VibeShield cloud.</strong> The <code class="font-mono text-sm">--online</code> flag is reserved for a future package-intel lookup; in this build it prints a notice and the scan continues fully offline. The scanner contains no HTTP client at all.</li>
-      <li><strong class="text-[var(--color-fg)]">The Action runs on your runner.</strong> It posts a PR comment using <em>your</em> <code class="font-mono text-sm">GITHUB_TOKEN</code>. The only thing that leaves the runner is that comment, in your repository.</li>
-      <li><strong class="text-[var(--color-fg)]">Nothing is ever used for model training.</strong> There is no model, and nothing to train it with.</li>
+  <section id="what-leaves-your-machine">
+    <h2>1. What Leaves Your Machine</h2>
+    <p>
+      The core security promise of VibeShield is absolute data containment:
+    </p>
+    <ul>
+      <li>
+        <strong>Zero Egress on Every Surface:</strong> The CLI binary, the npm launcher, the pre-commit hook, and the IDE integrations execute rule matching exclusively in local memory. There is no telemetry, no cloud logging, no user tracking, and no external code transfer.
+      </li>
+      <li>
+        <strong>No Backend Server:</strong> VibeShield maintains no centralized SaaS backend, databases, or cloud infrastructure. The compiled Go binary contains zero HTTP networking client code for code egress.
+      </li>
+      <li>
+        <strong>CI/CD Runner Isolation:</strong> In GitHub Action mode, the action runs entirely inside your self-hosted or GitHub-hosted runner. It communicates only with GitHub's official API using your repository's native <code>GITHUB_TOKEN</code> to post findings directly to the pull request.
+      </li>
+      <li>
+        <strong>No AI Model Training:</strong> Because your source code and prompts are never collected or stored, nothing is ever used for model training or fine-tuning.
+      </li>
     </ul>
+  </section>
 
-    <h2 class="mt-10 text-[24px] font-semibold">Trust boundaries</h2>
-    <table class="mt-4 w-full border-collapse text-sm">
-      <thead class="text-left">
-        <tr class="border-b border-[var(--color-hairline)]">
-          <th scope="col" class="py-2 pr-4 font-semibold">Component</th>
-          <th scope="col" class="py-2 pr-4 font-semibold">Runs</th>
-          <th scope="col" class="py-2 font-semibold">Handles</th>
+  <section id="trust-boundaries">
+    <h2>2. Trust Boundaries & Execution Isolation</h2>
+    <p>
+      The table below details where each component runs, what data it accesses, and its network posture:
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Component</th>
+          <th scope="col">Execution Environment</th>
+          <th scope="col">Data Access &amp; Boundaries</th>
         </tr>
       </thead>
-      <tbody class="text-[var(--color-muted)]">
-        <tr class="border-b border-[var(--color-hairline)]"><td class="py-2 pr-4 font-mono text-[13px] text-[var(--color-fg)]">scanner (Go binary)</td><td class="py-2 pr-4">your machine / runner</td><td class="py-2">source files (read-only), git metadata. No network code is linked in</td></tr>
-        <tr class="border-b border-[var(--color-hairline)]"><td class="py-2 pr-4 font-mono text-[13px] text-[var(--color-fg)]">rules packs (YAML)</td><td class="py-2 pr-4">in-process</td><td class="py-2">validated at load; strict schema, RE2 only — a malformed pack is exit 2, never execution</td></tr>
-        <tr class="border-b border-[var(--color-hairline)]"><td class="py-2 pr-4 font-mono text-[13px] text-[var(--color-fg)]">npm launcher</td><td class="py-2 pr-4">your machine</td><td class="py-2">downloads one release asset and verifies it against the published <code class="font-mono text-sm">sha256sums.txt</code> before running it</td></tr>
-        <tr class="border-b border-[var(--color-hairline)]"><td class="py-2 pr-4 font-mono text-[13px] text-[var(--color-fg)]">GitHub Action</td><td class="py-2 pr-4">your runner</td><td class="py-2">findings in your repo's PR comment, via your <code class="font-mono text-sm">GITHUB_TOKEN</code>. No third-party endpoint</td></tr>
+      <tbody>
+        <tr>
+          <td><strong>Scanner (Go Binary)</strong></td>
+          <td>Local machine or CI runner</td>
+          <td>Read-only filesystem access to target repository. No outbound network connections linked.</td>
+        </tr>
+        <tr>
+          <td><strong>Rule Packs (YAML)</strong></td>
+          <td>In-process memory</td>
+          <td>Validated against strict schema at load using RE2 regexes. Malformed packs terminate execution immediately with exit code 2.</td>
+        </tr>
+        <tr>
+          <td><strong>npm Launcher</strong></td>
+          <td>Local Node.js environment</td>
+          <td>Downloads verified release binary and validates its SHA-256 hash against <code>sha256sums.txt</code> before execution.</td>
+        </tr>
+        <tr>
+          <td><strong>GitHub Action</strong></td>
+          <td>GitHub Actions runner</td>
+          <td>Reads git diff and posts PR comment. Operates solely within repository permission scope.</td>
+        </tr>
       </tbody>
     </table>
+  </section>
 
-    <h2 class="mt-10 text-[24px] font-semibold">How the scanner reads your code</h2>
-    <ul class="mt-4 list-disc space-y-2 pl-5 text-[var(--color-muted)]">
-      <li>Read-only file access; the scanner never writes to your repo (<code class="font-mono text-sm">init</code> writes config files, and says so first).</li>
-      <li>It does not execute your code, install dependencies, or build. Findings are pattern matches over text, weighted by AI-likelihood.</li>
-      <li>Secrets found in matched lines are redacted by the scanner (4 + 4 characters kept) before anything is printed, posted, or sent.</li>
-      <li>Rule packs are data, not code. A malformed pack is a startup error (exit 2), never something that gets evaluated.</li>
+  <section id="how-scanner-reads-code">
+    <h2>3. How the Scanner Reads Your Code</h2>
+    <ul>
+      <li><strong>Read-Only Access:</strong> The scanner never modifies your source files during <code>scan</code>. Automated remediation via <code>fix</code> requires explicit interactive confirmation or preview.</li>
+      <li><strong>No Execution of Scanned Code:</strong> Scanned files are treated strictly as text and AST trees; VibeShield never executes, builds, or runs tests on the inspected code.</li>
+      <li><strong>Automatic Secret Redaction:</strong> When a suspected secret (such as an API token or private key) is detected in a diff, the finding redacts all but four prefix and suffix characters before outputting to terminal or PR comments.</li>
+    </ul>
+  </section>
+
+  <section id="disclosure">
+    <h2>4. Coordinated Vulnerability Disclosure</h2>
+    <p>
+      If you discover a security vulnerability or bypass in VibeShield, we ask that you report it responsibly and coordinate disclosure with us before public release.
+    </p>
+    <h3>How to Report</h3>
+    <ul>
+      <li>
+        <strong>Preferred Method:</strong> Open a private security report via
+        <a href={siteConfig.social.securityAdvisories} target="_blank" rel="noopener noreferrer">GitHub Security Advisories</a>.
+        This provides an encrypted, private channel accessible only to maintainers.
+      </li>
+      <li>
+        <strong>Direct Security Email:</strong> Alternatively, contact our security team at
+        <code>{siteConfig.securityEmail}</code>.
+      </li>
+      <li>
+        <strong>Security.txt:</strong> Machine-readable disclosure information is published at
+        <code>/.well-known/security.txt</code> in compliance with RFC 9116.
+      </li>
     </ul>
 
-    <h2 class="mt-10 text-[24px] font-semibold">Disclosure</h2>
-    <p class="mt-4 text-[var(--color-muted)]">
-      Found a vulnerability in VibeShield itself? Open a private report through
-      <a class="text-[var(--color-accent)] hover:underline" href="https://github.com/rajviyash9136freefr-tech/vibeshield/security/advisories/new">GitHub Security Advisories</a>
-      — that keeps the details private until there is a fix. We acknowledge within 48 hours and aim to ship a fix within 14 days for anything rated high or above.
-      Please don't open a public issue first; we'll credit reporters who give us the window.
-      The full policy is in <a class="text-[var(--color-accent)] hover:underline" href="https://github.com/rajviyash9136freefr-tech/vibeshield/blob/main/SECURITY.md">SECURITY.md</a>.
+    <h3>Response Targets</h3>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Phase</th>
+          <th scope="col">Target Response Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Initial Acknowledgement</td>
+          <td>Within 48 hours</td>
+        </tr>
+        <tr>
+          <td>Triage &amp; Severity Assessment</td>
+          <td>Within 5 business days</td>
+        </tr>
+        <tr>
+          <td>Patch Release (High / Critical)</td>
+          <td>Within 14 calendar days</td>
+        </tr>
+        <tr>
+          <td>Public Release &amp; Attribution</td>
+          <td>Coordinated following patch deployment</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      We provide public attribution in our release notes and changelog for security researchers who report in good faith.
     </p>
+  </section>
 
-    <h2 class="mt-10 text-[24px] font-semibold">Precision, honestly stated</h2>
-    <p class="mt-4 text-[var(--color-muted)]">
-      No scanner is right all the time. Our release bar is ≥ 85 % precision on
-      critical/high findings against a 200-PR golden set, ≤ 5 false positives per
-      1k diff lines, and every dismiss carries a required reason into an audit
-      log we can learn from. When a rule underperforms we lower its confidence
-      or retire it — the pack's changelog is public in the repo.
+  <section id="quality-precision">
+    <h2>5. Detection Precision & Benchmark Integrity</h2>
+    <p>
+      Security scanners are only useful if developers trust their output without fatigue. Our release criteria mandate:
     </p>
-  </div>
-  <Footer slot="footer" />
-</BaseLayout>
+    <ul>
+      <li>&ge; 85% precision on Critical and High severity findings evaluated against our curated golden test suite.</li>
+      <li>&le; 5 false positives per 1,000 scanned diff lines.</li>
+      <li>Auditable dismiss rationale requiring developer justification when dismissing rule findings.</li>
+    </ul>
+  </section>
+</LegalLayout>
