@@ -4,23 +4,31 @@ import { INSTALL_TABS } from '../../data/site';
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 ---
 
-<section id="install" class="section border-t border-[rgba(71,76,128,0.15)] relative bg-[#faf9f0]">
+<section id="install" class="section relative" style="background: var(--surface); border-top: 1px solid var(--border);">
   <div class="wrap-narrow">
-    <div class="inline-flex items-center gap-2 rounded-full border border-[rgba(71,76,128,0.22)] bg-white px-3.5 py-1.5 shadow-sm mb-4">
-      <span class="font-display text-xs font-bold tracking-wider text-[#474c80] uppercase">
+    <div
+      class="inline-flex items-center gap-2 rounded-full px-3 py-1 mb-3"
+      style="border: 1px solid var(--border); background: var(--bg);"
+    >
+      <span class="eyebrow" style="color: var(--ink)">
         Deployment
       </span>
     </div>
-    <h2 class="text-3xl font-extrabold tracking-[-0.03em] text-[#474c80] sm:text-4xl lg:text-5xl font-display">
+    <h2 style="color: var(--ink)">
       Install VibeShield in Under 60 Seconds
     </h2>
-    <p class="mt-4 text-base leading-relaxed text-[#474c80]/80 sm:text-lg font-sans">
+    <p class="mt-3 text-base sm:text-lg font-sans" style="color: var(--ink-soft)">
       Install the offline binary for Windows, macOS, or Linux, add it as a git pre-commit hook, or enforce it in CI via our official GitHub Action.
     </p>
 
-    <div class="mt-10" data-tabs>
+    <div class="mt-8" data-tabs>
       <!-- Segmented Control Container -->
-      <div class="inline-flex flex-wrap rounded-full border border-[rgba(71,76,128,0.2)] bg-white p-1 shadow-sm" role="tablist" aria-label="Install method">
+      <div
+        class="inline-flex flex-wrap rounded-full p-1"
+        style="border: 1px solid var(--border); background: var(--bg);"
+        role="tablist"
+        aria-label="Install method"
+      >
         {INSTALL_TABS.map((t, i) => (
           <button
             type="button"
@@ -29,8 +37,11 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
             aria-selected={i === 0 ? 'true' : 'false'}
             aria-controls={`panel-${t.id}`}
             tabindex={i === 0 ? '0' : '-1'}
-            class={`rounded-full px-5 py-2 text-xs font-bold tracking-tight transition-colors duration-150 font-display ${i === 0 ? 'bg-[#474c80] text-[#f8f7e2]' : 'text-[#474c80]/70 hover:text-[#474c80]'}`}
-          >{t.label}</button>
+            class="rounded-full px-4 sm:px-5 py-2 text-xs font-bold font-display transition-colors"
+            style={i === 0 ? 'background: var(--ink); color: var(--on-ink);' : 'color: var(--ink-soft);'}
+          >
+            {t.label}
+          </button>
         ))}
       </div>
 
@@ -43,22 +54,26 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
           class="relative mt-6"
         >
           <pre
-            class="scroll-x rounded-2xl border border-[rgba(71,76,128,0.2)] bg-white p-6 font-mono text-xs sm:text-sm leading-[1.75] text-[#474c80] shadow-sm font-semibold"
+            class="scroll-x rounded-xl p-6 font-mono text-xs sm:text-sm leading-[1.75] font-semibold overflow-x-auto"
+            style="border: 1px solid var(--border); background: var(--bg); color: var(--ink);"
             tabindex="0"
             data-code
           ><code set:html={esc(t.code)} /></pre>
           <button
             type="button"
-            class="absolute top-4 right-4 rounded-full border border-[rgba(71,76,128,0.25)] bg-[#faf9f0] px-3.5 py-1.5 font-display text-xs font-bold text-[#474c80] transition-colors hover:bg-[#474c80] hover:text-[#f8f7e2]"
+            class="absolute top-4 right-4 rounded-lg px-3.5 py-1.5 font-display text-xs font-bold transition-colors"
+            style="border: 1px solid var(--border); background: var(--surface); color: var(--ink);"
             data-copy
             aria-label={`Copy ${t.label} snippet`}
-          >Copy</button>
+          >
+            Copy
+          </button>
         </div>
       ))}
     </div>
 
-    <div class="mt-4 flex items-center gap-2 font-mono text-xs text-[#474c80]/70">
-      <span class="h-1.5 w-1.5 rounded-full bg-[#15803d]"></span>
+    <div class="mt-4 flex items-center gap-2 text-xs" style="color: var(--ink-soft)">
+      <span class="h-1.5 w-1.5 rounded-full" style="background: var(--ok)"></span>
       <span class="font-sans font-semibold">Zero accounts, zero external API keys, 100% free and open-source</span>
     </div>
   </div>
@@ -71,13 +86,16 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
     const panels = [...root.querySelectorAll<HTMLElement>('[role=tabpanel]')];
     const select = (i: number) => {
       tabs.forEach((t, j) => {
-        t.setAttribute('aria-selected', String(i === j));
-        t.tabIndex = i === j ? 0 : -1;
-        t.className =
-          'rounded-full px-5 py-2 text-xs font-bold font-display tracking-tight transition-colors duration-150 ' +
-          (i === j
-            ? 'bg-[#474c80] text-[#f8f7e2]'
-            : 'text-[#474c80]/70 hover:text-[#474c80]');
+        const isSelected = i === j;
+        t.setAttribute('aria-selected', String(isSelected));
+        t.tabIndex = isSelected ? 0 : -1;
+        if (isSelected) {
+          t.style.background = 'var(--ink)';
+          t.style.color = 'var(--on-ink)';
+        } else {
+          t.style.background = 'transparent';
+          t.style.color = 'var(--ink-soft)';
+        }
       });
       panels.forEach((p, j) => (p.hidden = i !== j));
     };

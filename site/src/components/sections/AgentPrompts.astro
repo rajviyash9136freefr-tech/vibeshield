@@ -3,27 +3,30 @@ import { AGENT_PROMPTS } from '../../data/site';
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 ---
 
-<section id="agents" class="section border-t border-[rgba(71,76,128,0.15)] relative bg-[#f8f7e2]">
+<section id="agents" class="section relative" style="background: var(--bg); border-top: 1px solid var(--border);">
   <div class="wrap">
     <!-- Header -->
-    <div class="text-center max-w-3xl mx-auto">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[rgba(71,76,128,0.22)] bg-white px-3.5 py-1.5 shadow-sm mb-4">
-        <span class="h-2 w-2 rounded-full bg-[#474c80]"></span>
-        <span class="font-display text-xs font-bold tracking-wider text-[#474c80] uppercase">
-          Agent Rules & Prompts
+    <div class="max-w-2xl">
+      <div
+        class="inline-flex items-center gap-2 rounded-full px-3 py-1 mb-3"
+        style="border: 1px solid var(--border); background: var(--surface);"
+      >
+        <span class="h-2 w-2 rounded-full" style="background: var(--ink)"></span>
+        <span class="eyebrow" style="color: var(--ink)">
+          Agent Rules &amp; Prompts
         </span>
       </div>
-      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-[-0.03em] text-[#474c80] font-display">
+      <h2 style="color: var(--ink)">
         Adversarial Guardrails for Your AI Coding Agent
       </h2>
-      <p class="mt-4 text-base sm:text-lg text-[#474c80]/80 leading-relaxed font-sans">
+      <p class="mt-3 text-base sm:text-lg font-sans" style="color: var(--ink-soft)">
         Select your AI coding tool below to copy pre-tuned rule prompts that force the agent to audit dependencies, ban leaked keys, and verify diffs before suggesting code.
       </p>
     </div>
 
     <!-- Agent Selector Tabs -->
-    <div class="mt-12 max-w-4xl mx-auto" data-agent-hub>
-      <div class="flex flex-wrap items-center justify-center gap-2.5 border-b border-[rgba(71,76,128,0.15)] pb-5" role="tablist">
+    <div class="mt-10" data-agent-hub>
+      <div class="flex flex-wrap items-center gap-2.5 pb-5" style="border-bottom: 1px solid var(--border)" role="tablist">
         {AGENT_PROMPTS.map((agent, i) => (
           <button
             type="button"
@@ -33,10 +36,16 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
             aria-selected={i === 0 ? 'true' : 'false'}
             aria-controls={`agent-panel-${agent.id}`}
             tabindex={i === 0 ? '0' : '-1'}
-            class="agent-btn group flex items-center gap-2 rounded-full px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold transition-colors duration-150 cursor-pointer font-display"
+            class="agent-btn flex items-center gap-2 rounded-full px-4 py-2 text-xs sm:text-sm font-semibold transition-colors duration-150 font-display"
+            style={i === 0 ? 'background: var(--ink); color: var(--on-ink); border: 1px solid var(--ink);' : 'background: var(--surface); color: var(--ink); border: 1px solid var(--border);'}
           >
             <span class="tab-label">{agent.name}</span>
-            <span class="tab-badge rounded-md px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-wider">{agent.badge}</span>
+            <span
+              class="tab-badge rounded px-1.5 py-0.5 text-[10px] font-mono uppercase"
+              style={i === 0 ? 'background: color-mix(in srgb, var(--on-ink) 20%, transparent); color: var(--on-ink);' : 'background: var(--bg); color: var(--ink-soft);'}
+            >
+              {agent.badge}
+            </span>
           </button>
         ))}
       </div>
@@ -49,22 +58,26 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
             id={`agent-panel-${agent.id}`}
             aria-labelledby={`agent-tab-${agent.id}`}
             hidden={i !== 0}
-            class="agent-panel card rounded-2xl border border-[rgba(71,76,128,0.22)] bg-white p-6 sm:p-8 shadow-sm"
+            class="agent-panel card p-6 sm:p-8"
+            style="background: var(--surface); border: 1px solid var(--border);"
           >
             <!-- Top Meta Info -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[rgba(71,76,128,0.15)] pb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6" style="border-bottom: 1px solid var(--border)">
               <div>
                 <div class="flex items-center gap-2">
-                  <span class="h-2.5 w-2.5 rounded-full bg-[#474c80]"></span>
-                  <h3 class="text-xl font-bold text-[#474c80] tracking-tight font-display">{agent.name} Guardrail Configuration</h3>
+                  <span class="h-2.5 w-2.5 rounded-full" style="background: var(--ink)"></span>
+                  <h3 class="text-xl font-bold tracking-tight font-display" style="color: var(--ink)">{agent.name} Guardrail Configuration</h3>
                 </div>
-                <p class="mt-1.5 text-xs sm:text-sm text-[#474c80]/75">
+                <p class="mt-1.5 text-xs sm:text-sm font-sans" style="color: var(--ink-soft)">
                   {agent.description}
                 </p>
               </div>
               <div class="shrink-0 flex items-center gap-2">
-                <span class="font-mono text-xs text-[#474c80]/70 font-semibold">Config File:</span>
-                <span class="rounded-lg border border-[rgba(71,76,128,0.25)] bg-[#faf9f0] px-3 py-1 font-mono text-xs font-bold text-[#474c80]">
+                <span class="font-mono text-xs font-semibold" style="color: var(--ink-soft)">Config File:</span>
+                <span
+                  class="rounded-lg px-3 py-1 font-mono text-xs font-bold"
+                  style="border: 1px solid var(--border); background: var(--bg); color: var(--ink);"
+                >
                   {agent.filename}
                 </span>
               </div>
@@ -74,12 +87,13 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
             {agent.cliCommand && (
               <div class="mt-6">
                 <div class="flex items-center justify-between mb-2">
-                  <span class="font-mono text-xs font-bold uppercase tracking-wider text-[#474c80]">
+                  <span class="eyebrow" style="color: var(--ink)">
                     Terminal Command
                   </span>
                   <button
                     type="button"
-                    class="copy-btn inline-flex items-center gap-1.5 rounded-full border border-[rgba(71,76,128,0.25)] bg-[#faf9f0] px-3 py-1 font-mono text-xs font-bold text-[#474c80] hover:bg-[#474c80] hover:text-[#f8f7e2] transition-colors"
+                    class="copy-btn inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-xs font-bold transition-colors"
+                    style="border: 1px solid var(--border); background: var(--bg); color: var(--ink);"
                     data-copy-target={`cli-${agent.id}`}
                   >
                     <span>Copy Command</span>
@@ -87,7 +101,8 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
                 </div>
                 <pre
                   id={`cli-${agent.id}`}
-                  class="scroll-x rounded-xl border border-[rgba(71,76,128,0.18)] bg-[#faf9f0] p-4 font-mono text-xs text-[#474c80] font-semibold leading-relaxed overflow-x-auto"
+                  class="scroll-x rounded-xl p-4 font-mono text-xs font-semibold leading-relaxed overflow-x-auto"
+                  style="border: 1px solid var(--border); background: var(--bg); color: var(--ink);"
                 ><code>{agent.cliCommand}</code></pre>
               </div>
             )}
@@ -95,12 +110,13 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
             <!-- Copyable Prompt Block -->
             <div class="mt-6">
               <div class="flex items-center justify-between mb-2">
-                <span class="font-mono text-xs font-bold uppercase tracking-wider text-[#474c80]">
+                <span class="eyebrow" style="color: var(--ink)">
                   Adversarial Prompt Content
                 </span>
                 <button
                   type="button"
-                  class="copy-btn inline-flex items-center gap-1.5 rounded-full bg-[#474c80] text-[#f8f7e2] px-4 py-1.5 font-mono text-xs font-bold transition-colors hover:bg-[#363a66]"
+                  class="copy-btn inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 font-mono text-xs font-bold transition-colors"
+                  style="background: var(--ink); color: var(--on-ink);"
                   data-copy-target={`prompt-${agent.id}`}
                 >
                   <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -113,21 +129,23 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
               <pre
                 id={`prompt-${agent.id}`}
-                class="scroll-x rounded-xl border border-[rgba(71,76,128,0.18)] bg-[#faf9f0] p-5 sm:p-6 font-mono text-xs sm:text-[13px] leading-relaxed text-[#474c80] overflow-x-auto"
+                class="scroll-x rounded-xl p-5 sm:p-6 font-mono text-xs sm:text-[13px] leading-relaxed overflow-x-auto"
+                style="border: 1px solid var(--border); background: var(--bg); color: var(--ink);"
               ><code set:html={esc(agent.prompt)} /></pre>
             </div>
 
             <!-- Footer Action Strip -->
-            <div class="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[rgba(71,76,128,0.15)] pt-4 text-xs text-[#474c80]/70 font-mono">
+            <div class="mt-6 flex flex-wrap items-center justify-between gap-4 pt-4 text-xs font-mono" style="border-top: 1px solid var(--border); color: var(--ink-soft)">
               <div class="flex items-center gap-2">
-                <span class="h-1.5 w-1.5 rounded-full bg-[#15803d]"></span>
-                <span class="font-sans font-semibold">Ready to paste directly into your project repository</span>
+                <span class="h-1.5 w-1.5 rounded-full" style="background: var(--ok)"></span>
+                <span class="font-sans font-semibold">Paste directly into your repository</span>
               </div>
               <a
                 href="https://github.com/rajviyash9136freefr-tech/vibeshield"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-[#474c80] font-bold hover:underline flex items-center gap-1 font-sans"
+                class="font-bold hover:underline flex items-center gap-1 font-sans"
+                style="color: var(--ink)"
               >
                 <span>View rule configs on GitHub</span>
                 <span>→</span>
@@ -140,43 +158,6 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
   </div>
 </section>
 
-<style>
-  /* Inactive State */
-  .agent-btn[aria-selected="false"] {
-    background-color: #ffffff;
-    border: 1px solid rgba(71, 76, 128, 0.22);
-    color: #474c80;
-  }
-  .agent-btn[aria-selected="false"] .tab-label {
-    color: #474c80;
-  }
-  .agent-btn[aria-selected="false"] .tab-badge {
-    background-color: #faf9f0;
-    color: #474c80;
-    border: 1px solid rgba(71, 76, 128, 0.15);
-  }
-  .agent-btn[aria-selected="false"]:hover {
-    border-color: #474c80;
-    background-color: #faf9f0;
-  }
-
-  /* Active State — East Bay with Rum Swizzle text */
-  .agent-btn[aria-selected="true"] {
-    background-color: #474c80 !important;
-    border: 1px solid #474c80 !important;
-    color: #f8f7e2 !important;
-  }
-  .agent-btn[aria-selected="true"] .tab-label {
-    color: #f8f7e2 !important;
-    font-weight: 800 !important;
-  }
-  .agent-btn[aria-selected="true"] .tab-badge {
-    background-color: rgba(248, 247, 226, 0.2) !important;
-    color: #f8f7e2 !important;
-    font-weight: 700 !important;
-  }
-</style>
-
 <script>
   const hub = document.querySelector('[data-agent-hub]');
   if (hub) {
@@ -188,6 +169,25 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
         const isSelected = i === index;
         tab.setAttribute('aria-selected', String(isSelected));
         tab.tabIndex = isSelected ? 0 : -1;
+        if (isSelected) {
+          tab.style.background = 'var(--ink)';
+          tab.style.color = 'var(--on-ink)';
+          tab.style.borderColor = 'var(--ink)';
+          const badge = tab.querySelector<HTMLElement>('.tab-badge');
+          if (badge) {
+            badge.style.background = 'color-mix(in srgb, var(--on-ink) 20%, transparent)';
+            badge.style.color = 'var(--on-ink)';
+          }
+        } else {
+          tab.style.background = 'var(--surface)';
+          tab.style.color = 'var(--ink)';
+          tab.style.borderColor = 'var(--border)';
+          const badge = tab.querySelector<HTMLElement>('.tab-badge');
+          if (badge) {
+            badge.style.background = 'var(--bg)';
+            badge.style.color = 'var(--ink-soft)';
+          }
+        }
       });
 
       panels.forEach((panel, i) => {
