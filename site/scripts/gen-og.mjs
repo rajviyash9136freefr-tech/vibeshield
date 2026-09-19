@@ -22,52 +22,57 @@ if (!fs.existsSync(publicDir)) {
   fs.mkdirSync(publicDir, { recursive: true });
 }
 
-// Palette — the same severity colours the CLI and the site use.
+// Palette — East Bay and Rum Swizzle theme
 const C = {
-  critical: '#F87171',
-  high: '#FB923C',
-  ok: '#34D399',
-  dim: 'rgba(255,255,255,0.55)',
-  fg: 'rgba(255,255,255,0.92)',
-  hairline: 'rgba(255,255,255,0.12)',
+  critical: '#FF7B72',
+  high: '#FFA657',
+  ok: '#7EE787',
+  dim: 'rgba(248, 247, 226, 0.65)',
+  fg: '#F8F7E2',
+  hairline: 'rgba(248, 247, 226, 0.15)',
+  surface: '#232747',
+  bg: '#181b30',
+  eastBay: '#474C80',
+  rumSwizzle: '#F8F7E2',
 };
 
 const MONO = "'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace";
-const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+const SANS = "'Outfit', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
 
 /** The share card. Drawn on a 1200x630 grid; other ratios scale-and-crop. */
 function card(w = 1200, h = 630) {
   return `<svg width="${w}" height="${h}" viewBox="0 0 1200 630" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="glow" cx="50%" cy="20%" r="70%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.09"/>
-      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    <radialGradient id="glow" cx="50%" cy="15%" r="75%">
+      <stop offset="0%" stop-color="#474C80" stop-opacity="0.45"/>
+      <stop offset="60%" stop-color="#232747" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#181b30" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
-  <rect width="1200" height="630" fill="#000000"/>
+  <rect width="1200" height="630" fill="#181b30"/>
   <rect width="1200" height="630" fill="url(#glow)"/>
 
   <!-- Wordmark -->
   <g transform="translate(80, 62)">
-    <rect width="196" height="36" rx="18" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
-    <text x="20" y="24" fill="#FFFFFF" font-family="${SANS}" font-size="14" font-weight="700" letter-spacing="1.2">VIBESHIELD</text>
+    <rect width="206" height="36" rx="18" fill="rgba(71,76,128,0.35)" stroke="rgba(248,247,226,0.3)" stroke-width="1"/>
+    <text x="20" y="24" fill="#F8F7E2" font-family="${SANS}" font-size="14" font-weight="800" letter-spacing="1.5">VIBESHIELD</text>
   </g>
 
   <!-- Headline -->
-  <text x="80" y="152" fill="#FFFFFF" font-family="${SANS}" font-size="46" font-weight="700" letter-spacing="-1.6">The bug hunter for AI-generated code</text>
+  <text x="80" y="152" fill="#F8F7E2" font-family="${SANS}" font-size="46" font-weight="800" letter-spacing="-1.2">The bug hunter for AI-generated code</text>
   <text x="80" y="192" fill="${C.dim}" font-family="${SANS}" font-size="20">Hallucinated packages · leaked secrets · insecure defaults — caught before they merge.</text>
 
   <!-- Terminal card -->
   <g transform="translate(80, 224)">
-    <rect width="1040" height="322" rx="16" fill="#08080A" stroke="${C.hairline}" stroke-width="1"/>
-    <circle cx="28" cy="24" r="5" fill="rgba(255,255,255,0.40)"/>
-    <circle cx="46" cy="24" r="5" fill="rgba(255,255,255,0.25)"/>
-    <circle cx="64" cy="24" r="5" fill="rgba(255,255,255,0.15)"/>
+    <rect width="1040" height="322" rx="16" fill="#232747" stroke="${C.hairline}" stroke-width="1"/>
+    <circle cx="28" cy="24" r="5" fill="rgba(248,247,226,0.40)"/>
+    <circle cx="46" cy="24" r="5" fill="rgba(248,247,226,0.25)"/>
+    <circle cx="64" cy="24" r="5" fill="rgba(248,247,226,0.15)"/>
     <text x="92" y="28" fill="${C.dim}" font-family="${MONO}" font-size="13">bash — vibeshield</text>
     <line x1="0" y1="46" x2="1040" y2="46" stroke="${C.hairline}" stroke-width="1"/>
 
-    <text x="28" y="80" fill="#FFFFFF" font-family="${MONO}" font-size="14" font-weight="700">$ vibeshield scan .</text>
+    <text x="28" y="80" fill="#F8F7E2" font-family="${MONO}" font-size="14" font-weight="700">$ vibeshield scan .</text>
     <text x="28" y="108" fill="${C.dim}" font-family="${MONO}" font-size="13.5">  Scanning 14 files (full mode)… done in 1.2s</text>
 
     <text x="28" y="146" fill="${C.critical}" font-family="${MONO}" font-size="13.5" font-weight="700">  CRITICAL  VS-PKG-001  hallucinated-package</text>

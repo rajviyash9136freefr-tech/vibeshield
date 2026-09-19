@@ -3,27 +3,27 @@ import { AGENT_PROMPTS } from '../../data/site';
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 ---
 
-<section id="agents" class="section border-t border-white/10 relative bg-gradient-to-b from-black via-[#070709] to-black">
+<section id="agents" class="section border-t border-[rgba(248,247,226,0.12)] relative bg-gradient-to-b from-[#181b30] via-[#242848] to-[#181b30]">
   <div class="wrap">
     <!-- Header -->
     <div class="text-center max-w-3xl mx-auto" data-reveal>
-      <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 backdrop-blur-md mb-4">
-        <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
-        <span class="font-mono text-xs font-medium tracking-wider text-white/80 uppercase">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[rgba(248,247,226,0.18)] bg-[rgba(248,247,226,0.06)] px-3.5 py-1.5 backdrop-blur-md mb-4">
+        <span class="h-1.5 w-1.5 rounded-full bg-[#f8f7e2] animate-pulse"></span>
+        <span class="font-display text-xs font-bold tracking-wider text-[#f8f7e2] uppercase">
           Agent Rules & Prompts
         </span>
       </div>
-      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[-0.035em] text-apple-headline">
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-[-0.03em] text-apple-headline font-display">
         Set Up VibeShield for Your AI Agent
       </h2>
-      <p class="mt-4 text-base sm:text-lg text-white/65 leading-relaxed">
+      <p class="mt-4 text-base sm:text-lg text-[#f8f7e2]/70 leading-relaxed font-sans">
         Select your coding agent below to copy the ready-to-use rule prompt, install the skill, or set up manual verification in one click.
       </p>
     </div>
 
     <!-- Agent Selector Tabs -->
     <div class="mt-12 max-w-4xl mx-auto" data-agent-hub data-reveal>
-      <div class="flex flex-wrap items-center justify-center gap-2 border-b border-white/10 pb-4" role="tablist">
+      <div class="flex flex-wrap items-center justify-center gap-2 border-b border-[rgba(248,247,226,0.12)] pb-4" role="tablist">
         {AGENT_PROMPTS.map((agent, i) => (
           <button
             type="button"
@@ -33,7 +33,7 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
             aria-selected={i === 0 ? 'true' : 'false'}
             aria-controls={`agent-panel-${agent.id}`}
             tabindex={i === 0 ? '0' : '-1'}
-            class="agent-btn group flex items-center gap-2.5 rounded-full px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer"
+            class="agent-btn group flex items-center gap-2.5 rounded-full px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer font-display"
           >
             <span class="tab-label transition-colors duration-150">{agent.name}</span>
             <span class="tab-badge rounded px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-wider transition-colors duration-150">{agent.badge}</span>
@@ -49,14 +49,14 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
             id={`agent-panel-${agent.id}`}
             aria-labelledby={`agent-tab-${agent.id}`}
             hidden={i !== 0}
-            class="agent-panel card rounded-3xl border border-white/15 bg-[#09090c] p-6 sm:p-8 shadow-2xl transition-all duration-300"
+            class="agent-panel card rounded-3xl border border-[rgba(248,247,226,0.18)] bg-[#242848] p-6 sm:p-8 shadow-[0_20px_50px_-15px_rgba(19,22,39,0.95)] transition-all duration-300"
           >
             <!-- Top Meta Info -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[rgba(248,247,226,0.12)] pb-6">
               <div>
                 <div class="flex items-center gap-2">
-                  <span class="h-2 w-2 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"></span>
-                  <h3 class="text-xl font-bold text-white tracking-tight">{agent.name} Setup Guide</h3>
+                  <span class="h-2 w-2 rounded-full bg-[#f8f7e2] shadow-[0_0_8px_rgba(248,247,226,0.8)]"></span>
+                  <h3 class="text-xl font-bold text-[#f8f7e2] tracking-tight font-display">{agent.name} Setup Guide</h3>
                 </div>
                 <p class="mt-1.5 text-xs sm:text-sm text-white/60">
                   {agent.description}
@@ -142,45 +142,48 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
 <style>
   /* Unselected State (Default) */
+  /* Inactive State */
   .agent-btn[aria-selected="false"] {
-    background-color: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.75);
+    background-color: rgba(248, 247, 226, 0.06);
+    border: 1px solid rgba(248, 247, 226, 0.16);
+    color: rgba(248, 247, 226, 0.75);
+    font-family: var(--font-display);
   }
   .agent-btn[aria-selected="false"] .tab-label {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(248, 247, 226, 0.75);
   }
   .agent-btn[aria-selected="false"] .tab-badge {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(248, 247, 226, 0.1);
+    color: rgba(248, 247, 226, 0.6);
   }
   .agent-btn[aria-selected="false"]:hover {
-    border-color: rgba(255, 255, 255, 0.35);
-    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(248, 247, 226, 0.45);
+    background-color: rgba(248, 247, 226, 0.12);
   }
   .agent-btn[aria-selected="false"]:hover .tab-label {
-    color: #ffffff;
+    color: #f8f7e2;
   }
   .agent-btn[aria-selected="false"]:hover .tab-badge {
-    color: rgba(255, 255, 255, 0.95);
-    background-color: rgba(255, 255, 255, 0.16);
+    color: #f8f7e2;
+    background-color: rgba(248, 247, 226, 0.18);
   }
 
-  /* Selected / Active State — 100% High Contrast on ALL tools (Cursor, Claude Code, Windsurf, Copilot, Terminal) */
+  /* Selected / Active State — Rum Swizzle Background with East Bay Text */
   .agent-btn[aria-selected="true"] {
-    background-color: #ffffff !important;
-    border: 1px solid #ffffff !important;
-    color: #000000 !important;
-    box-shadow: 0 0 25px rgba(255, 255, 255, 0.28) !important;
+    background-color: #f8f7e2 !important;
+    border: 1px solid #f8f7e2 !important;
+    color: #474c80 !important;
+    box-shadow: 0 0 25px rgba(248, 247, 226, 0.3) !important;
+    font-family: var(--font-display);
   }
   .agent-btn[aria-selected="true"] .tab-label {
-    color: #000000 !important;
-    font-weight: 700 !important;
+    color: #474c80 !important;
+    font-weight: 800 !important;
   }
   .agent-btn[aria-selected="true"] .tab-badge {
-    background-color: rgba(0, 0, 0, 0.14) !important;
-    color: #000000 !important;
-    font-weight: 700 !important;
+    background-color: rgba(71, 76, 128, 0.18) !important;
+    color: #474c80 !important;
+    font-weight: 800 !important;
   }
 </style>
 

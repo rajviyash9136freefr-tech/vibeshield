@@ -3,36 +3,36 @@ import { FOOTER } from '../../data/site';
 import { baseHref } from '../../lib/base';
 ---
 
-<footer class="border-t border-white/10 bg-black relative">
+<footer class="border-t border-[rgba(248,247,226,0.12)] bg-[#131627] relative">
   <div class="wrap section !py-16">
     <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
       <!-- Col 1: Brand & Motive -->
       <div>
-        <div class="flex items-center gap-2.5 font-semibold tracking-tight text-sm text-white">
-          <div class="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 border border-white/20">
+        <div class="flex items-center gap-2.5 font-bold tracking-tight text-sm text-[#f8f7e2] font-display">
+          <div class="flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(248,247,226,0.1)] border border-[rgba(248,247,226,0.2)]">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M12 2 4 5.5V11c0 5 3.2 8.9 8 10.5 4.8-1.6 8-5.5 8-10.5V5.5L12 2Z"
-                stroke="#ffffff"
+                stroke="#f8f7e2"
                 stroke-width="2"
-                fill="rgba(255, 255, 255, 0.15)"
+                fill="rgba(248, 247, 226, 0.15)"
               />
               <path
                 d="m8.5 11.8 2.4 2.4 4.6-4.9"
-                stroke="#ffffff"
+                stroke="#f8f7e2"
                 stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
               />
             </svg>
           </div>
-          <span>VibeShield</span>
+          <span class="tracking-wide uppercase font-extrabold text-[13px]">VibeShield</span>
         </div>
-        <p class="mt-3.5 max-w-64 text-xs text-white/60 leading-relaxed">
+        <p class="mt-3.5 max-w-64 text-xs text-[#f8f7e2]/70 leading-relaxed font-sans">
           The bug hunter & tester for AI vibe coding. Hunt hallucinated packages, leaked keys, and component bugs with instant fixes.
         </p>
-        <div class="mt-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 font-mono text-[11px] text-white/70">
-          <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
+        <div class="mt-4 inline-flex items-center gap-2 rounded-full border border-[rgba(248,247,226,0.18)] bg-[rgba(248,247,226,0.06)] px-3 py-1 font-mono text-[11px] text-[#f8f7e2]/80">
+          <span class="h-1.5 w-1.5 rounded-full bg-[#f8f7e2] animate-pulse"></span>
           <span>MIT Free & Open Source</span>
         </div>
       </div>
@@ -40,7 +40,7 @@ import { baseHref } from '../../lib/base';
       <!-- Cols 2-4: Clean genuine navigation -->
       {FOOTER.cols.map((col) => (
         <nav aria-label={col.title}>
-          <h2 class="text-xs font-mono uppercase tracking-wider text-white/50">{col.title}</h2>
+          <h2 class="text-xs font-display font-bold uppercase tracking-wider text-[#f8f7e2]/60">{col.title}</h2>
           <ul class="mt-4 space-y-2.5">
             {col.links.map(([label, href]) => (
               <li>
@@ -48,7 +48,7 @@ import { baseHref } from '../../lib/base';
                   href={href.startsWith('http') ? href : baseHref(href)}
                   target={href.startsWith('http') ? '_blank' : undefined}
                   rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  class="text-xs text-white/60 transition-colors duration-150 hover:text-white"
+                  class="text-xs text-[#f8f7e2]/65 transition-colors duration-150 hover:text-[#f8f7e2] font-sans"
                 >
                   {label}
                 </a>

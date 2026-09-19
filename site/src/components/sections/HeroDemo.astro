@@ -8,14 +8,14 @@ import { DEMO_LINES } from '../../data/site';
 
 function lineClass(cls: string): string {
   switch (cls) {
-    case 'accent': return 'text-white font-bold';
-    case 'muted': return 'text-white/65';
-    case 'faint': return 'text-white/40';
-    case 'critical': return 'font-bold text-black bg-white px-1 rounded';
-    case 'high': return 'font-bold text-white bg-white/20 border border-white/30 px-1 rounded';
-    case 'ok': return 'text-white font-medium';
-    case 'fg': return 'text-white/90';
-    default: return 'text-white/80';
+    case 'accent': return 'text-[#f8f7e2] font-bold';
+    case 'muted': return 'text-[#f8f7e2]/70';
+    case 'faint': return 'text-[#f8f7e2]/45';
+    case 'critical': return 'font-bold text-[#474c80] bg-[#f8f7e2] px-1.5 py-0.5 rounded';
+    case 'high': return 'font-bold text-[#f8f7e2] bg-[#474c80] border border-[rgba(248,247,226,0.3)] px-1.5 py-0.5 rounded';
+    case 'ok': return 'text-[#f8f7e2] font-semibold';
+    case 'fg': return 'text-[#f8f7e2]/90';
+    default: return 'text-[#f8f7e2]/80';
   }
 }
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -25,29 +25,29 @@ const initialHtml = DEMO_LINES.map(
 ---
 
 <div
-  class="card overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-b from-[#0c0c10] to-[#040406] shadow-[0_20px_50px_-15px_rgba(0,0,0,0.9)]"
+  class="card overflow-hidden rounded-2xl border border-[rgba(248,247,226,0.18)] bg-gradient-to-b from-[#25294a] to-[#16182c] shadow-[0_20px_50px_-15px_rgba(19,22,39,0.95)]"
   data-tilt="5"
   data-tilt-hero
   role="img"
   aria-label="Terminal showing a VibeShield scan: one critical hallucinated-package finding and one high hardcoded-secret finding, 11 files clean"
 >
   <!-- Window Control Bar -->
-  <div class="flex items-center justify-between border-b border-white/10 px-4 py-3 bg-white/[0.02]">
+  <div class="flex items-center justify-between border-b border-[rgba(248,247,226,0.12)] px-4 py-3 bg-[rgba(248,247,226,0.03)]">
     <div class="flex items-center gap-2">
-      <span class="h-2.5 w-2.5 rounded-full bg-white/30" aria-hidden="true"></span>
-      <span class="h-2.5 w-2.5 rounded-full bg-white/20" aria-hidden="true"></span>
-      <span class="h-2.5 w-2.5 rounded-full bg-white/10" aria-hidden="true"></span>
-      <span class="ml-2 font-mono text-xs text-white/50">bash — vibeshield scan</span>
+      <span class="h-2.5 w-2.5 rounded-full bg-[rgba(248,247,226,0.35)]" aria-hidden="true"></span>
+      <span class="h-2.5 w-2.5 rounded-full bg-[rgba(248,247,226,0.22)]" aria-hidden="true"></span>
+      <span class="h-2.5 w-2.5 rounded-full bg-[rgba(248,247,226,0.12)]" aria-hidden="true"></span>
+      <span class="ml-2 font-mono text-xs text-[#f8f7e2]/60">bash — vibeshield scan</span>
     </div>
-    <div class="flex items-center gap-1.5 font-mono text-xs text-white/50">
-      <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
+    <div class="flex items-center gap-1.5 font-mono text-xs text-[#f8f7e2]/70">
+      <span class="h-1.5 w-1.5 rounded-full bg-[#f8f7e2] animate-pulse"></span>
       <span>READY</span>
     </div>
   </div>
 
   <pre
     id="demo-body"
-    class="min-h-[330px] overflow-hidden p-5 font-mono text-xs sm:text-sm leading-[1.7] text-white/85 whitespace-pre-wrap break-words sm:min-h-[340px]"
+    class="min-h-[330px] overflow-hidden p-5 font-mono text-xs sm:text-sm leading-[1.7] text-[#f8f7e2]/90 whitespace-pre-wrap break-words sm:min-h-[340px]"
     data-lines={JSON.stringify(DEMO_LINES.map((l) => ({ t: l.text, c: l.cls })))}
   ><code set:html={initialHtml} /></pre>
 </div>
@@ -58,25 +58,24 @@ const initialHtml = DEMO_LINES.map(
   const wide = window.matchMedia('(min-width: 1024px)');
 
   if (body && !reduced && wide.matches) {
-    const lines: { t: string; c: string }[] = JSON.parse(
-      body.getAttribute('data-lines') ?? '[]',
-    );
+    const raw = body.getAttribute('data-lines') || '[]';
+    const lines: { t: string; c: string }[] = JSON.parse(raw);
     const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-    const cursor = document.createElement('span');
-    cursor.className =
-      'inline-block h-[1.1em] w-[0.55em] translate-y-[2px] bg-white shadow-[0_0_8px_#ffffff]';
-    cursor.setAttribute('aria-hidden', 'true');
-    let stopped = false;
     const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    const cursor = document.createElement('span');
+    cursor.className = 'inline-block w-2 h-4 bg-[#f8f7e2] ml-0.5 align-middle animate-pulse';
+
+    let stopped = false;
 
     async function play() {
       while (!stopped) {
-        const code = document.createElement('code');
-        body!.replaceChildren(code, cursor);
+        const code = body.querySelector('code');
+        if (!code) break;
+        code.innerHTML = '';
         for (const line of lines) {
           if (stopped) return;
           const span = document.createElement('span');
-          if (line.c) span.className = classFor(line.c);
+          span.className = classFor(line.c);
           code.appendChild(span);
           code.appendChild(document.createTextNode('\n'));
           if (line.t === '') {
@@ -97,13 +96,13 @@ const initialHtml = DEMO_LINES.map(
 
     function classFor(cls: string): string {
       switch (cls) {
-        case 'accent': return 'text-white font-bold';
-        case 'muted': return 'text-white/65';
-        case 'faint': return 'text-white/40';
-        case 'critical': return 'font-bold text-black bg-white px-1 rounded';
-        case 'high': return 'font-bold text-white bg-white/20 border border-white/30 px-1 rounded';
-        case 'ok': return 'text-white font-medium';
-        default: return 'text-white/85';
+        case 'accent': return 'text-[#f8f7e2] font-bold';
+        case 'muted': return 'text-[#f8f7e2]/70';
+        case 'faint': return 'text-[#f8f7e2]/45';
+        case 'critical': return 'font-bold text-[#474c80] bg-[#f8f7e2] px-1.5 py-0.5 rounded';
+        case 'high': return 'font-bold text-[#f8f7e2] bg-[#474c80] border border-[rgba(248,247,226,0.3)] px-1.5 py-0.5 rounded';
+        case 'ok': return 'text-[#f8f7e2] font-semibold';
+        default: return 'text-[#f8f7e2]/85';
       }
     }
 

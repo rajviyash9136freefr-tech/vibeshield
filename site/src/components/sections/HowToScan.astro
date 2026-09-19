@@ -27,19 +27,19 @@ const commands = [
 ];
 ---
 
-<section id="how-to-scan" class="section border-t border-white/10 relative bg-[#040406]">
+<section id="how-to-scan" class="section border-t border-[rgba(248,247,226,0.12)] relative bg-[#181b30]">
   <div class="wrap" data-reveal>
     <div class="text-center max-w-3xl mx-auto">
-      <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 backdrop-blur-md mb-4">
-        <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
-        <span class="font-mono text-xs font-medium tracking-wider text-white/80 uppercase">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[rgba(248,247,226,0.18)] bg-[rgba(248,247,226,0.06)] px-3.5 py-1.5 backdrop-blur-md mb-4">
+        <span class="h-1.5 w-1.5 rounded-full bg-[#f8f7e2] animate-pulse"></span>
+        <span class="font-display text-xs font-bold tracking-wider text-[#f8f7e2] uppercase">
           CLI & Workflow Guide
         </span>
       </div>
-      <h2 class="scroll-tell text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[-0.035em] text-apple-headline">
+      <h2 class="scroll-tell text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-[-0.03em] text-apple-headline font-display">
         How to Scan & Hunt Bugs
       </h2>
-      <p class="mt-4 text-base sm:text-lg text-white/65 leading-relaxed">
+      <p class="mt-4 text-base sm:text-lg text-[#f8f7e2]/70 leading-relaxed font-sans">
         Run fast, sub-second audits from your terminal or inside your agent. Copy any command below to test your vibe coding code immediately.
       </p>
     </div>
@@ -47,21 +47,21 @@ const commands = [
     <!-- Commands Grid -->
     <div class="mt-12 grid gap-6 md:grid-cols-2">
       {commands.map((c, i) => (
-        <div class="card rounded-2xl border border-white/12 bg-[#09090c] p-6 transition-all duration-300 hover:border-white/30 hover:shadow-2xl">
-          <div class="flex items-center justify-between border-b border-white/10 pb-3">
-            <h3 class="text-base font-semibold text-white">{c.title}</h3>
-            <span class="rounded-md border border-white/20 bg-white/5 px-2 py-0.5 font-mono text-[11px] text-white/70">
+        <div class="card rounded-2xl border border-[rgba(248,247,226,0.14)] bg-[#242848] p-6 transition-all duration-300 hover:border-[rgba(248,247,226,0.35)] hover:shadow-2xl">
+          <div class="flex items-center justify-between border-b border-[rgba(248,247,226,0.12)] pb-3">
+            <h3 class="text-base font-bold text-[#f8f7e2] font-display">{c.title}</h3>
+            <span class="rounded-md border border-[rgba(248,247,226,0.2)] bg-[rgba(248,247,226,0.06)] px-2 py-0.5 font-mono text-[11px] text-[#f8f7e2]/80">
               {c.badge}
             </span>
           </div>
-          <p class="mt-3 text-xs sm:text-sm text-white/60 leading-relaxed min-h-[40px]">
+          <p class="mt-3 text-xs sm:text-sm text-[#f8f7e2]/65 leading-relaxed min-h-[40px] font-sans">
             {c.desc}
           </p>
           <div class="mt-4 relative">
-            <pre class="scroll-x rounded-xl border border-white/10 bg-black/90 p-3.5 font-mono text-xs text-white/90 pr-24 overflow-x-auto"><code>{c.cmd}</code></pre>
+            <pre class="scroll-x rounded-xl border border-[rgba(248,247,226,0.12)] bg-[#131627]/95 p-3.5 font-mono text-xs text-[#f8f7e2]/90 pr-24 overflow-x-auto"><code>{c.cmd}</code></pre>
             <button
               type="button"
-              class="scan-copy-btn absolute top-2 right-2 rounded-lg border border-white/20 bg-white/10 px-3 py-1 font-mono text-xs text-white transition-all hover:bg-white hover:text-black active:scale-95"
+              class="scan-copy-btn absolute top-2 right-2 rounded-lg border border-[rgba(248,247,226,0.2)] bg-[rgba(248,247,226,0.08)] px-3 py-1 font-display text-xs font-semibold text-[#f8f7e2] transition-all hover:bg-[#f8f7e2] hover:text-[#474c80] active:scale-95"
               data-cmd={c.cmd}
             >
               <span>Copy</span>
@@ -72,32 +72,32 @@ const commands = [
     </div>
 
     <!-- Terminal Output Demonstration -->
-    <div class="mt-10 rounded-2xl border border-white/15 bg-black/80 p-5 sm:p-6 font-mono text-xs sm:text-sm shadow-2xl">
-      <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+    <div class="mt-10 rounded-2xl border border-[rgba(248,247,226,0.15)] bg-[#131627]/95 p-5 sm:p-6 font-mono text-xs sm:text-sm shadow-2xl">
+      <div class="flex items-center justify-between border-b border-[rgba(248,247,226,0.12)] pb-3 mb-4">
         <div class="flex items-center gap-2">
-          <span class="h-2.5 w-2.5 rounded-full bg-white/30"></span>
-          <span class="h-2.5 w-2.5 rounded-full bg-white/20"></span>
-          <span class="h-2.5 w-2.5 rounded-full bg-white/10"></span>
-          <span class="ml-2 text-white/50 text-xs">Terminal Output Preview</span>
+          <span class="h-2.5 w-2.5 rounded-full bg-[rgba(248,247,226,0.35)]"></span>
+          <span class="h-2.5 w-2.5 rounded-full bg-[rgba(248,247,226,0.22)]"></span>
+          <span class="h-2.5 w-2.5 rounded-full bg-[rgba(248,247,226,0.12)]"></span>
+          <span class="ml-2 text-[#f8f7e2]/55 text-xs">Terminal Output Preview</span>
         </div>
-        <span class="text-white/40 text-xs">Completed in 1.2s</span>
+        <span class="text-[#f8f7e2]/45 text-xs">Completed in 1.2s</span>
       </div>
-      <div class="space-y-2 text-white/80 leading-relaxed overflow-x-auto">
-        <p class="text-white font-bold">$ vibeshield scan .</p>
-        <p class="text-white/50">&nbsp;&nbsp;Scanning 14 vibe-coded files (diff mode)… done in 1.2s</p>
-        <div class="mt-2 pl-2 border-l-2 border-white/40 space-y-1">
-          <p class="text-white font-bold"><span class="bg-white text-black px-1.5 py-0.5 rounded text-xs font-mono mr-2">CRITICAL</span>VS-PKG-001 &nbsp;hallucinated-package</p>
-          <p class="text-white/70">&nbsp;&nbsp;package.json:8 — fast-parse-utils-v3@2.1.4</p>
-          <p class="text-white/50">&nbsp;&nbsp;Why: LLM hallucinated package name. Registered 9 days ago on npm with remote curl payload.</p>
-          <p class="text-white/90">&nbsp;&nbsp;→ Fix: Replace with native node:util (clean, 12 lines, zero dependencies).</p>
+      <div class="space-y-2 text-[#f8f7e2]/85 leading-relaxed overflow-x-auto">
+        <p class="text-[#f8f7e2] font-bold">$ vibeshield scan .</p>
+        <p class="text-[#f8f7e2]/55">&nbsp;&nbsp;Scanning 14 vibe-coded files (diff mode)… done in 1.2s</p>
+        <div class="mt-2 pl-2 border-l-2 border-[rgba(248,247,226,0.4)] space-y-1">
+          <p class="text-[#f8f7e2] font-bold"><span class="bg-[#f8f7e2] text-[#474c80] px-1.5 py-0.5 rounded text-xs font-mono font-bold mr-2">CRITICAL</span>VS-PKG-001 &nbsp;hallucinated-package</p>
+          <p class="text-[#f8f7e2]/75">&nbsp;&nbsp;package.json:8 — fast-parse-utils-v3@2.1.4</p>
+          <p class="text-[#f8f7e2]/55">&nbsp;&nbsp;Why: LLM hallucinated package name. Registered 9 days ago on npm with remote curl payload.</p>
+          <p class="text-[#f8f7e2]/95">&nbsp;&nbsp;→ Fix: Replace with native node:util (clean, 12 lines, zero dependencies).</p>
         </div>
-        <div class="mt-2 pl-2 border-l-2 border-white/40 space-y-1">
-          <p class="text-white font-bold"><span class="bg-white/20 text-white border border-white/30 px-1.5 py-0.5 rounded text-xs font-mono mr-2">HIGH</span>VS-SEC-017 &nbsp;hardcoded-secret</p>
-          <p class="text-white/70">&nbsp;&nbsp;src/agent.ts:41 — OPENAI_API_KEY = "sk-proj-••••••••••••••4a2f"</p>
-          <p class="text-white/50">&nbsp;&nbsp;Why: Copilot pasted credential echoed from chat context memory.</p>
-          <p class="text-white/90">&nbsp;&nbsp;→ Fix: Move to process.env.OPENAI_API_KEY and rotate the leaked key immediately.</p>
+        <div class="mt-2 pl-2 border-l-2 border-[rgba(248,247,226,0.4)] space-y-1">
+          <p class="text-[#f8f7e2] font-bold"><span class="bg-[#474c80] text-[#f8f7e2] border border-[rgba(248,247,226,0.3)] px-1.5 py-0.5 rounded text-xs font-mono font-bold mr-2">HIGH</span>VS-SEC-017 &nbsp;hardcoded-secret</p>
+          <p class="text-[#f8f7e2]/75">&nbsp;&nbsp;src/agent.ts:41 — OPENAI_API_KEY = "sk-proj-••••••••••••••4a2f"</p>
+          <p class="text-[#f8f7e2]/55">&nbsp;&nbsp;Why: Copilot pasted credential echoed from chat context memory.</p>
+          <p class="text-[#f8f7e2]/95">&nbsp;&nbsp;→ Fix: Move to process.env.OPENAI_API_KEY and rotate the leaked key immediately.</p>
         </div>
-        <p class="pt-2 text-white font-semibold">✓ 12 files clean · 2 findings · 0 leaks merged to main</p>
+        <p class="pt-2 text-[#f8f7e2] font-semibold">✓ 12 files clean · 2 findings · 0 leaks merged to main</p>
       </div>
     </div>
   </div>
@@ -112,13 +112,13 @@ const commands = [
         await navigator.clipboard.writeText(cmd);
         const original = btn.innerHTML;
         btn.innerHTML = '<span>✓ Copied!</span>';
-        btn.classList.add('bg-white', 'text-black');
+        btn.classList.add('bg-[#f8f7e2]', 'text-[#474c80]');
         setTimeout(() => {
           btn.innerHTML = original;
-          btn.classList.remove('bg-white', 'text-black');
-        }, 1800);
-      } catch (e) {
-        console.error('Failed to copy', e);
+          btn.classList.remove('bg-[#f8f7e2]', 'text-[#474c80]');
+        }, 2000);
+      } catch {
+        btn.innerText = 'Press Ctrl+C';
       }
     });
   });

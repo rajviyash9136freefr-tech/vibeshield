@@ -18,21 +18,21 @@ const trackItems = [...items, ...items];
 ---
 
 <div
-  class={`relative overflow-hidden border-y border-white/10 bg-[#050507] py-3.5 font-mono text-xs tracking-wider text-white/70 select-none ${cls}`}
+  class={`relative overflow-hidden border-y border-[rgba(248,247,226,0.12)] bg-[#181b30] py-3.5 font-display text-xs tracking-wider text-[#f8f7e2]/75 select-none ${cls}`}
   data-cinematic-crawl
   data-direction={direction}
 >
   <!-- Edge gradient masks for smooth cinematic fade -->
-  <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-black to-transparent" aria-hidden="true"></div>
-  <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-black to-transparent" aria-hidden="true"></div>
+  <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-[#181b30] to-transparent" aria-hidden="true"></div>
+  <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-[#181b30] to-transparent" aria-hidden="true"></div>
 
   <div class="crawl-wrapper flex w-max overflow-hidden">
     <!-- First track group -->
     <div class={`crawl-track flex shrink-0 items-center gap-8 pr-8 ${direction === 'left' ? 'animate-crawl-left' : 'animate-crawl-right'}`}>
       {trackItems.map((item) => (
         <div class="flex items-center gap-6 whitespace-nowrap">
-          <span class="text-white/75 hover:text-white transition-colors duration-200">{item}</span>
-          <span class="text-white/20 text-[10px]">◆</span>
+          <span class="text-[#f8f7e2]/80 hover:text-[#f8f7e2] font-bold uppercase tracking-widest text-[11px] transition-colors duration-200">{item}</span>
+          <span class="text-[rgba(248,247,226,0.3)] text-[10px]">◆</span>
         </div>
       ))}
     </div>
@@ -40,8 +40,8 @@ const trackItems = [...items, ...items];
     <div class={`crawl-track flex shrink-0 items-center gap-8 pr-8 ${direction === 'left' ? 'animate-crawl-left' : 'animate-crawl-right'}`} aria-hidden="true">
       {trackItems.map((item) => (
         <div class="flex items-center gap-6 whitespace-nowrap">
-          <span class="text-white/75 hover:text-white transition-colors duration-200">{item}</span>
-          <span class="text-white/20 text-[10px]">◆</span>
+          <span class="text-[#f8f7e2]/80 hover:text-[#f8f7e2] font-bold uppercase tracking-widest text-[11px] transition-colors duration-200">{item}</span>
+          <span class="text-[rgba(248,247,226,0.3)] text-[10px]">◆</span>
         </div>
       ))}
     </div>

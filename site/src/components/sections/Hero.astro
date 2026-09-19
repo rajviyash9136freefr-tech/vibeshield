@@ -5,30 +5,30 @@ import HeroDemo from './HeroDemo.astro';
 ---
 
 <section class="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-32">
-  <!-- Apple-grade ambient radial aura (pure monochrome white/silver) -->
+  <!-- Dual-tone ambient radial aura (East Bay #474C80 deep slate glow with Rum Swizzle #F8F7E2 highlight) -->
   <div
-    class="parallax-slow pointer-events-none absolute inset-x-0 -top-40 h-[640px] opacity-70"
-    style="background: radial-gradient(60% 50% at 50% 25%, rgba(255,255,255,0.08) 0%, rgba(0,0,0,0) 100%);"
+    class="parallax-slow pointer-events-none absolute inset-x-0 -top-40 h-[640px] opacity-80"
+    style="background: radial-gradient(60% 50% at 50% 25%, rgba(71, 76, 128, 0.45) 0%, rgba(248, 247, 226, 0.05) 50%, rgba(24, 27, 48, 0) 100%);"
     aria-hidden="true"
   ></div>
 
   <div class="wrap relative grid items-center gap-12 lg:grid-cols-[minmax(0,58%)_minmax(0,42%)] lg:gap-10">
     <div data-reveal>
       <!-- Eyebrow Pill -->
-      <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 backdrop-blur-md">
-        <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
-        <span class="font-mono text-xs font-medium tracking-normal text-white/90">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[rgba(248,247,226,0.18)] bg-[rgba(248,247,226,0.06)] px-3.5 py-1.5 backdrop-blur-md">
+        <span class="h-1.5 w-1.5 rounded-full bg-[#f8f7e2] animate-pulse"></span>
+        <span class="font-display text-xs font-bold tracking-wider text-[#f8f7e2] uppercase">
           Bug Hunter for AI Vibe Coding
         </span>
       </div>
 
       <!-- Main Headline -->
-      <h1 class="mt-6 text-4xl font-bold leading-[1.12] tracking-[-0.035em] text-apple-headline sm:text-5xl lg:text-6xl">
+      <h1 class="mt-6 text-4xl font-extrabold leading-[1.12] tracking-[-0.03em] text-apple-headline sm:text-5xl lg:text-6xl font-display">
         {HERO.h1}
       </h1>
 
       <!-- Subtitle -->
-      <p class="mt-6 max-w-[560px] text-base leading-[1.65] text-white/70 sm:text-lg">
+      <p class="mt-6 max-w-[560px] text-base leading-[1.65] text-[#f8f7e2]/75 sm:text-lg font-sans">
         {HERO.sub}
       </p>
 
@@ -51,7 +51,7 @@ import HeroDemo from './HeroDemo.astro';
           href="https://github.com/rajviyash9136freefr-tech/vibeshield"
           target="_blank"
           rel="noopener noreferrer"
-          class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold text-white/80 hover:border-white/30 hover:bg-white/10 hover:text-white transition-all flex items-center gap-1.5"
+          class="rounded-full border border-[rgba(248,247,226,0.18)] bg-[rgba(248,247,226,0.06)] px-4 py-2 text-xs font-semibold text-[#f8f7e2]/85 hover:border-[rgba(248,247,226,0.45)] hover:bg-[rgba(248,247,226,0.12)] hover:text-[#f8f7e2] transition-all flex items-center gap-1.5"
         >
           <span>★ Star on GitHub</span>
         </a>
