@@ -48,5 +48,25 @@ export default defineConfig({
       },
     },
   },
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      filter: (page) => !page.includes('/404'),
+      serialize(item) {
+        if (item.url.includes('/privacy') || item.url.includes('/terms') || item.url.includes('/security')) {
+          item.priority = 0.3;
+          item.changefreq = 'monthly';
+        } else if (item.url.endsWith('/vibeshield/') || item.url.endsWith('/vibeshield')) {
+          item.priority = 1.0;
+          item.changefreq = 'weekly';
+        } else if (item.url.includes('/docs')) {
+          item.priority = 0.8;
+          item.changefreq = 'weekly';
+        } else {
+          item.priority = 0.7;
+          item.changefreq = 'monthly';
+        }
+        return item;
+      },
+    }),
+  ],
 });
