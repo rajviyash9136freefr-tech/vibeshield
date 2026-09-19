@@ -3,6 +3,122 @@
 All notable changes to VibeShield. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versioning is [SemVer](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] — 2026-09-19
+
+The release that makes VibeShield **usable by someone who has never seen it**.
+v1 was a scanner, v2 was a workspace — but a workspace whose manual you had to
+read first. v3 is the version you can hand to a colleague: every command
+documents itself, a typo names the command you meant, `doctor` tells you what
+is wired up and what is not, and Tab completes the flags.
+
+The rule pack is **unchanged at `2.0.0`** — this is a tool release, not a rule
+rewrite. `vibeshield version` reports `3.0.0` for the binary and `core 2.0.0`
+for the pack, on purpose.
+
+### Added
+
+- **`vibeshield doctor [path]`.** A read-only health check for the binary, the
+  config, the git pre-commit hook, the PR-gate workflow and the agent rule
+  files. Every gap is printed with the exact command that fixes it. `--format
+  json` emits `vibeshield.doctor/v1`; the exit code is `1` when anything needs
+  fixing, so CI can assert the gate is really wired up. This is the first thing
+  to run when a scan behaves unexpectedly.
+- **`vibeshield completion <bash|zsh|fish|powershell>`.** Generated completion
+  scripts. Every verb and flag comes from the same tables the parser uses, and
+  a test fails the build if the help text and the completion tables drift.
+- **`vibeshield rules [id]`.** The rule packs without the actions and agent
+  recipes that `search` also indexes — `search --rules --limit 0` under a name
+  people actually reach for. `vibeshield rules VS-SEC-017` reads one rule in
+  full; `vibeshield rules` lists them all, grouped by category.
+- **Per-command help.** `vibeshield scan --help`, `vibeshield help scan` and
+  `vibeshield scan -h` now print that command's own flags and examples, and
+  exit `0`. Previously every subcommand printed the global manual, so
+  `scan --help` never mentioned `--diff`.
+- **"Did you mean" suggestions.** `vibeshield scna` now answers with
+  `Did you mean \`vibeshield scan\`?` instead of the whole manual. Similarity is
+  Damerau-Levenshtein based, so transposed letters count as one edit, and the
+  0.6 floor means an unrelated word gets silence rather than a confident wrong
+  answer.
+- **`-V` as a version alias**, alongside the existing `-v` and `--version`.
+- `.gitattributes` normalising line endings. Without it a Windows checkout
+  rewrites every file to CRLF, which made `gofmt -l .` report every Go file as
+  unformatted and put CRLF shebangs on the shell scripts.
+- **`vibeshield.yml`, and the repository now scans itself in CI.** The
+  "VibeShield scans itself" step in `.github/workflows/ci.yml` runs the scanner
+  against this repository with `mode: block-on-critical`. Getting it to pass
+  took a real ignore list, and the reason is instructive: a scanner pointed at
+  its own source always finds itself. The rule packs contain every pattern they
+  detect, the golden fixtures are vulnerable on purpose, and the docs must
+  display the install one-liner that `VS-SEC-027` exists to flag. Every
+  exception in `vibeshield.yml` names its files and states why, and nothing is
+  excluded because a finding was inconvenient — the first run went from 248
+  findings to 0 by fixing two real bugs and documenting the structural ones.
+- `packaging/homebrew/README.md` and `scripts/gen-homebrew-formula.mjs`, which
+  turns a published release's own `sha256sums.txt` into a ready-to-submit
+  formula. The generated `.rb` is deliberately not committed: a formula with
+  placeholder checksums is worse than no formula.
+- `.github/workflows/publish-npm.yml`, publishing the npm launcher with OIDC
+  trusted publishing (no stored token) and `--provenance`, and refusing to
+  publish when `package.json` or `lib/run.js` disagree with the release tag.
+
+### Changed
+
+- **Top-level help rewritten around examples.** It opens with four commands to
+  run first, groups the verbs into Everyday / Explore / Meta, and states the
+  exit-code contract — because that is the whole contract for a gate.
+- `--list` on `search` is no longer truncated by the default `--limit 20`. The
+  README documents `vibeshield search --rules --list` as "every shipped rule"
+  and it printed 20 entries. An explicit `--limit` still wins.
+- The console catalog covers `doctor`, `rules` and `completion`.
+- **Version 3.0.0** across the binary, npm launcher, GitHub Action, Claude Code
+  plugin, contracts, docs and site.
+
+### Fixed
+
+- **The one-line installers were pinned to `v1.0.0`.** `scripts/install.sh` and
+  `scripts/install.ps1` both defaulted to `v1.0.0`, and neither was listed in
+  `scripts/bump-version.mjs` — so every release since the first bumped 26
+  version touchpoints and silently skipped the two files that decide what the
+  README's headline install command actually downloads. Anyone running that
+  one-liner got a release two major versions old, or a 404 if the old assets
+  had been pruned. Both now default to `v3.0.0` and both are in the bump list,
+  so this cannot drift again.
+- **The installers advised installing at a floating tag.** The `go install`
+  fallbacks in `install.sh`, `install.ps1` and the npm launcher all ended in
+  `@latest`, which is the exact pattern this project's own `VS-DEP-011` rule
+  flags: a floating tag resolves to whatever is published at run time. They now
+  pin to the release being installed. The npm fallback in `install.ps1` was
+  also unpinned (`npm install -g vibeshield`) and now installs the matching
+  version.
+- **`publish-npm.yml` upgraded the global npm CLI from a floating tag.** A
+  security tool's release workflow should not do the thing its own
+  `VS-DEP-004` rule calls a supply-chain window. Node 24 bundles npm 11.x,
+  which supports OIDC trusted publishing, so the upgrade is gone entirely and
+  replaced with an assertion that fails loudly if a future Node downgrade makes
+  trusted publishing unavailable.
+- **`--rules` swallowed the following flag in `search`.** The positional-arg
+  rewriter used one global table of value-taking flags, so in `search` — where
+  `--rules` is a boolean switch — it consumed the next argument as if it were a
+  directory name. `vibeshield search --rules --list` and
+  `vibeshield rules VS-SEC-017 --no-color` both failed with a flag parse error.
+  The table is now per-subcommand, and `TestFlagTakesValueCoversEveryValueFlag`
+  covers the boolean/value split in both directions.
+- `doctor --config <missing-file>` is now a warning rather than a silent
+  fall-through to the defaults.
+- `initcmd`'s exported `FindGitDir` replaces the unexported `findGitDir`, so
+  `doctor` and `init` cannot disagree about where the git directory is.
+- The `actionRef` test asserts against `defaultActionTag` instead of a literal
+  version, so a release bump no longer has to edit a test.
+- The Claude Code plugin manifest pointed at `github.com/vibeshield/vibeshield`
+  and a `vibeshield.dev` homepage that does not exist. Both now point at the
+  real repository and site.
+
+### Notes
+
+- Zero new runtime dependencies. Still a single static binary, no CGO.
+- Cross-compiles clean for linux/amd64, linux/arm64, darwin/amd64,
+  darwin/arm64, windows/amd64 and windows/arm64.
+
 ## [2.0.1] — 2026-09-19
 
 Patch release: three documentation-vs-reality gaps found by auditing the docs

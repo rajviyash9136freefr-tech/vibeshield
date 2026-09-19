@@ -17,9 +17,10 @@ import Footer from '../components/ui/Footer.astro';
 
     <h2 class="mt-10 text-[24px] font-semibold">What leaves your machine</h2>
     <ul class="mt-4 list-disc space-y-2 pl-5 text-[var(--color-muted)]">
-      <li><strong class="text-[var(--color-fg)]">CLI & pre-commit hook:</strong> nothing. Static analysis is fully local; the rules engine runs from the embedded pack. Network calls happen only with explicit <code class="font-mono text-sm">--online</code>, and then only package names go to public registries — never file contents.</li>
-      <li><strong class="text-[var(--color-fg)]">GitHub Action:</strong> analysis runs on your runner. We send findings <em>metadata</em> to the dashboard — file paths, rule IDs, symbol names, severities. File contents and snippets are never persisted server-side; snippets exist only inside your PR comment.</li>
-      <li><strong class="text-[var(--color-fg)]">Private-repo results are never used for model training. Ever.</strong></li>
+      <li><strong class="text-[var(--color-fg)]">Nothing, on every surface.</strong> The CLI, the console, the pre-commit hook and the GitHub Action all run the same static analysis from the pack embedded in the binary. There is no telemetry, no account, no upload, and no server component to send anything to.</li>
+      <li><strong class="text-[var(--color-fg)]">There is no VibeShield cloud.</strong> The <code class="font-mono text-sm">--online</code> flag is reserved for a future package-intel lookup; in this build it prints a notice and the scan continues fully offline. The scanner contains no HTTP client at all.</li>
+      <li><strong class="text-[var(--color-fg)]">The Action runs on your runner.</strong> It posts a PR comment using <em>your</em> <code class="font-mono text-sm">GITHUB_TOKEN</code>. The only thing that leaves the runner is that comment, in your repository.</li>
+      <li><strong class="text-[var(--color-fg)]">Nothing is ever used for model training.</strong> There is no model, and nothing to train it with.</li>
     </ul>
 
     <h2 class="mt-10 text-[24px] font-semibold">Trust boundaries</h2>
@@ -32,10 +33,10 @@ import Footer from '../components/ui/Footer.astro';
         </tr>
       </thead>
       <tbody class="text-[var(--color-muted)]">
-        <tr class="border-b border-[var(--color-hairline)]"><td class="py-2 pr-4 font-mono text-[13px] text-[var(--color-fg)]">scanner (Go binary)</td><td class="py-2 pr-4">your machine / runner</td><td class="py-2">source files (read-only), git metadata</td></tr>
+        <tr class="border-b border-[var(--color-hairline)]"><td class="py-2 pr-4 font-mono text-[13px] text-[var(--color-fg)]">scanner (Go binary)</td><td class="py-2 pr-4">your machine / runner</td><td class="py-2">source files (read-only), git metadata. No network code is linked in</td></tr>
         <tr class="border-b border-[var(--color-hairline)]"><td class="py-2 pr-4 font-mono text-[13px] text-[var(--color-fg)]">rules packs (YAML)</td><td class="py-2 pr-4">in-process</td><td class="py-2">validated at load; strict schema, RE2 only — a malformed pack is exit 2, never execution</td></tr>
-        <tr class="border-b border-[var(--color-hairline)]"><td class="py-2 pr-4 font-mono text-[13px] text-[var(--color-fg)]">package-intel API</td><td class="py-2 pr-4">our cloud</td><td class="py-2">registry snapshots (npm/PyPI/crates/Go); sees package names from opt-in --online lookups</td></tr>
-        <tr class="border-b border-[var(--color-hairline)]"><td class="py-2 pr-4 font-mono text-[13px] text-[var(--color-fg)]">findings API + dashboard</td><td class="py-2 pr-4">our cloud</td><td class="py-2">findings metadata; GitHub OAuth; no file contents</td></tr>
+        <tr class="border-b border-[var(--color-hairline)]"><td class="py-2 pr-4 font-mono text-[13px] text-[var(--color-fg)]">npm launcher</td><td class="py-2 pr-4">your machine</td><td class="py-2">downloads one release asset and verifies it against the published <code class="font-mono text-sm">sha256sums.txt</code> before running it</td></tr>
+        <tr class="border-b border-[var(--color-hairline)]"><td class="py-2 pr-4 font-mono text-[13px] text-[var(--color-fg)]">GitHub Action</td><td class="py-2 pr-4">your runner</td><td class="py-2">findings in your repo's PR comment, via your <code class="font-mono text-sm">GITHUB_TOKEN</code>. No third-party endpoint</td></tr>
       </tbody>
     </table>
 
@@ -44,14 +45,16 @@ import Footer from '../components/ui/Footer.astro';
       <li>Read-only file access; the scanner never writes to your repo (<code class="font-mono text-sm">init</code> writes config files, and says so first).</li>
       <li>It does not execute your code, install dependencies, or build. Findings are pattern matches over text, weighted by AI-likelihood.</li>
       <li>Secrets found in matched lines are redacted by the scanner (4 + 4 characters kept) before anything is printed, posted, or sent.</li>
+      <li>Rule packs are data, not code. A malformed pack is a startup error (exit 2), never something that gets evaluated.</li>
     </ul>
 
     <h2 class="mt-10 text-[24px] font-semibold">Disclosure</h2>
     <p class="mt-4 text-[var(--color-muted)]">
-      Found a vulnerability in VibeShield itself? Email
-      <a class="text-[var(--color-accent)] hover:underline" href="mailto:security@vibeshield.dev">security@vibeshield.dev</a>
-      — PGP key on request. We acknowledge within 48 hours and aim to ship a fix within 14 days for anything rated high or above.
+      Found a vulnerability in VibeShield itself? Open a private report through
+      <a class="text-[var(--color-accent)] hover:underline" href="https://github.com/rajviyash9136freefr-tech/vibeshield/security/advisories/new">GitHub Security Advisories</a>
+      — that keeps the details private until there is a fix. We acknowledge within 48 hours and aim to ship a fix within 14 days for anything rated high or above.
       Please don't open a public issue first; we'll credit reporters who give us the window.
+      The full policy is in <a class="text-[var(--color-accent)] hover:underline" href="https://github.com/rajviyash9136freefr-tech/vibeshield/blob/main/SECURITY.md">SECURITY.md</a>.
     </p>
 
     <h2 class="mt-10 text-[24px] font-semibold">Precision, honestly stated</h2>

@@ -34,10 +34,14 @@ The mode is a policy you can ratchet: `warn` for a month, then flip to
 
 ## ignore
 
-Every ignore needs a `reason` — it's stored in the audit log and shown in the
+Every ignore needs a `reason` — it is stored in the audit log and shown in the
 PR report, so dismissals leave a trail instead of a mystery. `paths` are
-doublestar globs. Accept-from-the-PR (`/vibeshield accept VS-SEC-017 --reason
-"test fixture"`) writes the same record, so triage and config never diverge.
+doublestar globs.
+
+The Action prints a triage line under each dismissable finding, e.g.
+`/vibeshield accept <hash> --reason "test fixture"`. Replying with it on the PR
+writes the same record the config would, so triage and config never diverge.
+(That is a pull-request comment command, not a CLI verb.)
 
 ## thresholds
 

@@ -15,7 +15,7 @@ import { tmpdir, homedir } from 'node:os';
 import { join } from 'node:path';
 
 const REPO = 'rajviyash9136freefr-tech/vibeshield';
-const VERSION = process.env.VIBESHIELD_VERSION || 'v2.0.1';
+const VERSION = process.env.VIBESHIELD_VERSION || 'v3.0.0';
 
 function cacheDir() {
   if (process.env.VIBESHIELD_HOME) return process.env.VIBESHIELD_HOME;
@@ -30,7 +30,7 @@ function assetBase() {
   const os = { linux: 'linux', darwin: 'darwin', win32: 'windows' }[process.platform];
   const arch = { x64: 'x86_64', arm64: 'aarch64' }[process.arch];
   if (!os || !arch) {
-    fail(`unsupported platform ${process.platform}/${process.arch} — grab a binary from https://github.com/${REPO}/releases or build: go install github.com/${REPO}/scanner/cmd/vibeshield@latest`);
+    fail(`unsupported platform ${process.platform}/${process.arch} — grab a binary from https://github.com/${REPO}/releases or build: go install github.com/${REPO}/scanner/cmd/vibeshield@${VERSION}`);
   }
   return { name: `vibeshield-${os}-${arch}`, ext: os === 'windows' ? 'zip' : 'tar.gz', bin: os === 'windows' ? 'vibeshield.exe' : 'vibeshield' };
 }
@@ -68,7 +68,7 @@ async function downloadBinary(dest) {
     }
   } catch (err) {
     fail(`could not download the scanner (${err.message}).\n` +
-      `  Offline? Build it once: go install github.com/${REPO}/scanner/cmd/vibeshield@latest\n` +
+      `  Offline? Build it once: go install github.com/${REPO}/scanner/cmd/vibeshield@${VERSION}\n` +
       `  Then point the wrapper at it: VIBESHIELD_BIN=/path/to/vibeshield npx vibeshield …`);
   }
   writeFileSync(tmp, archive);

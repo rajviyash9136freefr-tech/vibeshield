@@ -1,56 +1,100 @@
 ---
-// /changelog — powered by rule-pack + binary versions (UIUX §10 #8).
-// Data lives in the repo's releases; this page mirrors the notable ones.
+// /changelog — rendered from the repository's CHANGELOG.md at build time.
+//
+// This page used to be a hand-copied summary of the changelog, which meant it
+// was wrong from the moment the next release shipped. It now reads the real
+// file, so the site cannot disagree with the repository about what shipped.
+//
+// The parser is deliberately small: it understands the Keep a Changelog shape
+// (## [version] — date, ### Section, - bullets with wrapped continuation
+// lines) and nothing else. No markdown dependency is added for this.
+import { readFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/ui/Nav.astro';
 import Footer from '../components/ui/Footer.astro';
 
-const ENTRIES = [
-  {
-    version: 'v2.0.1',
-    date: '2026-09-19',
-    title: 'Config correctness',
-    items: [
-      '`notifications.slack` now enforces what these docs already claimed: a literal webhook URL is a config error (exit 2), because a webhook path *is* the credential. `${SLACK_WEBHOOK}` and `$SLACK_WEBHOOK` are accepted; anything else, including the malformed `${A`, is rejected.',
-      '`scan <path>` now reads `<path>/vibeshield.yml`. It resolved the config from the working directory, so scanning another project silently used the wrong configuration — or none. An explicit `--config` still wins.',
-      '`vibeshield version` no longer overstates the rule count: it reports `117 active · 5 reserved` rather than a flat 122. Five `structural` rules load and validate so packs stay portable, but the matcher skips them; the console now marks them reserved.',
-      'No new features and no rule changes — the core pack stays at 2.0.0.',
-    ],
-  },
-  {
-    version: 'v2.0.0',
-    date: '2026-09-18',
-    title: 'The terminal workspace',
-    items: [
-      '`--format sarif` — SARIF 2.1.0 output for GitHub code scanning, so findings land in your repository\'s Security tab via `github/codeql-action/upload-sarif`, with the rule text, the one-line fix and a stable fingerprint.',
-      '`-v` / `--verbose` on `scan` and `fix` — reports the resolved config, mode, languages, pack version and walk result.',
-      '`vibeshield init` — detects the stack from your manifests and writes a `vibeshield.yml`, a pull-request gate workflow and a POSIX pre-commit hook, then runs the first scan. Never overwrites a file without `--force`, never touches an existing git hook.',
-      'Interactive console — running `vibeshield` with no arguments opens a searchable, keyboard-driven menu over every action, rule and agent recipe. Arrow keys, Tab to jump groups, Enter to open.',
-      '`vibeshield search [query]` — the same ranking on stdout, with `--list`, `--rules`, `--agents`, `--limit` and `--format json` (`vibeshield.search/v1`) for scripts and agent tool-calls.',
-      '`vibeshield agents [name]` — setup recipes for Codex, Claude Code (CLI and Desktop), Google Antigravity, Cursor, Windsurf, GitHub Copilot and any `AGENTS.md` client, with `--body` and `--markdown`.',
-      'Agent rule files generated from one source of truth, with CI failing on drift: `AGENTS.md`, `.agents/rules/`, `.cursor/rules/`, `.cursorrules`, `.windsurf/rules/`, `.windsurfrules`, `.github/copilot-instructions.md`.',
-      'The GitHub Action now verifies the downloaded scanner against the release `sha256sums.txt` before executing it.',
-      'Core rules pack v2.0.0 (MIT): 122 rules across 6 categories. Rule IDs and semantics unchanged.',
-    ],
-  },
-  {
-    version: 'v1.0.0',
-    date: '2026-09-13',
-    title: 'Launch',
-    items: [
-      'GitHub Action (`vibeshield/action@v1`) — diff-mode PR scans, consolidated VibeCheck report, accept/dismiss commands, badge.',
-      'Pre-commit hook — staged-files scan, fully offline rules.',
-      'CLI — `scan | fix | version`, `--format pretty|json|github`.',
-      'Core rules pack v1.0.0 (MIT): 122 rules across the AI-code failure modes, 11 languages.',
-      'Bug-hunting skill (`/vibeshield:vibeshield-audit`) — in-agent audit with parallel hunter subagents, same finding contract.',
-    ],
-  },
-];
+function changelogPath(): string {
+  // `astro build` runs with cwd = site/, but fall back to the module-relative
+  // path so the page still resolves if it is built from somewhere else.
+  const candidates = [
+    join(process.cwd(), '..', 'CHANGELOG.md'),
+    join(process.cwd(), 'CHANGELOG.md'),
+  ];
+  return candidates.find(existsSync) ?? candidates[0];
+}
+
+interface Section {
+  heading: string;
+  items: string[];
+}
+interface Entry {
+  version: string;
+  date: string;
+  sections: Section[];
+}
+
+/** Escape the characters that would otherwise become markup. */
+function esc(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/** A deliberately tiny inline-markdown renderer: code, bold, links. */
+function inline(s: string): string {
+  return esc(s)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" rel="noopener">$1</a>');
+}
+
+function parse(raw: string): Entry[] {
+  const entries: Entry[] = [];
+  let entry: Entry | null = null;
+  let section: Section | null = null;
+
+  // Normalise line endings first. A Windows checkout hands us CRLF, and in
+  // JavaScript `\r` is a line terminator, so `(.*)$` never matches a line that
+  // ends with one — every bullet would be silently dropped.
+  for (const line of raw.replace(/\r\n?/g, '\n').split('\n')) {
+    const head = line.match(/^##\s+\[([^\]]+)\]\s+[—-]\s+(.+?)\s*$/);
+    if (head) {
+      entry = { version: head[1], date: head[2], sections: [] };
+      entries.push(entry);
+      section = null;
+      continue;
+    }
+    if (!entry) continue; // the file's preamble
+
+    const sub = line.match(/^###\s+(.+?)\s*$/);
+    if (sub) {
+      section = { heading: sub[1], items: [] };
+      entry.sections.push(section);
+      continue;
+    }
+    if (!section) continue;
+
+    const bullet = line.match(/^[-*]\s+(.*)$/);
+    if (bullet) {
+      section.items.push(bullet[1]);
+      continue;
+    }
+    // A wrapped continuation of the previous bullet, or a blank line between
+    // bullets. Anything else (a table, a nested list) is appended as-is so it
+    // still renders instead of being dropped.
+    if (section.items.length && line.trim() !== '') {
+      section.items[section.items.length - 1] += ' ' + line.trim();
+    }
+  }
+  return entries;
+}
+
+const ENTRIES = parse(readFileSync(changelogPath(), 'utf8'));
+const LATEST = ENTRIES[0];
 ---
 
 <BaseLayout
   title="Changelog — VibeShield"
-  description="VibeShield releases: scanner, rule packs, and the bug-hunting skill. Every rules-pack version is diffable in the open-source repo."
+  description="Every VibeShield release, rendered from the repository's CHANGELOG.md: the scanner, the rule packs, and the bug-hunting skill."
   canonical="/changelog"
 >
   <Nav slot="nav" />
@@ -58,17 +102,34 @@ const ENTRIES = [
     <p class="eyebrow">Changelog</p>
     <h1 class="mt-2 text-[36px] font-bold tracking-[-0.03em]">Releases</h1>
     <p class="mt-3 text-[var(--color-muted)]">
-      Rules are data: pack history lives in
-      <a class="text-[var(--color-accent)] hover:underline" href="https://github.com/rajviyash9136freefr-tech/vibeshield/tree/main/rules">rules/ in the repo</a>.
-      Binary history in
+      This page is generated from
+      <a class="text-[var(--color-accent)] hover:underline" href="https://github.com/rajviyash9136freefr-tech/vibeshield/blob/main/CHANGELOG.md">CHANGELOG.md</a>
+      at build time, so it cannot drift from the repository. Rules are data: pack
+      history lives in
+      <a class="text-[var(--color-accent)] hover:underline" href="https://github.com/rajviyash9136freefr-tech/vibeshield/tree/main/rules">rules/</a>,
+      binaries in
       <a class="text-[var(--color-accent)] hover:underline" href="https://github.com/rajviyash9136freefr-tech/vibeshield/releases">GitHub releases</a>.
     </p>
+
+    {LATEST && (
+      <p class="mt-4 inline-block rounded-[var(--radius-btn)] bg-[var(--color-accent-dim)] px-3 py-1.5 font-mono text-sm text-[var(--color-accent)]">
+        Latest: {LATEST.version} · {LATEST.date}
+      </p>
+    )}
+
     {ENTRIES.map((e) => (
       <section class="mt-12 border-t border-[var(--color-hairline)] pt-8">
-        <h2 class="font-mono text-[20px] font-semibold text-[var(--color-fg)]">{e.version} <span class="text-sm font-normal text-[var(--color-faint)]">· {e.date} · {e.title}</span></h2>
-        <ul class="mt-4 list-disc space-y-2 pl-5 text-[15px] text-[var(--color-muted)]">
-          {e.items.map((i) => <li>{i}</li>)}
-        </ul>
+        <h2 class="font-mono text-[20px] font-semibold text-[var(--color-fg)]">
+          {e.version} <span class="text-sm font-normal text-[var(--color-faint)]">· {e.date}</span>
+        </h2>
+        {e.sections.map((s) => (
+          <div class="mt-5">
+            <h3 class="text-[13px] font-semibold uppercase tracking-wide text-[var(--color-faint)]">{s.heading}</h3>
+            <ul class="mt-2 list-disc space-y-2 pl-5 text-[15px] text-[var(--color-muted)]">
+              {s.items.map((i) => <li set:html={inline(i)} />)}
+            </ul>
+          </div>
+        ))}
       </section>
     ))}
   </div>

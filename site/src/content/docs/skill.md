@@ -17,13 +17,13 @@ In a Claude Code session:
 
 ```
 /plugin marketplace add rajviyash9136freefr-tech/vibeshield
-/plugin install vibeshield@rajviyash
+/plugin install vibeshield@vibeshield
 ```
 
 From your terminal:
 
 ```bash
-claude plugin marketplace add rajviyash9136freefr-tech/vibeshield && claude plugin install vibeshield@rajviyash
+claude plugin marketplace add rajviyash9136freefr-tech/vibeshield && claude plugin install vibeshield@vibeshield
 ```
 
 ## Install (other coding agents)

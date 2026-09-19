@@ -1,3 +1,18 @@
+// Generates the two share images from one source of truth:
+//
+//   public/og.png             1200x630  — og:image / twitter:image for the site
+//   public/social-preview.png 1280x640  — upload to GitHub → Settings → Social preview
+//
+// The GitHub one is the single highest-value image in the project: without it
+// every Slack, Discord, X and LinkedIn link to the repository renders as a grey
+// rectangle with a tiny avatar. It cannot be set from a file in the repo — it
+// has to be uploaded in repository settings — so this script exists to make
+// that upload a two-click job instead of a design task.
+//
+// The terminal transcript is kept byte-compatible with what `vibeshield scan`
+// actually prints, so the share image cannot promise an output format the
+// binary does not produce. Severity labels are ASCII ([CRITICAL], not 🔴)
+// because emoji rendering through SVG → librsvg → PNG is not reliable.
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
@@ -7,66 +22,83 @@ if (!fs.existsSync(publicDir)) {
   fs.mkdirSync(publicDir, { recursive: true });
 }
 
-const svg = `<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+// Palette — the same severity colours the CLI and the site use.
+const C = {
+  critical: '#F87171',
+  high: '#FB923C',
+  ok: '#34D399',
+  dim: 'rgba(255,255,255,0.55)',
+  fg: 'rgba(255,255,255,0.92)',
+  hairline: 'rgba(255,255,255,0.12)',
+};
+
+const MONO = "'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace";
+const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+/** The share card. Drawn on a 1200x630 grid; other ratios scale-and-crop. */
+function card(w = 1200, h = 630) {
+  return `<svg width="${w}" height="${h}" viewBox="0 0 1200 630" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="heroGlow" cx="50%" cy="25%" r="65%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+    <radialGradient id="glow" cx="50%" cy="20%" r="70%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.09"/>
       <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
   <rect width="1200" height="630" fill="#000000"/>
-  <rect width="1200" height="630" fill="url(#heroGlow)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
 
-  <!-- Border hairline -->
-  <rect x="1" y="1" width="1198" height="628" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
-
-  <!-- Brand badge -->
-  <g transform="translate(80, 70)">
-    <rect width="150" height="34" rx="17" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
-    <text x="24" y="22" fill="#FFFFFF" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" letter-spacing="1">🛡 VIBESHIELD</text>
+  <!-- Wordmark -->
+  <g transform="translate(80, 62)">
+    <rect width="196" height="36" rx="18" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+    <text x="20" y="24" fill="#FFFFFF" font-family="${SANS}" font-size="14" font-weight="700" letter-spacing="1.2">VIBESHIELD</text>
   </g>
 
-  <!-- Title -->
-  <text x="80" y="155" fill="#FFFFFF" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="700" letter-spacing="-1.5">Security for the code your AI writes</text>
-  <text x="80" y="200" fill="rgba(255,255,255,0.65)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="400">Audits Cursor, Copilot &amp; Claude Code commits before they hit main.</text>
+  <!-- Headline -->
+  <text x="80" y="152" fill="#FFFFFF" font-family="${SANS}" font-size="46" font-weight="700" letter-spacing="-1.6">The bug hunter for AI-generated code</text>
+  <text x="80" y="192" fill="${C.dim}" font-family="${SANS}" font-size="20">Hallucinated packages · leaked secrets · insecure defaults — caught before they merge.</text>
 
   <!-- Terminal card -->
-  <g transform="translate(80, 240)">
-    <rect width="1040" height="320" rx="16" fill="#0A0A0C" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-
-    <!-- Terminal header -->
-    <circle cx="28" cy="24" r="5" fill="rgba(255,255,255,0.4)"/>
+  <g transform="translate(80, 224)">
+    <rect width="1040" height="322" rx="16" fill="#08080A" stroke="${C.hairline}" stroke-width="1"/>
+    <circle cx="28" cy="24" r="5" fill="rgba(255,255,255,0.40)"/>
     <circle cx="46" cy="24" r="5" fill="rgba(255,255,255,0.25)"/>
     <circle cx="64" cy="24" r="5" fill="rgba(255,255,255,0.15)"/>
-    <text x="92" y="28" fill="rgba(255,255,255,0.5)" font-family="'Geist Mono', monospace" font-size="13">bash — vibeshield scan</text>
-    <line x1="0" y1="44" x2="1040" y2="44" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <text x="92" y="28" fill="${C.dim}" font-family="${MONO}" font-size="13">bash — vibeshield</text>
+    <line x1="0" y1="46" x2="1040" y2="46" stroke="${C.hairline}" stroke-width="1"/>
 
-    <!-- Terminal body -->
-    <text x="28" y="78" fill="#FFFFFF" font-family="'Geist Mono', monospace" font-size="14" font-weight="700">$ npx vibeshield scan</text>
-    <text x="28" y="106" fill="rgba(255,255,255,0.65)" font-family="'Geist Mono', monospace" font-size="13.5">  Scanning 14 changed files (diff mode)… done in 1.2s</text>
+    <text x="28" y="80" fill="#FFFFFF" font-family="${MONO}" font-size="14" font-weight="700">$ vibeshield scan .</text>
+    <text x="28" y="108" fill="${C.dim}" font-family="${MONO}" font-size="13.5">  Scanning 14 files (full mode)… done in 1.2s</text>
 
-    <!-- Finding 1 -->
-    <text x="28" y="142" fill="#FFFFFF" font-family="'Geist Mono', monospace" font-size="13.5" font-weight="700">  [CRITICAL] VS-PKG-001  hallucinated-package</text>
-    <text x="28" y="166" fill="rgba(255,255,255,0.85)" font-family="'Geist Mono', monospace" font-size="13.5">     fast-parse-utils-v3@2.1.4 — registered 9 days ago, 1 maintainer, post-install remote fetch</text>
-    <text x="28" y="190" fill="#FFFFFF" font-family="'Geist Mono', monospace" font-size="13.5">     → Fix: replace with node:util (12-line change in src/parse.ts)</text>
+    <text x="28" y="146" fill="${C.critical}" font-family="${MONO}" font-size="13.5" font-weight="700">  CRITICAL  VS-PKG-001  hallucinated-package</text>
+    <text x="28" y="170" fill="${C.fg}" font-family="${MONO}" font-size="13.5">     package.json:8 — fast-parse-utils-v3@2.1.4 (9 days old, 1 maintainer)</text>
+    <text x="28" y="194" fill="${C.ok}" font-family="${MONO}" font-size="13.5">     → Fix: replace with node:util (12 lines, zero dependencies).</text>
 
-    <!-- Finding 2 -->
-    <text x="28" y="224" fill="rgba(255,255,255,0.85)" font-family="'Geist Mono', monospace" font-size="13.5" font-weight="700">  [HIGH]     VS-SEC-017  hardcoded-secret</text>
-    <text x="28" y="248" fill="rgba(255,255,255,0.85)" font-family="'Geist Mono', monospace" font-size="13.5">     OPENAI_API_KEY echoed in src/lib/agent.ts:41 — likely pasted from AI chat</text>
-    <text x="28" y="272" fill="#FFFFFF" font-family="'Geist Mono', monospace" font-size="13.5">     → Fix: move to env, rotate the key now</text>
+    <text x="28" y="232" fill="${C.high}" font-family="${MONO}" font-size="13.5" font-weight="700">  HIGH      VS-SEC-017  hardcoded-secret</text>
+    <text x="28" y="256" fill="${C.fg}" font-family="${MONO}" font-size="13.5">     src/agent.ts:41 — OPENAI_API_KEY pasted from chat context</text>
+    <text x="28" y="280" fill="${C.ok}" font-family="${MONO}" font-size="13.5">     → Fix: read process.env.OPENAI_API_KEY and rotate the key now.</text>
 
-    <!-- Summary -->
-    <text x="28" y="304" fill="#FFFFFF" font-family="'Geist Mono', monospace" font-size="13">  ✓ 11 files clean · 2 findings · 1 dependency added (risky)</text>
+    <text x="28" y="308" fill="${C.ok}" font-family="${MONO}" font-size="13">  ✓ 12 files clean · 2 findings · 0 leaks merged to main</text>
+  </g>
+
+  <!-- Footer facts -->
+  <g transform="translate(80, 578)">
+    <text x="0" y="0" fill="${C.dim}" font-family="${SANS}" font-size="15">100% local · MIT · one static binary · GitHub Action, pre-commit hook and CLI</text>
   </g>
 </svg>`;
+}
+
 
 async function main() {
-  const outputPath = path.join(publicDir, 'og.png');
-  await sharp(Buffer.from(svg))
-    .png({ quality: 90 })
-    .toFile(outputPath);
-  console.log(`[gen-og] Generated ${outputPath}`);
+  // og:image — the 1200x630 the site's <meta> tags point at.
+  await sharp(Buffer.from(card(1200, 630))).png({ quality: 92 }).toFile(path.join(publicDir, 'og.png'));
+  console.log('[gen-og] public/og.png (1200x630)');
+
+  // GitHub social preview — 1280x640. The card is drawn on a 1200x630 grid and
+  // scaled to fill, so there are no letterbox bars: the extra 10px of height is
+  // cropped from the top and bottom margins, which are empty by design.
+  await sharp(Buffer.from(card(1280, 640))).png({ quality: 92 }).toFile(path.join(publicDir, 'social-preview.png'));
+  console.log('[gen-og] public/social-preview.png (1280x640) → upload to GitHub → Settings → Social preview');
 }
 
 main().catch((err) => {

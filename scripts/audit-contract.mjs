@@ -33,7 +33,12 @@ const NOT_OURS = new Map([
 ]);
 
 // `vibeshield accept ...` is an Action PR-comment command, not a CLI verb.
-const NOT_A_COMMAND = new Set(['accept']);
+const NOT_A_COMMAND = new Set([
+  'accept',
+  // The v3 migration guide shows the "did you mean" output for this exact
+  // typo, so it appears as `vibeshield scna` in the docs on purpose.
+  'scna',
+]);
 
 // --- what the docs claim ----------------------------------------------------
 
@@ -61,7 +66,13 @@ for (const line of text.split('\n')) {
   if (m) flags.add(m[1]);
 }
 
-const COMMANDS = ['scan', 'fix', 'init', 'version', 'search', 'agents', 'ui', 'menu', 'console', 'help', 'find', 'agent'];
+// Every verb run() dispatches, aliases included. A documented `vibeshield X`
+// that is not in this list is a documentation bug.
+const COMMANDS = [
+  'scan', 'fix', 'init', 'doctor', 'search', 'find', 'rules', 'rule',
+  'agents', 'agent', 'completion', 'completions', 'ui', 'menu', 'console',
+  'version', 'help',
+];
 
 const formats = new Set();
 for (const m of text.matchAll(/pretty\s*\|\s*json\s*\|\s*([a-z| ]+)/g)) {
@@ -71,7 +82,7 @@ for (const m of text.matchAll(/pretty\s*\|\s*json\s*\|\s*([a-z| ]+)/g)) {
 // --- what the binary does ---------------------------------------------------
 
 const run = (args) => spawnSync(bin, args, { encoding: 'utf8', cwd: repoRoot });
-const SUBCOMMANDS = ['scan', 'fix', 'init', 'search', 'agents'];
+const SUBCOMMANDS = ['scan', 'fix', 'init', 'doctor', 'search', 'rules', 'agents'];
 
 // A path that never exists, so a probe that gets past flag parsing fails fast
 // on the path check instead of actually scanning the repository.

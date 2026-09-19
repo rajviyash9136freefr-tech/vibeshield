@@ -15,14 +15,39 @@ import { baseHref } from '../lib/base';
 
 const { title, description, docSlug, schema: extraSchema = [] } = Astro.props;
 
-const DOCS = [
-  ['quickstart', 'Quickstart'],
-  ['github-action', 'GitHub Action'],
-  ['pre-commit', 'Pre-commit hook'],
-  ['cli', 'CLI reference'],
-  ['config', 'Configuration'],
-  ['rules', 'Rules & detection'],
-  ['skill', 'Bug-hunting skill'],
+// The sidebar is grouped so the page a first-time reader needs is obvious.
+// Order within a group is the reading order; `slug` must match a file in
+// src/content/docs/ (a missing one 404s, which is why it is a flat list here
+// rather than generated from the collection — the order matters).
+const DOC_GROUPS: { label: string; items: [string, string][] }[] = [
+  {
+    label: 'Getting started',
+    items: [
+      ['quickstart', 'Quickstart'],
+      ['installation', 'Installation'],
+      ['troubleshooting', 'Troubleshooting'],
+    ],
+  },
+  {
+    label: 'The CLI',
+    items: [
+      ['cli', 'CLI reference'],
+      ['config', 'Configuration'],
+      ['rules', 'Rules & detection'],
+    ],
+  },
+  {
+    label: 'Automate it',
+    items: [
+      ['github-action', 'GitHub Action'],
+      ['pre-commit', 'Pre-commit hook'],
+      ['skill', 'Bug-hunting skill'],
+    ],
+  },
+  {
+    label: 'Reference',
+    items: [['migration-v3', 'Upgrading to v3']],
+  },
 ];
 
 const schema = [
@@ -51,22 +76,42 @@ const schema = [
   <div class="wrap grid gap-10 py-16 lg:grid-cols-[220px_minmax(0,1fr)]">
     <aside>
       <nav aria-label="Docs" class="lg:sticky lg:top-24">
-        <p class="text-sm font-semibold text-[var(--color-fg)]">Docs</p>
-        <ul class="mt-3 space-y-1">
-          {DOCS.map(([slug, label]) => (
+        {DOC_GROUPS.map((group) => (
+          <div class="mb-5">
+            <p class="text-xs font-semibold uppercase tracking-wide text-[var(--color-faint)]">{group.label}</p>
+            <ul class="mt-2 space-y-1">
+              {group.items.map(([slug, label]) => (
+                <li>
+                  <a
+                    href={baseHref(`/docs/${slug}`)}
+                    aria-current={slug === docSlug ? 'page' : undefined}
+                    class={`block rounded-[var(--radius-btn)] px-3 py-1.5 text-sm ${
+                      slug === docSlug
+                        ? 'bg-[var(--color-accent-dim)] text-[var(--color-accent)]'
+                        : 'text-[var(--color-muted)] hover:bg-[var(--color-hovered)] hover:text-[var(--color-fg)]'
+                    }`}
+                  >{label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+        <div class="mb-5 border-t border-[var(--color-line)] pt-4">
+          <ul class="space-y-1">
             <li>
               <a
-                href={baseHref(`/docs/${slug}`)}
-                aria-current={slug === docSlug ? 'page' : undefined}
-                class={`block rounded-[var(--radius-btn)] px-3 py-1.5 text-sm ${
-                  slug === docSlug
-                    ? 'bg-[var(--color-accent-dim)] text-[var(--color-accent)]'
-                    : 'text-[var(--color-muted)] hover:bg-[var(--color-hovered)] hover:text-[var(--color-fg)]'
-                }`}
-              >{label}</a>
+                href={SITE.repo}
+                class="block rounded-[var(--radius-btn)] px-3 py-1.5 text-sm text-[var(--color-muted)] hover:bg-[var(--color-hovered)] hover:text-[var(--color-fg)]"
+              >GitHub repository ↗</a>
             </li>
-          ))}
-        </ul>
+            <li>
+              <a
+                href={baseHref('/changelog')}
+                class="block rounded-[var(--radius-btn)] px-3 py-1.5 text-sm text-[var(--color-muted)] hover:bg-[var(--color-hovered)] hover:text-[var(--color-fg)]"
+              >Changelog</a>
+            </li>
+          </ul>
+        </div>
       </nav>
     </aside>
     <article class="wrap-narrow !max-w-[760px] !px-0 prose-docs">

@@ -51,7 +51,9 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - uses: ${SITE.repo.replace('https://github.com/', '')}/action@v1`,
+        with:
+          fetch-depth: 0
+      - uses: ${SITE.repo.replace('https://github.com/', '')}/action@v3.0.0`,
     meta: 'runs on your runner · code never leaves it',
   },
   {
@@ -62,7 +64,7 @@ jobs:
     filename: '.pre-commit-config.yaml',
     code: `repos:
   - repo: ${SITE.repo}
-    rev: v1.0.0
+    rev: v3.0.0
     hooks:
       - id: vibeshield`,
     meta: 'pre-commit run --all-files to backfill',
@@ -73,7 +75,7 @@ jobs:
     h3: 'If you read Go, read the source before you run it',
     body: 'One module, no CGO, plain go install. Every rule pack is versioned YAML in the same repo — nothing ships compiled that you cannot diff.',
     filename: 'terminal',
-    code: 'go install github.com/rajviyash9136freefr-tech/vibeshield/scanner/cmd/vibeshield@latest',
+    code: 'go install github.com/rajviyash9136freefr-tech/vibeshield/scanner/cmd/vibeshield@v3.0.0',
     meta: 'go test ./... passes before every release tag',
   },
 ];
@@ -82,17 +84,17 @@ const TRUTHS = [
   { n: '0', label: 'accounts, API keys, or telemetry' },
   { n: '4', label: 'lines of YAML if you want the PR gate' },
   { n: '1.2s', label: 'median diff scan', countup: '1.2', suffix: 's' },
-  { n: '120', label: 'AI-failure-mode rules, offline', countup: '120' },
+  { n: '122', label: 'AI-failure-mode rules, offline', countup: '122' },
 ];
 
 const HONEST_NOTES: { q: string; a: string }[] = [
   {
     q: 'I am on Windows. Does the one-liner work?',
-    a: 'In Git Bash, yes — it fetches vibeshield-windows-x86_64.zip and unpacks vibeshield.exe next to the rest. In plain PowerShell, use npx vibeshield scan . or go install instead; the .sh installer assumes a POSIX shell on purpose.',
+    a: 'Use the PowerShell installer (irm … | iex), which downloads vibeshield-windows-x86_64.zip, unpacks vibeshield.exe into ~/.local/bin, adds it to your user PATH, and wires the audit skill into any coding agent it finds. The .sh installer is for POSIX shells — Git Bash works, plain PowerShell does not.',
   },
   {
     q: 'Corporate proxy / air-gapped network?',
-    a: 'Download the archive for your platform from GitHub Releases, check it against the matching line in sha256sums.txt from the same release, and put the binary on PATH. Rules are embedded in the binary, so scans work with the network unplugged. Only the opt-in --online registry lookups need egress.',
+    a: 'Download the archive for your platform from GitHub Releases, check it against the matching line in sha256sums.txt from the same release, and put the binary on PATH. Rules are embedded in the binary, so scans work with the network unplugged — the scanner links in no HTTP client at all.',
   },
   {
     q: 'I ran it and nothing printed but findings.',
@@ -101,6 +103,10 @@ const HONEST_NOTES: { q: string; a: string }[] = [
   {
     q: 'How do I get rid of it?',
     a: 'rm ~/.local/bin/vibeshield (or delete vibeshield.exe), remove the workflow file, remove the hook entry, and delete vibeshield.yml. There is no daemon, no service, and no state outside your repo to clean up.',
+  },
+  {
+    q: 'I am not sure it is installed correctly.',
+    a: 'Run vibeshield doctor. It reports the binary and its rule pack, the config, the git hook, the PR-gate workflow and your agent rule files, and prints the exact command that fixes each gap. It changes nothing, and it exits 1 when something needs fixing.',
   },
 ];
 
@@ -238,8 +244,8 @@ const schema = [
         </p>
         <ul class="mt-6 space-y-3 text-[15px] text-[var(--color-muted)]">
           <li class="flex gap-3"><span class="font-mono text-[var(--color-accent)]" aria-hidden="true">1.</span><span>The binary is fetched and its sha256 is checked against the release manifest. A mismatch refuses to run — loudly.</span></li>
-          <li class="flex gap-3"><span class="font-mono text-[var(--color-accent)]" aria-hidden="true">2.</span><span>The rules pack (v1, MIT) loads from inside the binary. Zero network, zero config.</span></li>
-          <li class="flex gap-3"><span class="font-mono text-[var(--color-accent)]" aria-hidden="true">3.</span><span>Every tracked file gets pattern-matched against the ~120 AI-failure-mode rules — plus a pass over your manifest for newly added dependencies.</span></li>
+          <li class="flex gap-3"><span class="font-mono text-[var(--color-accent)]" aria-hidden="true">2.</span><span>The rules pack (core 2.0.0, MIT) loads from inside the binary. Zero network, zero config.</span></li>
+          <li class="flex gap-3"><span class="font-mono text-[var(--color-accent)]" aria-hidden="true">3.</span><span>Every tracked file gets pattern-matched against the 122 AI-failure-mode rules — 117 of which the engine can evaluate today.</span></li>
           <li class="flex gap-3"><span class="font-mono text-[var(--color-accent)]" aria-hidden="true">4.</span><span>Findings print in the VibeCheck format: why it matters for AI code, the pattern, a one-line fix. Secrets are redacted to 4+4 characters before anything is printed.</span></li>
         </ul>
       </div>
@@ -259,20 +265,20 @@ const schema = [
             tabindex="0"
             data-code
           ><code><span class="text-[var(--color-accent)]">$</span> npx vibeshield scan .
-<span class="text-[var(--color-muted)]">  vibeshield v1.0.0 · rules core/1.0.0 (offline)
-  scanning 42 files… done in 0.9s</span>
+<span class="text-[var(--color-muted)]">  vibeshield 3.0.0 · rules core 2.0.0 (offline)
+  Scanning 42 files (full mode)… done in 0.9s</span>
 
 <span class="font-semibold text-[var(--color-critical)]">  🔴 CRITICAL  VS-PKG-001  hallucinated-package</span>
 <span class="text-[var(--color-fg)]">     src/utils/parse.ts:8 — fast-parse-utils-v3@2.1.4
      9 days old · 1 maintainer · postinstall curls a host</span>
-<span class="text-[var(--color-ok)]">     → fix: node:util covers this in 12 lines</span>
+<span class="text-[var(--color-ok)]">     → Fix: replace with node:util (12 lines, zero dependencies).</span>
 
 <span class="font-semibold text-[var(--color-high)]">  🟠 HIGH      VS-SEC-017  hardcoded-secret</span>
 <span class="text-[var(--color-fg)]">     src/lib/agent.ts:41 — OPENAI_API_KEY = "sk-proj-••••••••4a2f"</span>
-<span class="text-[var(--color-ok)]">     → fix: move to env, rotate the key now</span>
+<span class="text-[var(--color-ok)]">     → Fix: read process.env.OPENAI_API_KEY and rotate the key now.</span>
 
-<span class="text-[var(--color-muted)]">  ✓ 40 files clean · 2 findings · 0 tracked
-  run `vibeshield init` to add the PR gate + hook</span></code></pre>
+<span class="text-[var(--color-muted)]">  ✓ 40 files clean · 2 findings · 0 leaks merged
+  Next: vibeshield init   (add the PR gate + hook)</span></code></pre>
         </div>
       </div>
     </div>

@@ -1,14 +1,14 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace-manifest.json",
   "name": "vibeshield",
-  "owner": { "name": "VibeShield", "url": "https://vibeshield.dev" },
+  "owner": { "name": "VibeShield", "url": "https://rajviyash9136freefr-tech.github.io/vibeshield/" },
   "description": "VibeShield's official marketplace: the bug-hunting security-audit skill for AI-generated code.",
   "plugins": [
     {
       "name": "vibeshield",
       "source": "./skill",
       "description": "Bug-hunting security audit skill for AI-generated code — hallucinated packages, leaked secrets, insecure boilerplate, license-stripped snippets, and prompt-injection traps. Spawns parallel bug-hunter subagents and emits contracts/finding/schema.json findings.",
-      "homepage": "https://vibeshield.dev/docs/skill",
+      "homepage": "https://rajviyash9136freefr-tech.github.io/vibeshield/docs/skill",
       "license": "MIT",
       "category": "security",
       "keywords": ["security", "audit", "ai-code", "bugs"]

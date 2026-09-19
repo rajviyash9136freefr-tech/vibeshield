@@ -164,6 +164,16 @@ func actionItems(version string) []Item {
 		},
 		{
 			Kind: KindAction, Group: "Setup",
+			Title:   "Check what is set up (and what is not)",
+			Summary: "Read-only report: config, git hook, PR gate, agent rules.",
+			Keywords: []string{
+				"doctor", "check", "health", "diagnose", "status", "setup", "configure",
+				"why", "not working", "hook", "workflow", "debug", "verify", "install",
+			},
+			Args: []string{"doctor"},
+		},
+		{
+			Kind: KindAction, Group: "Setup",
 			Title:    "Set up this project (write the files)",
 			Summary:  "Same as above, without the dry-run preview.",
 			Keywords: []string{"init", "setup", "write", "apply", "configure", "workflow", "hook", "ci"},
@@ -241,6 +251,20 @@ func actionItems(version string) []Item {
 			Summary:  "Codex, Claude Code, Antigravity, Cursor, Windsurf, Copilot.",
 			Keywords: []string{"agents", "agent", "setup", "install", "codex", "claude", "antigravity", "cursor", "windsurf", "copilot", "rules"},
 			Args:     []string{"agents"},
+		},
+		{
+			Kind: KindAction, Group: "Search",
+			Title:    "List every rule",
+			Summary:  "The whole core pack, grouped by category — vibeshield rules.",
+			Keywords: []string{"rules", "rule", "list", "pack", "all", "catalog", "reference", "what does it check"},
+			Args:     []string{"rules"},
+		},
+		{
+			Kind: KindAction, Group: "Setup",
+			Title:    "Set up shell completion",
+			Summary:  "Tab-complete every command and flag: bash, zsh, fish, PowerShell.",
+			Keywords: []string{"completion", "complete", "tab", "autocomplete", "shell", "bash", "zsh", "fish", "powershell", "install"},
+			Args:     []string{"completion", "bash"},
 		},
 		{
 			Kind: KindAction, Group: "Meta",

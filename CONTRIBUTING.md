@@ -35,12 +35,15 @@ go vet ./...
 go build -o vibeshield ./cmd/vibeshield
 ```
 
-Then try the v2 console and the search index:
+Then try the console, the health check and the search index:
 
 ```bash
 ./vibeshield                 # interactive console (needs a real terminal)
+./vibeshield doctor          # is this project wired up?
+./vibeshield rules           # the whole core pack
 ./vibeshield search aws      # the same ranking, scriptable
 ./vibeshield agents --body   # the shared agent rule block
+./vibeshield completion bash # completion script for your shell
 ```
 
 ### Documentation & website (Astro)
@@ -60,10 +63,18 @@ A change is ready when:
 - `cd scanner && go test ./... && go vet ./...` is clean.
 - `node scripts/sync-rules.mjs --check` is clean (rule packs in sync).
 - `node scripts/sync-agent-rules.mjs --check` is clean (agent files in sync).
+- `node scripts/audit-contract.mjs scanner/vibeshield` reports 0 gaps (every
+  command, flag and format value the docs promise exists in the binary).
 - `gofmt -l` reports nothing for the files you touched.
 - New exported behaviour in Go has a `_test.go` covering it — see
   [`scanner/internal/cli/search_test.go`](scanner/internal/cli/search_test.go)
   for the table-driven style used for the search ranker.
+- A new command or flag is reflected in **four** places, which is why
+  [`scanner/cmd/vibeshield/help.go`](scanner/cmd/vibeshield/help.go) is the
+  single source of truth for the first three: the `docs()` table, the
+  `completionFlags` map, `scripts/audit-contract.mjs`'s `COMMANDS` list, and the
+  docs under `site/src/content/docs/`. `help_test.go` fails the build when the
+  first two drift apart.
 - It builds for every release target:
   `GOOS=linux GOARCH=arm64 go build ./...` and the same for `darwin/arm64`,
   `windows/amd64`. Raw-terminal code lives in `term_{windows,linux,darwin}.go`
@@ -71,7 +82,55 @@ A change is ready when:
 
 ---
 
+## 🚢 Releasing (maintainers)
+
+The tool version and the rule-pack version move independently. The pack carries
+its own `version:` in `rules/core/*.yaml`; a CLI-only release leaves it alone.
+
+```bash
+# 1. Bump every version touchpoint (26 of them, listed in the script).
+node scripts/bump-version.mjs 3.0.0 3.1.0
+#    Add --pack 3.1.0 only when the rules themselves changed.
+
+# 2. Add a CHANGELOG.md entry. The site's /changelog page parses that file at
+#    build time, so there is nothing else to update.
+
+# 3. Run the gates.
+cd scanner && go test ./... && go vet ./... && cd ..
+node scripts/sync-rules.mjs --check
+node scripts/sync-agent-rules.mjs --check
+node scripts/audit-contract.mjs scanner/vibeshield
+cd site && npm run build && cd ..
+
+# 4. Tag. release.yml cross-compiles six targets and publishes sha256sums.txt.
+git tag v3.1.0 && git push origin v3.1.0
+```
+
+`bump-version.mjs` lists its replacements per file rather than applying a
+blanket regex, because fixture manifests also contain `"version": "1.0.0"` and
+must never be touched. If it reports `SKIP`, it found the wrong number of
+occurrences — fix the file rather than forcing it, and add any new touchpoint to
+the script.
+
+After the tag:
+
+```bash
+node scripts/gen-homebrew-formula.mjs 3.1.0   # see packaging/homebrew/
+```
+
+npm publishes itself on release via `.github/workflows/publish-npm.yml` (OIDC
+trusted publishing, no stored token). It refuses to publish if `package.json`
+or `lib/run.js` disagree with the tag — which is the failure that would ship a
+launcher pointing at a release that does not exist.
+
+---
+
 ## 📜 Code of Conduct & License
+
+This project follows the [Contributor Covenant](CODE_OF_CONDUCT.md). The short
+version: critique the pattern, never the person, and "AI-generated" is not an
+insult. Report unacceptable behaviour through the private channel described in
+that document.
 
 By contributing, you agree that your contributions will be licensed under the project's [MIT License](LICENSE).
 Let's build a safer, faster ecosystem for AI vibe coders worldwide! 🚀

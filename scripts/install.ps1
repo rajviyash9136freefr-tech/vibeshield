@@ -3,7 +3,9 @@
 #   irm https://raw.githubusercontent.com/rajviyash9136freefr-tech/vibeshield/main/scripts/install.ps1 | iex
 
 param(
-    [string]$Version = "v1.0.0",
+    # Kept current by scripts/bump-version.mjs. A stale default here means the
+    # PowerShell one-liner installs an old release without saying so.
+    [string]$Version = "v3.0.0",
     [string]$InstallDir = "$HOME\.local\bin",
     [switch]$NoSkill = $false,
     [string]$Agent = "auto"
@@ -50,13 +52,16 @@ try {
             Write-Host "✓ Installed vibeshield.exe to $InstallDir" -ForegroundColor Green
         }
     } else {
-        # Fallback to npm global or go install
+        # Fallback to npm global or go install. Both are pinned to $Version:
+        # an unpinned fallback resolves to whatever is published at run time,
+        # which is the window VS-DEP-004 exists to flag.
+        $NpmVersion = $Version.TrimStart('v')
         if (Get-Command npm -ErrorAction SilentlyContinue) {
             Write-Host "Installing via npm..." -ForegroundColor Cyan
-            npm install -g vibeshield
+            npm install -g "vibeshield@$NpmVersion"
         } elseif (Get-Command go -ErrorAction SilentlyContinue) {
             Write-Host "Building from source via Go..." -ForegroundColor Cyan
-            go install "github.com/$Repo/scanner/cmd/vibeshield@latest"
+            go install "github.com/$Repo/scanner/cmd/vibeshield@$Version"
         } else {
             Write-Error "Could not download binary and neither npm nor go were found."
         }

@@ -1,0 +1,130 @@
+name: publish-npm
+
+# Publishes npm/vibeshield to the npm registry, so `npx vibeshield scan .`
+# works without a checkout. Until this runs once, that documented install path
+# is aspirational.
+#
+# One-time setup, in this order:
+#
+#   1. Create the package on npmjs.com (or claim the name with a first publish).
+#   2. npmjs.com → the package → Settings → Trusted Publisher → GitHub Actions.
+#      Set organisation/user, repository, and this workflow's filename
+#      (publish-npm.yml). No NPM_TOKEN secret is needed, and none should be
+#      added: a long-lived publish token is exactly the supply-chain risk this
+#      project exists to flag.
+#   3. Push a `v*` tag, or run this workflow from the Actions tab.
+#
+# Trusted publishing uses OIDC, so the job needs `id-token: write` and an npm
+# CLI new enough to speak it (>= 11.5.1). Node 24 bundles npm 11.x, so this
+# workflow needs no global install at all — which is deliberate. The obvious
+# version of this file upgraded the global npm CLI from a floating tag, and
+# VibeShield's own VS-DEP-004 rule flagged it: a floating tag resolves to
+# whatever is published at install time, which is precisely the supply-chain
+# window this project exists to close. A security tool's release workflow does
+# not get to do that. (The literal command is deliberately not repeated here —
+# writing it out made this comment flag itself, which is the rule working.)
+#
+# The guard below asserts the bundled npm is new enough, so a future Node
+# downgrade fails with a clear message instead of a confusing OIDC error.
+#
+# --provenance attaches a signed build attestation, which npm surfaces on the
+# package page. For a security tool, "you can verify this tarball came from this
+# commit in this repository" is worth the extra thirty seconds.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Pack and inspect only — do not publish'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: npm/vibeshield
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # 24, not 22: Node 22 bundles npm 10.x, which cannot do trusted
+          # publishing, and the workaround for that is the @latest install
+          # described above.
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Bundled npm must support OIDC trusted publishing
+        run: |
+          NPM_VERSION=$(npm --version)
+          echo "npm $NPM_VERSION"
+          if ! printf '%s\n11.5.1\n' "$NPM_VERSION" | sort -V -C; then
+            echo "::error::npm $NPM_VERSION is older than 11.5.1 and cannot use trusted publishing."
+            echo "Bump node-version in this workflow rather than installing npm at run time."
+            exit 1
+          fi
+
+      # The launcher downloads a release asset named for the version baked into
+      # lib/run.js. Publishing a tarball whose version does not match a real
+      # release would ship a wrapper that 404s on first run, so refuse.
+      - name: package.json version must match the release tag
+        if: github.event_name == 'release'
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          PKG=$(node -p "require('./package.json').version")
+          WANT="${TAG#v}"
+          if [ "$PKG" != "$WANT" ]; then
+            echo "::error::npm/vibeshield/package.json is $PKG but the release tag is $TAG — run: node scripts/bump-version.mjs $PKG $WANT"
+            exit 1
+          fi
+          echo "version $PKG matches tag $TAG"
+
+      # lib/run.js bakes the release tag it will download. If it disagrees with
+      # the tag being published, the package installs and then 404s on first
+      # run — the worst kind of failure, because it looks like a network blip.
+      # Read the literal rather than importing the module: importing run.js
+      # would execute the launcher.
+      - name: lib/run.js must point at the release being published
+        if: github.event_name == 'release'
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          BAKED=$(grep -oE "VIBESHIELD_VERSION \|\| 'v[0-9]+\.[0-9]+\.[0-9]+'" lib/run.js \
+                  | grep -oE "v[0-9]+\.[0-9]+\.[0-9]+" | head -1)
+          echo "launcher default: ${BAKED:-<none found>}"
+          if [ -z "$BAKED" ]; then
+            echo "::error::could not read the default version out of npm/vibeshield/lib/run.js"
+            exit 1
+          fi
+          if [ "$BAKED" != "$TAG" ]; then
+            echo "::error::lib/run.js points at $BAKED but the release is $TAG — run: node scripts/bump-version.mjs ${BAKED#v} ${TAG#v}"
+            exit 1
+          fi
+
+      - name: Pack and inspect (dry run)
+        if: github.event_name == 'workflow_dispatch' && inputs.dry_run
+        run: npm pack --dry-run
+
+      - name: Publish
+        if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && !inputs.dry_run)
+        run: npm publish --access public --provenance
+
+      - name: Smoke-test the published package
+        if: github.event_name == 'release'
+        working-directory: .
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          sleep 20
+          # Pinned to the tag, not @latest: the question is whether THIS release
+          # installs and runs, not what the registry happens to be serving.
+          npx --yes "vibeshield@${TAG#v}" version

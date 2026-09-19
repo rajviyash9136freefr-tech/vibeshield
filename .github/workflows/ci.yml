@@ -96,6 +96,14 @@ jobs:
       - name: Every documented surface exists
         run: node scripts/audit-contract.mjs scanner/vibeshield
 
+      # Dogfood. This is the repository for a security scanner; if it cannot
+      # pass its own gate, the gate is not real. `vibeshield.yml` at the repo
+      # root carries the one auditable exception (the documented install
+      # one-liner) with its reason written down. `mode: block-on-critical`
+      # means a critical finding fails this step.
+      - name: VibeShield scans itself
+        run: ./scanner/vibeshield scan .
+
   repo-sync:
     runs-on: ubuntu-latest
     steps:

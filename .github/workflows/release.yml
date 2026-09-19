@@ -5,6 +5,11 @@ name: release
 #   vibeshield-{os}-{arch}.tar.gz   (linux/darwin; arch: x86_64 | aarch64)
 #   vibeshield-{os}-{arch}.zip      (windows)
 # The npm wrapper (npm/vibeshield) resolves the same assets at install time.
+#
+# Six targets, matching ci.yml's cross-compile matrix and the six checksum
+# parts the release job merges. Windows on arm64 was missing here while
+# npm/vibeshield/lib/run.js already advertised it, so `npx vibeshield` on a
+# Windows ARM machine asked for an asset that was never published.
 
 on:
   push:
@@ -24,6 +29,7 @@ jobs:
           - { goos: darwin,  goarch: amd64, suffix: x86_64,  ext: tar.gz }
           - { goos: darwin,  goarch: arm64, suffix: aarch64, ext: tar.gz }
           - { goos: windows, goarch: amd64, suffix: x86_64,  ext: zip }
+          - { goos: windows, goarch: arm64, suffix: aarch64, ext: zip }
     env:
       CGO_ENABLED: '0'
     steps:

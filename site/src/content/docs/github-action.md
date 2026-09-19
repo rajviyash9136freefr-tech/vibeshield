@@ -1,12 +1,12 @@
 ---
 title: GitHub Action
-description: "vibeshield/action@v2.0.1 — inputs, outputs, gate modes, PR comments, and the badge. The security gate for AI-generated pull requests."
+description: "vibeshield/action@v3.0.0 — inputs, outputs, gate modes, PR comments, and the badge. The security gate for AI-generated pull requests."
 order: 2
 ---
 
-`vibeshield/action@v2.0.1` is a composite GitHub Action that scans your PR diff and
-posts a consolidated VibeCheck report comment. It runs the same Go scanner
-binary used by the [pre-commit hook](/docs/pre-commit) and the
+`rajviyash9136freefr-tech/vibeshield/action@v3.0.0` is a composite GitHub Action that
+scans your PR diff and posts a consolidated VibeCheck report comment. It runs the
+same Go scanner binary used by the [pre-commit hook](/docs/pre-commit) and the
 [CLI](/docs/cli) — static analysis on the runner, in seconds.
 
 ## Minimal workflow
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0   # needed for diff mode against the base branch
-      - uses: vibeshield/action@v2.0.1
+      - uses: rajviyash9136freefr-tech/vibeshield/action@v3.0.0
 ```
 
 ## Inputs
@@ -36,7 +36,7 @@ jobs:
 | `config` | `vibeshield.yml` | Path to the config file. Missing default = scanner defaults; missing explicit path = config error (exit 2). |
 | `online` | `false` | Allow network calls for package-intel lookups (`--online`). Degrades gracefully offline. |
 | `scanner_bin` | — | Path to a prebuilt binary; skips the release download. |
-| `version` | `v2.0.1` | Pinned scanner release tag to download. |
+| `version` | `v3.0.0` | Pinned scanner release tag to download. |
 
 ## Outputs
 
@@ -48,7 +48,7 @@ markdown comment on the runner; `report_json` — the raw scan JSON
 Example — fail the build on criticals and echo the count:
 
 ```yaml
-- uses: vibeshield/action@v2.0.1
+- uses: vibeshield/action@v3.0.0
   id: vs
   with:
     mode: block-on-critical
@@ -81,14 +81,17 @@ generated-marker comment is present; `likely` from writing-pattern heuristics;
 Add the shield to your README once your first scan is green:
 
 ```markdown
-[![VibeShield](https://vibeshield.dev/badge/passing.svg)](https://vibeshield.dev)
+[![VibeShield](https://rajviyash9136freefr-tech.github.io/vibeshield/badge/passing.svg)](https://github.com/rajviyash9136freefr-tech/vibeshield)
 ```
 
-The badge shows `passing` / finding counts / worst severity and links to your
-repo's scan page. It's honest data — a red badge is a feature.
+Swap `passing` for `findings`, `critical` or `failing` to show the current
+state — the four files ship in the repository under `site/public/badge/`. It is
+honest data, and a red badge is a feature.
 
 ## Privacy
 
-Only findings metadata (file paths, rule IDs, symbol names) is posted to the PR
-and sent to the dashboard. File contents never leave the runner and are never
-persisted. Private-repo results are never used for model training.
+The Action runs the scanner on your runner. The only thing that leaves it is
+the VibeCheck comment, posted to your own pull request with your own
+`GITHUB_TOKEN`. There is no VibeShield server, no dashboard, and no findings
+API — file contents never leave the runner because there is nowhere for them to
+go. Details on the [security page](/security).

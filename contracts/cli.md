@@ -5,14 +5,26 @@ Binary name: `vibeshield` (Go, single static binary, pure Go — no CGO).
 ## Commands
 
 ```
-vibeshield scan [path]     Scan a directory (full mode) or diff (diff mode)
-vibeshield fix [path]      VibePatch: preview + apply mechanical autofixes (opt-in, gated)
-vibeshield init [path]     Detect frameworks, write vibeshield.yml + hook + workflow, run first scan
-vibeshield search [query]  Search the rule packs and the console catalog
-vibeshield agents [name]   Print per-agent setup recipes (Codex, Claude Code, Antigravity, …)
-vibeshield ui              Open the interactive console (same as a bare `vibeshield`)
-vibeshield version         Print version + embedded rule-pack versions
+vibeshield scan [path]       Scan a directory (full mode) or diff (diff mode)
+vibeshield fix [path]        VibePatch: preview + apply mechanical autofixes (opt-in, gated)
+vibeshield init [path]       Detect frameworks, write vibeshield.yml + hook + workflow, run first scan
+vibeshield doctor [path]     Report what is set up and what is not; changes nothing
+vibeshield search [query]    Search the rule packs and the console catalog
+vibeshield rules [id]        List the rule packs, or read one rule in full
+vibeshield agents [name]     Print per-agent setup recipes (Codex, Claude Code, Antigravity, …)
+vibeshield completion <sh>   Print a bash | zsh | fish | powershell completion script
+vibeshield ui                Open the interactive console (same as a bare `vibeshield`)
+vibeshield version           Print version + embedded rule-pack versions
+vibeshield help [command]    Full help; every command also accepts -h / --help
 ```
+
+Aliases: `find` → `search`, `rule` → `rules`, `agent` → `agents`,
+`completions` → `completion`, `menu` / `console` → `ui`.
+
+Help law: `vibeshield <cmd> --help` and `vibeshield help <cmd>` print the same
+text — that command's own flags and examples — and exit `0`. Asking for help is
+never an error. An unrecognised verb prints a suggestion when one is close
+enough (Damerau-Levenshtein similarity ≥ 0.6) and exits `2`.
 
 ## Init flags
 
@@ -51,6 +63,44 @@ Gate law: `fix` prompts `[y/N/a/s]` per file; a non-TTY stdin must pass
 mechanically — a key needs rotation, and an agent editing its own
 instruction file is the injection we came to catch.
 
+## Doctor flags
+
+```
+--config <file>    Config path to check (default: vibeshield.yml if present)
+--format <fmt>     pretty (default) | json
+--no-color         Disable color
+-v, --verbose      Print every check, including the ones that passed
+```
+
+Doctor law: it reads and reports, and never modifies anything. Checks are the
+binary + embedded pack, the project path, the config, the git repository, the
+pre-commit hook, the PR-gate workflow and the agent rule files. Every failed
+check carries the command that fixes it. `--format json` emits
+`vibeshield.doctor/v1`: `{ schema, version, path, ok, checks[] }` where each
+check is `{ name, status, detail, fix? }` and status is one of
+`ok | warn | note | info`. Exit `1` when any check is `warn` — a health check
+that always exits 0 cannot be used as a gate. Only `warn` fails the run; `note`
+is informational.
+
+## Search / rules flags
+
+```
+--list             List every catalog entry instead of searching (ignores the
+                   default --limit; an explicit --limit still applies)
+--rules            Search rule packs only (boolean — takes no value)
+--agents           Search agent setup recipes only
+--limit <n>        Max results (search default 20; rules default: no limit)
+--format <fmt>     pretty (default) | json
+--no-color         Disable color
+```
+
+`rules` is `search --rules --limit 0` under a different name, so the two can
+never disagree about what a rule is.
+
+Note for implementers: `--rules` is a **value** flag on `scan` (`--rules <dir>`)
+and a **boolean** on `search`/`rules`. The positional-argument rewriter must be
+per-subcommand, or the switch swallows the flag that follows it.
+
 ## Global flags
 
 ```
@@ -76,6 +126,9 @@ scopes do not overlap.
 | 0 | Clean, or findings present in warn/off mode |
 | 1 | Findings present at-or-above block threshold (block-on-critical / block-on-high+) |
 | 2 | Config / usage error |
+
+`doctor` reuses `1` to mean "something needs fixing", which is the same idea
+applied to a health check rather than a scan. `-h` / `--help` exits `0`.
 
 ## Config file: vibeshield.yml (schema)
 
@@ -115,7 +168,7 @@ validated so a config can be written once and stay correct.
 {
   "schema_version": 1,
   "tool": "vibeshield",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "scan": { "mode": "diff", "ref": "HEAD~1", "files_scanned": 14, "duration_ms": 1234 },
   "summary": { "critical": 1, "high": 1, "medium": 0, "low": 0, "info": 0, "clean_files": 11 },
   "dependencies": [

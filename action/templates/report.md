@@ -62,6 +62,6 @@ const key = "sk-proj-FAKE••••••••••••4a2f";
 
 Reply here to triage: `/vibeshield accept <dismiss_hash> --reason "intentional test fixture"` — acceptances are audit-logged.
 
-Docs: https://vibeshield.dev/docs/github-action · Mode: `warn` · Add the README badge: [![VibeShield](https://img.shields.io/badge/VibeShield-2%20findings%20%7C%201%20critical-F87171)](https://vibeshield.dev)
+Docs: https://rajviyash9136freefr-tech.github.io/vibeshield/docs/github-action · Mode: `warn` · Add the README badge: [![VibeShield](https://img.shields.io/badge/VibeShield-2%20findings%20%7C%201%20critical-F87171)](https://rajviyash9136freefr-tech.github.io/vibeshield/)
 
 <!-- vibeshield:blame-patterns-not-people -->

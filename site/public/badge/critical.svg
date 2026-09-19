@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="174" height="20" role="img" aria-label="VibeShield: critical">
+  <linearGradient id="s" x2="0" y2="100%"><stop offset="0" stop-color="#eee" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient>
+  <rect width="92" height="20" fill="#14121E"/>
+  <rect x="92" width="82" height="20" fill="#F87171"/>
+  <rect width="174" height="20" fill="url(#s)"/>
+  <g fill="#EFEEF5" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" font-size="110" text-rendering="geometricPrecision" transform="scale(.1)">
+    <text x="460" y="140" fill="#0B0A10" stroke="#0B0A10" stroke-width="2" stroke-opacity=".3">🛡 VibeShield</text>
+    <text x="460" y="140" fill="#EFEEF5">🛡 VibeShield</text>
+    <text x="1330" y="140" fill="#0B0A10" text-anchor="middle">critical</text>
+  </g>
+</svg>

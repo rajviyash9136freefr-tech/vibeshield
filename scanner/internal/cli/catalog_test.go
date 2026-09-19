@@ -28,7 +28,7 @@ func testPack() *rules.Pack {
 				Fix:        "Use the standard library.",
 				Autofix:    &rules.Autofix{Match: "old", Replace: "new"},
 				Languages:  []string{"javascript", "python"},
-				References: []string{"https://vibeshield.dev/docs/hallucinated-packages"},
+				References: []string{"https://rajviyash9136freefr-tech.github.io/vibeshield/docs/rules#hallucinated-packages"},
 			},
 		},
 	}
@@ -119,7 +119,7 @@ func TestRuleItemsAreSearchableByIDCategoryAndFix(t *testing.T) {
 
 func TestRuleBodyRendersAutofixAndReferences(t *testing.T) {
 	body := ruleBody(testPack().Rules[1])
-	for _, want := range []string{"VS-PKG-001", "Autofix (VibePatch)", "match:", "References", "vibeshield.dev"} {
+	for _, want := range []string{"VS-PKG-001", "Autofix (VibePatch)", "match:", "References", "rajviyash9136freefr-tech.github.io"} {
 		if !strings.Contains(body, want) {
 			t.Errorf("rule body missing %q\n%s", want, body)
 		}

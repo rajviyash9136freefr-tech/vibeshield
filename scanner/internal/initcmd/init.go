@@ -144,7 +144,11 @@ func exists(path string) bool {
 
 // findGitDir walks up from dir looking for a .git directory or a .git file
 // (worktrees and submodules use the file form with a "gitdir:" pointer).
-func findGitDir(dir string) (string, bool) {
+func findGitDir(dir string) (string, bool) { return FindGitDir(dir) }
+
+// FindGitDir is the exported form, used by `vibeshield doctor` to report
+// whether a pre-commit hook can exist at all.
+func FindGitDir(dir string) (string, bool) {
 	cur := dir
 	for {
 		dotGit := filepath.Join(cur, ".git")
@@ -260,7 +264,7 @@ jobs:
 // defaultActionTag is the Action ref used when the running binary's version is
 // not a plain semver (a local `go build` reports "dev"). It is a release
 // constant, so scripts/bump-version.mjs keeps it current.
-const defaultActionTag = "v2.0.1"
+const defaultActionTag = "v3.0.0"
 
 // actionRef turns a binary version into a usable Action ref. Anything that is
 // not a plain semver is replaced by defaultActionTag, so a locally built

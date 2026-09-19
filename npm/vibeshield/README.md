@@ -17,4 +17,17 @@ The `vibeshield` name on npm is a thin launcher for the Go scanner binary at
 Every flag and command is the scanner's — see `contracts/cli.md` in the repo
 (`vibeshield scan .`, `--staged`, `--diff origin/main`, `--format json`, …).
 
+## After the first run
+
+```bash
+npx vibeshield doctor        # is the config, hook and PR gate wired up?
+npx vibeshield scan .        # audit the current project
+npx vibeshield rules         # the whole rule pack
+npx vibeshield completion bash >> ~/.bashrc   # Tab completion
+```
+
+If you use the wrapper often, install the binary directly instead: each Tab
+press through the Node launcher costs a process spawn. The install script, or
+`go install`, puts the same binary on your `PATH`.
+
 MIT licensed, like everything here.

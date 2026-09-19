@@ -1,6 +1,6 @@
 ---
 title: Pre-commit hook
-description: "Scan staged files for AI-code failure modes before every commit. 1.5s typical, fully offline, never a hostage."
+description: "Scan staged files for AI-code failure modes before every commit. Under 1.5s typical, fully offline, and never a hostage."
 order: 3
 ---
 
@@ -14,7 +14,7 @@ anything reaches a remote. Typical runtime: under 1.5 seconds.
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/rajviyash9136freefr-tech/vibeshield
-    rev: v2.0.1
+    rev: v3.0.0
     hooks:
       - id: vibeshield
 ```
@@ -28,13 +28,16 @@ pre-commit install
 No pre-commit framework? The hook is also a plain git hook — `vibeshield init`
 writes `.git/hooks/pre-commit` for you alongside the config and workflow files.
 
+Not sure whether it is installed? `vibeshield doctor` reports it, along with the
+config and the PR gate.
+
 ## What it scans
 
 Only **staged changes** (`git diff --cached`), so the cost tracks your edit
-size, not your repo size. Rules run offline from the embedded MIT core pack;
-pass `--online` (via `args:` in the hook config) to additionally check
-package-intel for newly-added dependencies. Offline, it degrades to local
-heuristics gracefully — a missing network is never a failed commit.
+size, not your repo size. Rules run offline from the embedded MIT core pack —
+the scanner contains no HTTP client at all, so a missing network is never a
+failed commit. `--online` is reserved for a future package-intel lookup and is
+a no-op in this build.
 
 ## Exit behavior
 
@@ -50,5 +53,17 @@ works. VibeShield is a gate you own, not a hostage-taker.
 ## Output
 
 Findings print in the VibeCheck format — severity, rule ID, why it matters for
-AI code, one-line fix — capped at 88 columns, colors from the severity palette,
+AI code, one-line fix — capped at 88 columns, colours from the severity palette,
 plain text when piped.
+
+## Keeping it fast
+
+A hook that is slow gets deleted. Three things keep it honest:
+
+- Only staged files are read, so the cost tracks the diff, not the repo.
+- The rules run from the pack embedded in the binary — no file I/O to load them.
+- `--staged` uses `git diff --cached`, not a full walk.
+
+If your repository is large enough that even that is too slow, scope the hook
+with `files:` in `.pre-commit-config.yaml` so it only runs on the paths you
+actually change.

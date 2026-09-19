@@ -1,0 +1,36 @@
+# Line endings.
+#
+# The repo is developed on Windows and built on Linux CI. Without this file a
+# Windows checkout rewrites every text file to CRLF, and two things break in
+# ways that look like unrelated bugs:
+#
+#   1. `gofmt -l .` — the CI gate — reports every Go file as unformatted, so
+#      the check stops meaning anything locally.
+#   2. Shell scripts (scripts/install.sh, action/entrypoint.sh) and the
+#      generated pre-commit hook must stay LF; a CRLF shebang is a confusing
+#      "bad interpreter" failure on Linux and macOS.
+#
+# text=auto normalises on commit; the explicit eol=lf rules make the checkout
+# identical on every platform for the files where it matters.
+* text=auto
+
+*.go    text eol=lf
+*.sh    text eol=lf
+*.mjs   text eol=lf
+*.js    text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.mdc   text eol=lf
+*.astro text eol=lf
+*.ts    text eol=lf
+*.txt   text eol=lf
+
+*.ps1   text eol=crlf
+
+# Binary assets must never be touched.
+*.png  binary
+*.jpg  binary
+*.ico  binary
+*.gif  binary

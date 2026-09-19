@@ -1,6 +1,12 @@
 // Command vibeshield is the VibeShield CLI: a static security & dependency
 // auditor for AI-generated code (contracts/cli.md). It never sends code
 // anywhere; --online opts into package-intel lookups (v1.1).
+//
+// v3 is the "usable from a terminal" release. The scanner already worked; what
+// changed is that a person who has never seen it can now find their way:
+// every command has its own help, `vibeshield doctor` says what is wired up
+// and what is not, `vibeshield completion` adds Tab completion, and a typo
+// suggests the command that was meant instead of printing the whole manual.
 package main
 
 import (
@@ -23,75 +29,7 @@ import (
 )
 
 // Version is stamped by -ldflags "-X main.Version=v1.2.3" at release build.
-var Version = "2.0.1"
-
-const usage = `vibeshield %s — security scanner for AI-generated code
-
-Usage:
-  vibeshield                  Interactive console: search every action, rule
-                              and agent setup (v2). Falls back to this help
-                              when stdin is not a terminal.
-  vibeshield scan [path]      Scan a directory (full) or a git diff (--diff/--staged)
-  vibeshield fix [path]       VibePatch: preview + apply mechanical fixes from scan findings
-  vibeshield init [path]      Set up a project: detect the stack, write vibeshield.yml,
-                              a PR-gate workflow and a pre-commit hook, then scan
-  vibeshield search [query]   Search the rule packs and the console catalog
-  vibeshield agents [name]    Print the per-agent setup recipe (Codex, Claude Code,
-                              Antigravity, Cursor, Windsurf, Copilot, …)
-  vibeshield version          Print version and embedded rule-pack info
-
-Scan flags:
-  --diff <ref|->     Diff mode: scan changes vs a git ref, or "-" for stdin
-  --staged           Pre-commit mode: scan git staged changes
-  --format <fmt>     pretty (default) | json | github | sarif
-                     github = ::error/::warning annotations · sarif = GitHub
-                     code-scanning upload (github/codeql-action/upload-sarif)
-  --config <file>    Config path (default: vibeshield.yml if present)
-  --mode <mode>      off | warn | block-on-critical | block-on-high+
-  --rules <dir>      Load extra rule packs from a directory
-  --online           (reserved) allow package-intel network lookups
-  --max-cols <n>     Output width cap (default 88)
-  --no-color         Disable color (also: NO_COLOR env, non-TTY auto)
-  -v, --verbose      Explain what was scanned, on stderr
-
-Fix flags (VibePatch — opt-in, human-gated):
-  --dry-run          Preview the diff, change nothing
-  --yes              Apply without prompting (for coding agents / CI);
-                     every patch still lands in vibeshield-fixes.log
-  --report <file>    Reuse an existing --format json scan instead of rescanning
-
-Init flags:
-  --mode <mode>      Initial gate mode written to vibeshield.yml (default: warn)
-  --dry-run          Show what would be written, change nothing
-  --force            Overwrite files that already exist (never touches a hook
-                     unless you pass this)
-  --no-hook          Skip the git pre-commit hook
-  --no-workflow      Skip the GitHub Action workflow
-  --no-scan          Skip the first scan
-  --no-color         Disable color
-
-Search flags:
-  --list             List every catalog entry instead of searching
-  --rules            Search rule packs only
-  --agents           Search agent setup recipes only
-  --limit <n>        Max results (default 20)
-  --format <fmt>     pretty (default) | json
-
-Exit codes: 0 clean or warn-mode findings · 1 block threshold met · 2 config/usage error
-`
-
-const searchUsage = `vibeshield %s search — search rules, actions and agent setup
-
-Usage:
-  vibeshield search [flags] [query]
-
-Examples:
-  vibeshield search aws                 # AWS credential rules
-  vibeshield search vs-sec-017          # one rule by id
-  vibeshield search "prompt injection"  # multi-word: every token must match
-  vibeshield search --agents cursor     # agent setup recipes only
-  vibeshield search --list              # the whole catalog
-`
+var Version = "3.0.0"
 
 func main() {
 	os.Exit(run(os.Args[1:], os.Stdout, os.Stderr))
@@ -99,17 +37,17 @@ func main() {
 
 func run(args []string, stdout, stderr io.Writer) int {
 	if len(args) == 0 {
-		// v2: a bare invocation opens the interactive console. Scripts that
-		// pipe into vibeshield still get the usage text and exit 2, so no
-		// existing automation changes behaviour.
+		// A bare invocation opens the interactive console. Scripts that pipe
+		// into vibeshield still get the help text and exit 2, so no existing
+		// automation changes behaviour.
 		if stdinIsInteractive(os.Stdin) {
 			return cmdConsole(stdout, stderr)
 		}
-		fmt.Fprintf(stderr, usage, Version)
+		fmt.Fprint(stderr, usageTop(Version))
 		return 2
 	}
 	switch args[0] {
-	case "version", "--version", "-v":
+	case "version", "--version", "-v", "-V":
 		return cmdVersion(stdout)
 	case "scan":
 		return cmdScan(args[1:], stdout, stderr)
@@ -117,25 +55,58 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return cmdFix(args[1:], os.Stdin, stdout, stderr)
 	case "init":
 		return cmdInit(args[1:], stdout, stderr)
+	case "doctor":
+		return cmdDoctor(args[1:], stdout, stderr)
 	case "search", "find":
 		return cmdSearch(args[1:], stdout, stderr)
+	case "rules", "rule":
+		return cmdRules(args[1:], stdout, stderr)
 	case "agents", "agent":
 		return cmdAgents(args[1:], stdout, stderr)
+	case "completion", "completions":
+		return cmdCompletion(args[1:], stdout, stderr)
 	case "ui", "menu", "console":
 		return cmdConsole(stdout, stderr)
 	case "help", "--help", "-h":
-		fmt.Fprintf(stdout, usage, Version)
-		return 0
+		return cmdHelp(args[1:], stdout, stderr)
 	default:
-		fmt.Fprintf(stderr, "vibeshield: unknown command %q\n\n", args[0])
-		fmt.Fprintf(stderr, usage, Version)
-		return 2
+		return unknownCommand(args[0], stderr)
 	}
 }
 
-// cmdConsole opens the v2 interactive console: one search box over every
-// action, rule and agent recipe. Actions are replayed through run(), so the
-// menu can never drift from the documented flags.
+// unknownCommand is the typo path. Printing the whole manual for a misspelled
+// verb buries the one line the user needs, so a close match is named first.
+func unknownCommand(arg string, stderr io.Writer) int {
+	fmt.Fprintf(stderr, "vibeshield: unknown command %q\n", arg)
+	if s := suggest(arg); s != "" {
+		fmt.Fprintf(stderr, "\n  Did you mean `vibeshield %s`?\n", s)
+	}
+	fmt.Fprintf(stderr, "\n  Run `vibeshield help` for the command list, or `vibeshield` for the console.\n")
+	return 2
+}
+
+// cmdHelp implements `vibeshield help [command]`. With no argument it prints
+// the overview; with one it prints that command's long help.
+func cmdHelp(args []string, stdout, stderr io.Writer) int {
+	if len(args) == 0 {
+		fmt.Fprint(stdout, usageTop(Version))
+		return 0
+	}
+	text, ok := usageFor(args[0], Version)
+	if !ok {
+		fmt.Fprintf(stderr, "vibeshield: no help for %q\n", args[0])
+		if s := suggest(args[0]); s != "" {
+			fmt.Fprintf(stderr, "\n  Did you mean `vibeshield help %s`?\n", s)
+		}
+		return 2
+	}
+	fmt.Fprint(stdout, text)
+	return 0
+}
+
+// cmdConsole opens the interactive console: one search box over every action,
+// rule and agent recipe. Actions are replayed through run(), so the menu can
+// never drift from the documented flags.
 func cmdConsole(stdout, stderr io.Writer) int {
 	pack, err := rules.LoadCore()
 	if err != nil {
@@ -203,9 +174,8 @@ func resolveConfigPath(fl *flag.FlagSet, configured, scanPath string) string {
 // (least of all a git hook) without --force, and --dry-run prints the whole
 // plan first so nothing is a surprise.
 func cmdInit(args []string, stdout, stderr io.Writer) int {
-	args = normalizeScanArgs(args)
-	fl := flag.NewFlagSet("init", flag.ContinueOnError)
-	fl.SetOutput(stderr)
+	args = normalizeScanArgs("init", args)
+	fl := newFlagSet("init", stderr)
 	var (
 		mode       = fl.String("mode", "warn", "initial gate mode written to vibeshield.yml")
 		dryRun     = fl.Bool("dry-run", false, "show what would be written, change nothing")
@@ -215,18 +185,8 @@ func cmdInit(args []string, stdout, stderr io.Writer) int {
 		noScan     = fl.Bool("no-scan", false, "skip the first scan")
 		noColor    = fl.Bool("no-color", false, "disable color")
 	)
-	fl.Usage = func() {
-		fmt.Fprint(stderr, "usage: vibeshield init [flags] [path]\n\n"+
-			"  --mode <mode>   off | warn | block-on-critical | block-on-high+ (default warn)\n"+
-			"  --dry-run       Show what would be written, change nothing\n"+
-			"  --force         Overwrite existing files\n"+
-			"  --no-hook       Skip the git pre-commit hook\n"+
-			"  --no-workflow   Skip the GitHub Action workflow\n"+
-			"  --no-scan       Skip the first scan\n"+
-			"  --no-color      Disable color\n")
-	}
 	if err := fl.Parse(args); err != nil {
-		return 2
+		return usageExit(err)
 	}
 	if !config.AllowedModes[*mode] {
 		fmt.Fprintf(stderr, "vibeshield: bad --mode %q (off|warn|block-on-critical|block-on-high+)\n", *mode)
@@ -321,9 +281,22 @@ func cmdInit(args []string, stdout, stderr io.Writer) int {
 // stdout, so an AI agent can ask "what do you know about aws keys?" without a
 // TTY. It searches the rule packs plus the action and agent-setup catalog.
 func cmdSearch(args []string, stdout, stderr io.Writer) int {
-	args = normalizeScanArgs(args)
-	fl := flag.NewFlagSet("search", flag.ContinueOnError)
-	fl.SetOutput(stderr)
+	return runSearch(args, stdout, stderr, "search")
+}
+
+// cmdRules is `vibeshield rules [id]`: the rule packs, without the noise of the
+// actions and agent recipes that `search` also indexes. It is the same engine
+// with --rules --limit 0 pre-selected, which is why the two can never disagree.
+func cmdRules(args []string, stdout, stderr io.Writer) int {
+	pre := []string{"--rules", "--limit", "0"}
+	// An explicit --limit in the user's args comes later, so Go's flag package
+	// lets it win over the pre-selected one.
+	return runSearch(append(pre, args...), stdout, stderr, "rules")
+}
+
+func runSearch(args []string, stdout, stderr io.Writer, helpCmd string) int {
+	args = normalizeScanArgs(helpCmd, args)
+	fl := newFlagSet(helpCmd, stderr)
 	var (
 		list       = fl.Bool("list", false, "list every catalog entry instead of searching")
 		rulesOnly  = fl.Bool("rules", false, "search rule packs only")
@@ -332,9 +305,8 @@ func cmdSearch(args []string, stdout, stderr io.Writer) int {
 		format     = fl.String("format", "pretty", "pretty | json")
 		noColor    = fl.Bool("no-color", false, "disable color")
 	)
-	fl.Usage = func() { fmt.Fprintf(stderr, searchUsage, Version) }
 	if err := fl.Parse(args); err != nil {
-		return 2
+		return usageExit(err)
 	}
 	pack, err := rules.LoadCore()
 	if err != nil {
@@ -357,6 +329,18 @@ func cmdSearch(args []string, stdout, stderr io.Writer) int {
 	} else {
 		results = cli.Rank(query, items)
 	}
+	// --list means "everything", so the default limit must not silently truncate
+	// it. An explicit --limit still wins, which is what makes
+	// `search --list --limit 5` useful.
+	explicitLimit := false
+	fl.Visit(func(f *flag.Flag) {
+		if f.Name == "limit" {
+			explicitLimit = true
+		}
+	})
+	if *list && !explicitLimit {
+		*limit = 0
+	}
 	if *limit > 0 && len(results) > *limit {
 		results = results[:*limit]
 	}
@@ -367,9 +351,15 @@ func cmdSearch(args []string, stdout, stderr io.Writer) int {
 	case "", "pretty":
 		color := !*noColor && output.IsTTY(stdout)
 		emitSearchPretty(stdout, query, results, color)
+		if len(results) == 0 {
+			// An empty search is not an error, but it should not be a dead end
+			// either — point at the two ways to see everything.
+			fmt.Fprintf(stdout, "  %s\n\n",
+				"nothing matched — try `vibeshield rules` for the full list, or a shorter word")
+		}
 		return 0
 	default:
-		fmt.Fprintf(stderr, "vibeshield: unknown --format %q\n", *format)
+		fmt.Fprintf(stderr, "vibeshield: unknown --format %q (pretty | json)\n", *format)
 		return 2
 	}
 }
@@ -462,16 +452,14 @@ func emitSearchJSON(w io.Writer, stderr io.Writer, query string, results []cli.I
 // emits just the shared rule block, which is what you paste into an agent's
 // rules file; the full listing is the human-readable install guide.
 func cmdAgents(args []string, stdout, stderr io.Writer) int {
-	args = normalizeScanArgs(args)
-	fl := flag.NewFlagSet("agents", flag.ContinueOnError)
-	fl.SetOutput(stderr)
+	args = normalizeScanArgs("agents", args)
+	fl := newFlagSet("agents", stderr)
 	var (
 		body     = fl.Bool("body", false, "print only the shared rule block")
 		markdown = fl.Bool("markdown", false, "print the agent matrix as markdown")
 	)
-	fl.Usage = func() { fmt.Fprintf(stderr, "usage: vibeshield agents [--body|--markdown] [name]\n") }
 	if err := fl.Parse(args); err != nil {
-		return 2
+		return usageExit(err)
 	}
 	if *body {
 		fmt.Fprint(stdout, cli.AgentRulesBody)
@@ -527,7 +515,12 @@ func cmdAgents(args []string, stdout, stderr io.Writer) int {
 // after the flags: Go's flag package stops at the first non-flag word, but
 // users (and the Action) call `scan . --format json` and
 // `search "prompt injection" --limit 5`, not the other way round.
-func normalizeScanArgs(args []string) []string {
+//
+// The command name matters: `--rules` takes a directory in `scan` but is a
+// boolean switch in `search`, so a single global "this flag takes a value"
+// table would make `search --rules --list` swallow `--list` as a directory
+// name. That was a real bug before v3.
+func normalizeScanArgs(cmd string, args []string) []string {
 	var flags, pos []string
 	i := 0
 	for i < len(args) {
@@ -538,7 +531,7 @@ func normalizeScanArgs(args []string) []string {
 			// `-` alone is the stdin diff spec, positional here is fine
 			// to pass through as a flag value below.
 			name := strings.TrimLeft(a, "-")
-			if !strings.Contains(name, "=") && i+1 < len(args) && flagTakesValue(name) {
+			if !strings.Contains(name, "=") && i+1 < len(args) && flagTakesValue(cmd, name) {
 				i++
 				flags = append(flags, args[i])
 			}
@@ -550,14 +543,19 @@ func normalizeScanArgs(args []string) []string {
 	return append(flags, pos...)
 }
 
-// flagTakesValue lists every flag, across all subcommands, that consumes the
-// following argument. Getting this wrong would swallow a positional.
-func flagTakesValue(name string) bool {
-	switch name {
-	case "diff", "format", "config", "mode", "rules", "max-cols", "report", "limit":
-		return true
-	}
-	return false
+// valueFlags lists, per subcommand, the flags that consume the following
+// argument. Getting this wrong swallows a positional argument.
+var valueFlags = map[string]map[string]bool{
+	"scan":   {"diff": true, "format": true, "config": true, "mode": true, "rules": true, "max-cols": true},
+	"fix":    {"report": true, "config": true, "rules": true},
+	"init":   {"mode": true},
+	"doctor": {"config": true, "format": true},
+	"search": {"limit": true, "format": true},
+	"rules":  {"limit": true, "format": true},
+}
+
+func flagTakesValue(cmd, name string) bool {
+	return valueFlags[cmd][name]
 }
 
 // cmdFix is VibePatch: it scans (or reuses a --report file), plans the
@@ -566,9 +564,8 @@ func flagTakesValue(name string) bool {
 // prompts for coding agents; every applied patch is appended to
 // vibeshield-fixes.log (JSONL) so the change trail stays auditable.
 func cmdFix(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
-	args = normalizeScanArgs(args)
-	fl := flag.NewFlagSet("fix", flag.ContinueOnError)
-	fl.SetOutput(stderr)
+	args = normalizeScanArgs("fix", args)
+	fl := newFlagSet("fix", stderr)
 	var (
 		dryRun   = fl.Bool("dry-run", false, "preview only, change nothing")
 		yes      = fl.Bool("yes", false, "apply without prompting (agent/CI mode; still audited)")
@@ -579,9 +576,8 @@ func cmdFix(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		verbose  = fl.Bool("verbose", false, "explain what was scanned, to stderr")
 	)
 	fl.BoolVar(verbose, "v", false, "alias of --verbose")
-	fl.Usage = func() { fmt.Fprintf(stderr, usage, Version) }
 	if err := fl.Parse(args); err != nil {
-		return 2
+		return usageExit(err)
 	}
 	path := "."
 	if fl.NArg() > 0 {
@@ -699,13 +695,12 @@ func stdinIsInteractive(stdin io.Reader) bool {
 }
 
 func cmdScan(args []string, stdout, stderr io.Writer) int {
-	args = normalizeScanArgs(args)
-	fl := flag.NewFlagSet("scan", flag.ContinueOnError)
-	fl.SetOutput(stderr)
+	args = normalizeScanArgs("scan", args)
+	fl := newFlagSet("scan", stderr)
 	var (
 		diffRef  = fl.String("diff", "", "scan changes vs git ref, or '-' for stdin")
 		staged   = fl.Bool("staged", false, "scan git staged changes (pre-commit mode)")
-		format   = fl.String("format", "", "pretty | json | github (default: pretty)")
+		format   = fl.String("format", "", "pretty | json | github | sarif (default: pretty)")
 		cfgPath  = fl.String("config", "vibeshield.yml", "config file path")
 		mode     = fl.String("mode", "", "off | warn | block-on-critical | block-on-high+")
 		rulesDir = fl.String("rules", "", "directory of extra rule pack YAML files")
@@ -715,9 +710,8 @@ func cmdScan(args []string, stdout, stderr io.Writer) int {
 		verbose  = fl.Bool("verbose", false, "explain what was scanned, to stderr")
 	)
 	fl.BoolVar(verbose, "v", false, "alias of --verbose")
-	fl.Usage = func() { fmt.Fprintf(stderr, usage, Version) }
 	if err := fl.Parse(args); err != nil {
-		return 2
+		return usageExit(err)
 	}
 	if *online {
 		fmt.Fprintln(stderr, "vibeshield: --online package-intel is not in this build yet; continuing fully offline (harmless)")
@@ -854,7 +848,7 @@ func cmdScan(args []string, stdout, stderr io.Writer) int {
 	case "", "pretty":
 		output.Pretty(stdout, rep, color, *maxCols)
 	default:
-		fmt.Fprintf(stderr, "vibeshield: unknown --format %q\n", *format)
+		fmt.Fprintf(stderr, "vibeshield: unknown --format %q (pretty | json | github | sarif)\n", *format)
 		return 2
 	}
 

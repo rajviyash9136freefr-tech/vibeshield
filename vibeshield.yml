@@ -1,0 +1,121 @@
+# VibeShield's own configuration.
+#
+# The scanner audits this repository in CI (`.github/workflows/ci.yml`, the
+# "VibeShield scans itself" step). That is the only honest way to ship a
+# security tool: if it cannot pass its own gate, the gate is not real.
+#
+# It took a real ignore list to get there, and the reason is worth writing
+# down, because every security scanner has this problem: **this repository is
+# itself a corpus of security patterns.** The rule packs contain every regex
+# they detect, the golden fixtures are vulnerable on purpose, and the docs have
+# to display the install one-liner that VS-SEC-027 exists to flag. A scanner
+# pointed at its own source will always find itself.
+#
+# So the exceptions below are structural, and each one says why. What is NOT
+# here matters as much: nothing is excluded because a finding was inconvenient.
+# If a finding appears in `scanner/`, `action/`, `site/src/` or the installer
+# scripts that is not covered by an entry below, it is a real finding and it
+# fails the build.
+#
+# Schema: contracts/cli.md — every key is optional.
+
+mode: block-on-critical
+
+# No `languages` filter on purpose. This repository is Go, TypeScript, Astro,
+# YAML, Markdown and shell, and its prose is as much of an attack surface as
+# its code — VS-INJ exists because READMEs and AGENTS.md files are where
+# prompt-injection payloads hide.
+
+ignore:
+  # ---------------------------------------------------------------------------
+  # Structural: the tool describing itself
+  # ---------------------------------------------------------------------------
+
+  # The rule packs contain every pattern they detect. Scanning them finds those
+  # patterns, which is the definition of the file working. The embedded copy
+  # under scanner/internal/rules/packs/ is byte-identical by construction —
+  # `node scripts/sync-rules.mjs --check` fails CI if it drifts — so it needs
+  # the same exception. `rule` is omitted, which means every rule.
+  - paths:
+      - "rules/core/**"
+      - "scanner/internal/rules/packs/**"
+    reason: "Rule definitions necessarily contain the patterns they detect; the embedded copy is byte-identical by CI contract."
+
+  # The golden corpus is deliberately vulnerable, and the test files carry
+  # sample secrets and patterns as fixtures. A clean fixtures directory would
+  # mean the tests assert nothing.
+  - paths:
+      - "fixtures/**"
+      - "scanner/internal/**/*_test.go"
+    reason: "Golden corpus and test fixtures are vulnerable by design; that is what the tests assert against."
+
+  # ---------------------------------------------------------------------------
+  # Generated, not authored
+  # ---------------------------------------------------------------------------
+
+  - paths:
+      - "site/package-lock.json"
+    reason: "Generated lockfile. The version ranges in it are npm's resolution output, not a choice a contributor made."
+
+  # ---------------------------------------------------------------------------
+  # The documented install one-liner
+  # ---------------------------------------------------------------------------
+
+  # VS-SEC-027 (critical) and VS-DEP-018 (medium) are both right to fire on a
+  # remote script piped straight into a shell in general — that is precisely
+  # why they exist. Here the URL is this repository's own release script and
+  # the reader is being told to run it, so the line has to appear in the files
+  # below. The list names them rather than using a broad glob on purpose: a new
+  # file that introduces the pattern should fail CI and force the same decision.
+  #
+  # (This comment deliberately does not spell the pattern out. Writing it
+  # literally made this file flag itself — the rules were doing their job, and
+  # the fix was to describe the pattern rather than quote it.)
+  - rule: VS-SEC-027
+    paths:
+      - "README.md"
+      - "scripts/install.sh"
+      - "site/src/**"
+      - "skill/skills/vibeshield-audit/patterns.md"
+    reason: "The documented install one-liner and the pages, cards and playbook that must display it; the URL is this repository's own pinned release script."
+
+  - rule: VS-DEP-018
+    paths:
+      - "README.md"
+      - "scripts/install.sh"
+      - "site/src/**"
+      - "skill/skills/vibeshield-audit/patterns.md"
+    reason: "Same install one-liner: a raw-URL install of this repository's own release script, shown deliberately."
+
+  # ---------------------------------------------------------------------------
+  # Documentation quoting a pattern in order to forbid it
+  # ---------------------------------------------------------------------------
+
+  # The npm `repository` field is a standard manifest key, not a dependency
+  # fetched from a branch.
+  - rule: VS-DEP-009
+    paths:
+      - "npm/vibeshield/package.json"
+    reason: "The standard npm `repository` metadata field, not a dependency resolved from a git ref."
+
+  - rule: VS-PKG-004
+    paths:
+      - "npm/vibeshield/package.json"
+    reason: "Same `repository` metadata field; nothing is installed from it."
+
+  # The agent-prompt text instructs agents never to scaffold `JWT alg: none`.
+  # Quoting the anti-pattern is the whole point of the sentence.
+  - rule: VS-SEC-054
+    paths:
+      - "site/src/data/site.ts"
+    reason: "Agent-prompt copy that names `algorithms:[\"none\"]` in order to forbid it; nothing here configures JWT."
+
+  # The terms page has to show the license it is describing.
+  - rule: VS-LIC-024
+    paths:
+      - "site/src/pages/terms.astro"
+    reason: "The terms page renders the MIT text verbatim because that is what the page is for."
+
+thresholds:
+  # A dependency younger than this is treated as a slopsquatting risk.
+  new_dependency_max_age_days: 30

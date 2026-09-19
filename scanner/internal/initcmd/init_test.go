@@ -212,15 +212,19 @@ func TestDefaultActionTagIsSemver(t *testing.T) {
 }
 
 func TestActionRefRejectsNonSemver(t *testing.T) {
+	// The fallback is asserted through defaultActionTag rather than a literal
+	// version, so a release bump does not have to edit this test.
+	tag := defaultActionTag
 	cases := map[string]string{
 		"2.0.1":     "v2.0.1",
 		"v2.0.1":    "v2.0.1",
 		"2.1.10":    "v2.1.10",
-		"dev":       "v2.0.1",
-		"":          "v2.0.1",
-		"2.0":       "v2.0.1",
-		"2.0.0-rc1": "v2.0.1",
-		"main":      "v2.0.1",
+		"10.20.30":  "v10.20.30",
+		"dev":       tag,
+		"":          tag,
+		"2.0":       tag,
+		"2.0.0-rc1": tag,
+		"main":      tag,
 	}
 	for in, want := range cases {
 		if got := actionRef(in); got != want {

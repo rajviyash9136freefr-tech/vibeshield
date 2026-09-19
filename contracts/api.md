@@ -1,5 +1,21 @@
 # VibeShield API contract (v1) — api.vibeshield.dev
 
+> **Status: NOT IMPLEMENTED. This is a design document, not a description of
+> shipped behaviour.**
+>
+> There is no `api/` package in this repository and no hosted service. The
+> scanner, the console, the pre-commit hook, the GitHub Action and the skill all
+> run with **no server component** — that is what makes the privacy promise on
+> the [security page](../site/src/pages/security.astro) true. Nothing in this
+> file is reachable today.
+>
+> It is kept because it is the design for the opt-in `--online` package-intel
+> lookup and for the findings ingestion the Action's PR comment could grow into,
+> and because the endpoint shapes constrain the finding contract. If you are
+> reading this to learn how VibeShield works, you want
+> [`contracts/cli.md`](cli.md) and
+> [`contracts/finding/schema.json`](finding/schema.json) instead.
+
 Fastify + TypeScript, Node 22+, PostgreSQL (findings store), npm/PyPI crawlers for
 package-intel. Deploy target: single container. **v1 ships as a runnable service with
 an in-memory/pg-lite fallback store so the whole stack works locally without infra.**

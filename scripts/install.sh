@@ -17,7 +17,10 @@
 set -euo pipefail
 
 REPO="rajviyash9136freefr-tech/vibeshield"
-VERSION="${VIBESHIELD_VERSION:-v1.0.0}"
+# Kept current by scripts/bump-version.mjs. If this drifts, the one-line install
+# in the README quietly installs an old release — which is exactly what it did
+# for two major versions, because this file was missing from the bump list.
+VERSION="${VIBESHIELD_VERSION:-v3.0.0}"
 AGENT="auto"
 WANT_SKILL=1
 INSTALL_DIR="${VIBESHIELD_INSTALL_DIR:-$HOME/.local/bin}"
@@ -42,7 +45,7 @@ case "$OS" in
   linux)  vs_os=linux ;;
   darwin) vs_os=darwin ;;
   msys*|mingw*|cygwin*) vs_os=windows ;;
-  *) echo "vibeshield-install: unsupported OS $OS — build from source: go install github.com/$REPO/scanner/cmd/vibeshield@latest" >&2; exit 1 ;;
+  *) echo "vibeshield-install: unsupported OS $OS — build from source: go install github.com/$REPO/scanner/cmd/vibeshield@$VERSION" >&2; exit 1 ;;
 esac
 ARCH=$(uname -m)
 case "$ARCH" in
@@ -62,7 +65,7 @@ trap 'rm -rf "$TMP"' EXIT
 echo "→ fetching $ASSET ($VERSION)"
 if ! curl -fsSL "$BASE/$ASSET" -o "$TMP/$ASSET"; then
   echo "vibeshield-install: download failed. Is $VERSION released? List: https://github.com/$REPO/releases" >&2
-  echo "  Offline / from source:  go install github.com/$REPO/scanner/cmd/vibeshield@latest" >&2
+  echo "  Offline / from source:  go install github.com/$REPO/scanner/cmd/vibeshield@$VERSION" >&2
   exit 1
 fi
 curl -fsSL "$BASE/sha256sums.txt" -o "$TMP/sha256sums.txt" || {

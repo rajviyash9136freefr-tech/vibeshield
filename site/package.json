@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "VibeShield marketing site (vibeshield.dev) — Astro 5 static + Tailwind v4",
+  "description": "VibeShield marketing site & docs — Astro 5 static + Tailwind v4",
   "engines": {
     "node": ">=22.0.0"
   },

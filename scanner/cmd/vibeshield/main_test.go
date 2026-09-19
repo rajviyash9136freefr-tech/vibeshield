@@ -9,9 +9,9 @@ import (
 	"testing"
 )
 
-// newFlagSet builds a FlagSet with the config flag and parses args, so that
+// testFlagSet builds a FlagSet with the config flag and parses args, so that
 // fl.Visit can tell "the user passed --config" from "the default applied".
-func newFlagSet(t *testing.T, args ...string) *flag.FlagSet {
+func testFlagSet(t *testing.T, args ...string) *flag.FlagSet {
 	t.Helper()
 	fl := flag.NewFlagSet("test", flag.ContinueOnError)
 	fl.SetOutput(io.Discard)
@@ -33,7 +33,7 @@ func TestResolveConfigPathPrefersTheScannedProject(t *testing.T) {
 
 	// Scanning another project from somewhere else must read THAT project's
 	// config. Resolving from the working directory silently ignored it.
-	got := resolveConfigPath(newFlagSet(t), "vibeshield.yml", dir)
+	got := resolveConfigPath(testFlagSet(t), "vibeshield.yml", dir)
 	if got != project {
 		t.Errorf("resolved %q, want the scanned project's %q", got, project)
 	}
@@ -41,7 +41,7 @@ func TestResolveConfigPathPrefersTheScannedProject(t *testing.T) {
 
 func TestResolveConfigPathFallsBackToTheDefault(t *testing.T) {
 	dir := t.TempDir() // no vibeshield.yml here
-	got := resolveConfigPath(newFlagSet(t), "vibeshield.yml", dir)
+	got := resolveConfigPath(testFlagSet(t), "vibeshield.yml", dir)
 	if got != "vibeshield.yml" {
 		t.Errorf("resolved %q, want the default %q", got, "vibeshield.yml")
 	}
@@ -53,7 +53,7 @@ func TestResolveConfigPathHonoursExplicitConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 	// An explicit --config wins even when the scanned project has its own.
-	got := resolveConfigPath(newFlagSet(t, "--config", "custom.yml"), "custom.yml", dir)
+	got := resolveConfigPath(testFlagSet(t, "--config", "custom.yml"), "custom.yml", dir)
 	if got != "custom.yml" {
 		t.Errorf("resolved %q, want the explicit %q", got, "custom.yml")
 	}
@@ -65,7 +65,7 @@ func TestResolveConfigPathIgnoresADirectory(t *testing.T) {
 	if err := os.MkdirAll(filepath.Join(dir, "vibeshield.yml"), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	got := resolveConfigPath(newFlagSet(t), "vibeshield.yml", dir)
+	got := resolveConfigPath(testFlagSet(t), "vibeshield.yml", dir)
 	if got != "vibeshield.yml" {
 		t.Errorf("resolved %q, want the default when the candidate is a directory", got)
 	}
@@ -74,21 +74,28 @@ func TestResolveConfigPathIgnoresADirectory(t *testing.T) {
 func TestNormalizeScanArgsMovesFlagsFirst(t *testing.T) {
 	cases := []struct {
 		name string
+		cmd  string
 		in   []string
 		want []string
 	}{
-		{"already ordered", []string{"--format", "json", "."}, []string{"--format", "json", "."}},
-		{"path first", []string{".", "--format", "json"}, []string{"--format", "json", "."}},
-		{"bool after path", []string{".", "--staged"}, []string{"--staged", "."}},
-		{"equals form is not split", []string{".", "--format=json"}, []string{"--format=json", "."}},
-		{"search query with a trailing flag", []string{"aws", "--limit", "5"}, []string{"--limit", "5", "aws"}},
-		{"multi-word query survives", []string{"prompt", "injection", "--limit", "5"}, []string{"--limit", "5", "prompt", "injection"}},
-		{"no args", nil, nil},
+		{"already ordered", "scan", []string{"--format", "json", "."}, []string{"--format", "json", "."}},
+		{"path first", "scan", []string{".", "--format", "json"}, []string{"--format", "json", "."}},
+		{"bool after path", "scan", []string{".", "--staged"}, []string{"--staged", "."}},
+		{"equals form is not split", "scan", []string{".", "--format=json"}, []string{"--format=json", "."}},
+		{"search query with a trailing flag", "search", []string{"aws", "--limit", "5"}, []string{"--limit", "5", "aws"}},
+		{"multi-word query survives", "search", []string{"prompt", "injection", "--limit", "5"}, []string{"--limit", "5", "prompt", "injection"}},
+		{"no args", "scan", nil, nil},
+		// --rules takes a directory in `scan` but is a boolean switch in
+		// `search`/`rules`. A single global table made the switch swallow the
+		// flag that followed it.
+		{"rules is a switch in search", "search", []string{"--rules", "--list"}, []string{"--rules", "--list"}},
+		{"rules is a switch in rules", "rules", []string{"VS-SEC-017", "--no-color"}, []string{"--no-color", "VS-SEC-017"}},
+		{"rules takes a value in scan", "scan", []string{".", "--rules", "packs"}, []string{"--rules", "packs", "."}},
 	}
 	for _, tc := range cases {
-		got := normalizeScanArgs(tc.in)
+		got := normalizeScanArgs(tc.cmd, tc.in)
 		if !reflect.DeepEqual(got, tc.want) {
-			t.Errorf("%s: normalizeScanArgs(%v) = %v, want %v", tc.name, tc.in, got, tc.want)
+			t.Errorf("%s: normalizeScanArgs(%q, %v) = %v, want %v", tc.name, tc.cmd, tc.in, got, tc.want)
 		}
 	}
 }
@@ -96,7 +103,7 @@ func TestNormalizeScanArgsMovesFlagsFirst(t *testing.T) {
 // A lone "-" is the stdin diff spec, not a flag, and must survive reordering
 // as a positional rather than being swallowed as a flag value.
 func TestNormalizeScanArgsKeepsStdinSpec(t *testing.T) {
-	got := normalizeScanArgs([]string{"--diff", "-", "--format", "json"})
+	got := normalizeScanArgs("scan", []string{"--diff", "-", "--format", "json"})
 	want := []string{"--diff", "-", "--format", "json"}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
@@ -107,14 +114,32 @@ func TestFlagTakesValueCoversEveryValueFlag(t *testing.T) {
 	// Getting this wrong swallows the following positional argument, which is
 	// how `search "prompt injection" --limit 5` once treated "--limit 5" as
 	// part of the query.
-	for _, name := range []string{"diff", "format", "config", "mode", "rules", "max-cols", "report", "limit"} {
-		if !flagTakesValue(name) {
-			t.Errorf("flagTakesValue(%q) = false, want true", name)
+	valueFlagsByCmd := map[string][]string{
+		"scan":   {"diff", "format", "config", "mode", "rules", "max-cols"},
+		"fix":    {"report", "config", "rules"},
+		"init":   {"mode"},
+		"doctor": {"config", "format"},
+		"search": {"limit", "format"},
+		"rules":  {"limit", "format"},
+	}
+	for cmd, names := range valueFlagsByCmd {
+		for _, name := range names {
+			if !flagTakesValue(cmd, name) {
+				t.Errorf("flagTakesValue(%q, %q) = false, want true", cmd, name)
+			}
 		}
 	}
-	for _, name := range []string{"staged", "dry-run", "yes", "no-color", "verbose", "online", "force"} {
-		if flagTakesValue(name) {
-			t.Errorf("flagTakesValue(%q) = true, want false — it takes no value", name)
+	for _, cmd := range []string{"scan", "fix", "init", "doctor", "search", "rules"} {
+		for _, name := range []string{"staged", "dry-run", "yes", "no-color", "verbose", "online", "force"} {
+			if flagTakesValue(cmd, name) {
+				t.Errorf("flagTakesValue(%q, %q) = true, want false — it takes no value", cmd, name)
+			}
+		}
+	}
+	// The boolean forms must not be mistaken for value flags anywhere.
+	for _, cmd := range []string{"search", "rules"} {
+		if flagTakesValue(cmd, "rules") || flagTakesValue(cmd, "agents") || flagTakesValue(cmd, "list") {
+			t.Errorf("%q: a boolean switch is being treated as a value flag", cmd)
 		}
 	}
 }

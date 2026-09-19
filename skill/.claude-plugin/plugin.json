@@ -2,11 +2,11 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "vibeshield",
   "displayName": "VibeShield",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Bug-hunting security audit for AI-generated code. One skill, parallel bug-hunter subagents, findings in the VibeShield contract format.",
-  "author": { "name": "VibeShield", "url": "https://vibeshield.dev" },
-  "homepage": "https://vibeshield.dev",
-  "repository": "https://github.com/vibeshield/vibeshield",
+  "author": { "name": "VibeShield", "url": "https://github.com/rajviyash9136freefr-tech/vibeshield" },
+  "homepage": "https://rajviyash9136freefr-tech.github.io/vibeshield/docs/skill",
+  "repository": "https://github.com/rajviyash9136freefr-tech/vibeshield",
   "license": "MIT",
-  "keywords": ["security", "audit", "ai-code", "bugs", "supply-chain"]
+  "keywords": ["security", "audit", "ai-code", "bugs", "supply-chain", "claude-code", "slopsquatting"]
 }

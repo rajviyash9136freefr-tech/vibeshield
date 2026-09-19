@@ -1,9 +1,9 @@
 ---
 // /privacy — rewritten 2026-09-13 as a documentary clause page (LegalDoc
 // layout) to match /terms. Content stays honest to what ships: CLI/hook are
-// fully local; the Action posts findings metadata to your own PR; the site
-// sets no cookies and self-hosts fonts. UIUX §8 / PRD §6.5 — the "code never
-// leaves your machine" promise, itemized instead of asserted.
+// fully local, the Action posts findings to your own PR, and there is no
+// server component at all. UIUX §8 / PRD §6.5 — the "code never leaves your
+// machine" promise, itemized instead of asserted.
 import LegalDoc from '../layouts/LegalDoc.astro';
 
 const clauses = [
@@ -11,16 +11,16 @@ const clauses = [
     id: 'your-code',
     heading: 'Your code',
     blocks: [
-      'The CLI and the pre-commit hook perform static analysis entirely on your machine and send nothing anywhere. The rules engine runs from the pack embedded in the binary; there is no "phone home" call to disable because there is no call.',
-      'The optional --online flag is the one exception, and it is explicit: with it set, package names from your dependency manifests are looked up against public registries (npm, PyPI, crates.io, the Go module index) to score slopsquatting risk. Names go out; file contents never do. Without the flag, the same lookups degrade gracefully to the offline heuristics in the binary.',
-      'In GitHub Action mode, analysis runs on your GitHub runner. What leaves the runner is the VibeCheck report: findings metadata — file paths, rule IDs, symbol names, severities — posted as a comment on your own pull request. Secrets that match a pattern are redacted to four characters on each side before anything is printed or posted. File contents are never persisted by us, and results from private repositories are never used for model training. Ever.',
+      'The CLI, the console and the pre-commit hook perform static analysis entirely on your machine and send nothing anywhere. The rules engine runs from the pack embedded in the binary; there is no "phone home" call to disable because there is no call — the scanner links in no HTTP client at all.',
+      'The --online flag is reserved for a future package-intel lookup and does nothing in this build: it prints a notice and the scan continues fully offline. When it lands, it will send package names from your manifests to public registries to score slopsquatting risk — names out, file contents never — and it will stay opt-in.',
+      'In GitHub Action mode, analysis runs on your GitHub runner. What leaves the runner is the VibeCheck report: findings — file paths, rule IDs, symbol names, severities — posted as a comment on your own pull request using your own GITHUB_TOKEN. Secrets that match a pattern are redacted to four characters on each side before anything is printed or posted. There is no VibeShield server for that report to reach.',
     ],
   },
   {
     id: 'this-website',
     heading: 'This website',
     blocks: [
-      'No advertising cookies, no third-party trackers, no fingerprinting. Fonts are self-hosted, so a page view leaks nothing to Google. Analytics, where enabled, are privacy-safe aggregate pageviews (Plausible-class): which page, which referrer, nothing that profiles a person across sites.',
+      'No advertising cookies, no third-party trackers, no fingerprinting. Fonts are self-hosted, so a page view leaks nothing to Google.',
       'The site is a GitHub Pages static build. It cannot see your code because your code is never sent to it.',
     ],
   },
@@ -28,7 +28,7 @@ const clauses = [
     id: 'accounts',
     heading: 'Accounts',
     blocks: [
-      'There is no VibeShield account to have — the tool is MIT-licensed, free, and runs without signup, a key, or a seat. GitHub OAuth exists only where a dashboard surface is used, and even there it keeps the minimum: your username, avatar URL, org list, and the findings metadata your repos produce. Delete your org and pending findings are purged within 30 days.',
+      'There is no VibeShield account to have — the tool is MIT-licensed, free, and runs without signup, a key, or a seat. There is no dashboard, no cloud API and no GitHub OAuth flow, because there is no server component. Nothing about you is stored anywhere, because there is nowhere to store it.',
     ],
   },
   {
@@ -39,7 +39,8 @@ const clauses = [
       {
         list: [
           'Your source code or file contents, in any mode.',
-          'Your package names, unless you explicitly pass --online.',
+          'Your package names — no lookup is performed in this build.',
+          'Your repository names, branch names, or finding history.',
           'Keystrokes, editor telemetry, or anything resembling an IDE agent.',
           'Personal profiles, cross-site identifiers, or contact lists for marketing.',
         ],
@@ -57,7 +58,7 @@ const clauses = [
     id: 'contact',
     heading: 'Contact',
     blocks: [
-      'Privacy questions go to privacy@vibeshield.dev. Questions about the tool’s behavior with your data are usually answerable faster on GitHub issues — the scanner is one repo, and you can read the network code in it.',
+      'Privacy questions go to GitHub issues — the scanner is one repo, the whole network surface is one grep away, and the answer is usually "there isn\'t any".',
     ],
   },
 ];

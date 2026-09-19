@@ -17,6 +17,7 @@ export const NAV = [
   { label: 'How to Install', href: '/#install' },
   { label: 'How to Scan', href: '/#how-to-scan' },
   { label: 'Live Demo', href: '/#scanner' },
+  { label: 'Docs', href: '/docs' },
   { label: 'FAQ', href: '/#faq' },
 ];
 
@@ -27,23 +28,25 @@ export const HERO = {
 };
 
 // Hero terminal demo (UIUX §3.2) — the final frame; JS types it in.
+// Kept byte-identical in shape to what `vibeshield scan` actually prints, so
+// the demo cannot promise an output format the binary does not produce.
 export const DEMO_LINES = [
-  { text: '$ npx vibeshield scan', cls: 'accent' },
+  { text: '$ vibeshield scan .', cls: 'accent' },
   { text: '', cls: 'gap' },
-  { text: '  Scanning 14 changed files… done in 1.2s', cls: 'muted' },
+  { text: '  Scanning 14 files (full mode)… done in 1.2s', cls: 'muted' },
   { text: '', cls: 'gap' },
-  { text: '  🔴 CRITICAL  VS-PKG-001  hallucinated-pkg', cls: 'critical' },
-  { text: '     fast-parse-utils-v3@2.1.4 (9d old, 1 maint)', cls: 'fg' },
+  { text: '  🔴 CRITICAL  VS-PKG-001  hallucinated-package', cls: 'critical' },
+  { text: '     package.json:8 — fast-parse-utils-v3@2.1.4 (9d old, 1 maint)', cls: 'fg' },
   { text: '     remote payload install script detected', cls: 'fg' },
-  { text: '     → Fix: replace with node:util', cls: 'ok' },
+  { text: '     → Fix: replace with node:util (12 lines, zero deps).', cls: 'ok' },
   { text: '', cls: 'gap' },
   { text: '  🟠 HIGH      VS-SEC-017  hardcoded-secret', cls: 'high' },
-  { text: '     OPENAI_API_KEY echoed in agent.ts:41', cls: 'fg' },
-  { text: '     → Fix: move to env, rotate key now', cls: 'ok' },
+  { text: '     src/agent.ts:41 — OPENAI_API_KEY pasted from chat context', cls: 'fg' },
+  { text: '     → Fix: read process.env.OPENAI_API_KEY and rotate it now.', cls: 'ok' },
   { text: '', cls: 'gap' },
-  { text: '  ✓ 11 clean · 2 findings · 0 leaks merged', cls: 'ok' },
+  { text: '  ✓ 12 files clean · 2 findings · 0 leaks merged to main', cls: 'ok' },
   { text: '', cls: 'gap' },
-  { text: '  Report → PR #482 review comment posted', cls: 'faint' },
+  { text: '  Next: vibeshield fix . --dry-run   (preview the one-line fixes)', cls: 'faint' },
 ];
 
 export const INSTALL_TABS = [
@@ -54,7 +57,10 @@ export const INSTALL_TABS = [
 curl -fsSL https://raw.githubusercontent.com/rajviyash9136freefr-tech/vibeshield/main/scripts/install.sh | bash
 
 # Windows (PowerShell):
-irm https://raw.githubusercontent.com/rajviyash9136freefr-tech/vibeshield/main/scripts/install.ps1 | iex`,
+irm https://raw.githubusercontent.com/rajviyash9136freefr-tech/vibeshield/main/scripts/install.ps1 | iex
+
+# Then confirm it is wired up:
+vibeshield doctor`,
     lang: 'bash',
   },
   {
@@ -75,7 +81,10 @@ claude plugin install vibeshield@vibeshield
 npx vibeshield scan .
 
 # Or install globally via npm:
-npm install -g vibeshield`,
+npm install -g vibeshield
+
+# Tab completion, once installed:
+vibeshield completion bash >> ~/.bashrc`,
     lang: 'bash',
   },
   {
@@ -92,7 +101,9 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - uses: rajviyash9136freefr-tech/vibeshield/action@v2.0.1`,
+        with:
+          fetch-depth: 0
+      - uses: rajviyash9136freefr-tech/vibeshield/action@v3.0.0`,
     lang: 'yaml',
   },
 ];
@@ -188,18 +199,18 @@ export const FAQ: { q: string; a: string; link?: [string, string] }[] = [
   },
   {
     q: 'How do I install VibeShield and use it with my AI coding agent?',
-    a: 'You can use VibeShield in three ways: (1) Copy our dedicated agent prompt into your `.cursorrules`, `.windsurfrules`, or Claude Code skill; (2) Run our 1-command installer on macOS/Linux (`curl -fsSL ... | bash`) or Windows (`irm ... | iex`); or (3) Add our automated GitHub Action to audit every Pull Request in under 1.2 seconds.',
+    a: 'Four ways, one binary. (1) Run the install script on macOS/Linux or the PowerShell installer on Windows. (2) Copy our agent prompt into .cursorrules, .windsurfrules or the Claude Code plugin. (3) Add the GitHub Action to gate every pull request in seconds. (4) npx vibeshield scan . for a zero-install scan. Then run vibeshield doctor to confirm everything is wired up.',
     link: ['View Installation Options', '/#install'],
   },
   {
     q: 'What specific bugs and vulnerabilities does VibeShield hunt down?',
-    a: 'VibeShield targets failure modes unique to LLM-generated code: hallucinated npm/pip packages (slopsquatting attacks where attackers pre-register names invented by LLMs), leaked API keys and passwords echoed in boilerplate, insecure wildcard CORS (*), broken JWT auth, unhandled UI state bugs, and prompt-injection backdoors.',
+    a: 'VibeShield targets failure modes unique to LLM-generated code: hallucinated npm/pip packages (slopsquatting attacks where attackers pre-register names invented by LLMs), leaked API keys and passwords echoed in boilerplate, insecure wildcard CORS (*), broken JWT auth, stripped licence headers, and prompt-injection backdoors. 122 rules across 6 categories — all readable with vibeshield rules.',
     link: ['Test with Live Simulator', '/#scanner'],
   },
   {
     q: 'Does my source code or prompt data leave my machine?',
-    a: 'No. Never. VibeShield is designed for zero data exfiltration. The CLI, agent skills, and pre-commit hooks execute 100% locally and offline on your machine using static analysis. Your code, API keys, and prompts are never sent to external servers and are never used for model training.',
-    link: ['100% Local & Offline', SITE.repo],
+    a: 'No. Never. VibeShield is designed for zero data exfiltration. The CLI, console, pre-commit hook, GitHub Action and agent skill all execute 100% locally using static analysis. There is no telemetry, no account, no dashboard, and no server component — the scanner links in no HTTP client at all. Your code, API keys, and prompts are never sent anywhere.',
+    link: ['Read the security model', '/security'],
   },
   {
     q: 'Is VibeShield free, and can I use it for private repositories?',
@@ -221,6 +232,17 @@ export const FOOTER = {
       ] as [string, string][],
     },
     {
+      title: 'Documentation',
+      links: [
+        ['Quickstart', '/docs/quickstart'],
+        ['Installation', '/docs/installation'],
+        ['CLI reference', '/docs/cli'],
+        ['Configuration', '/docs/config'],
+        ['Rules & detection', '/docs/rules'],
+        ['Troubleshooting', '/docs/troubleshooting'],
+      ] as [string, string][],
+    },
+    {
       title: 'Agents Supported',
       links: [
         ['Cursor (.cursorrules)', '/#agents'],
@@ -235,6 +257,7 @@ export const FOOTER = {
       links: [
         ['GitHub Repository', 'https://github.com/rajviyash9136freefr-tech/vibeshield'],
         ['Issue Tracker', 'https://github.com/rajviyash9136freefr-tech/vibeshield/issues'],
+        ['Discussions', 'https://github.com/rajviyash9136freefr-tech/vibeshield/discussions'],
         ['Releases & Binaries', 'https://github.com/rajviyash9136freefr-tech/vibeshield/releases'],
         ['MIT License', 'https://github.com/rajviyash9136freefr-tech/vibeshield/blob/main/LICENSE'],
       ] as [string, string][],

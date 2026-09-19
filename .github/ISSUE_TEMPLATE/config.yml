@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability in VibeShield
+    url: https://github.com/rajviyash9136freefr-tech/vibeshield/security/advisories/new
+    about: Private channel for vulnerabilities in the tool itself. Never post a vulnerability publicly.
+  - name: Something is not working — run doctor first
+    url: https://github.com/rajviyash9136freefr-tech/vibeshield/blob/main/site/src/content/docs/troubleshooting.md
+    about: The troubleshooting page covers the problems people actually hit. `vibeshield doctor` reports the rest.
+  - name: Question, idea, or "how do I…"
+    url: https://github.com/rajviyash9136freefr-tech/vibeshield/discussions
+    about: Discussions is the right place for anything that is not a bug report or a rule request.

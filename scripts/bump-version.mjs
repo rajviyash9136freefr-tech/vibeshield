@@ -54,6 +54,12 @@ add('action/entrypoint.sh', `:-v${from}}`, `:-v${to}}`);
 add('.pre-commit-hooks.yaml', `cmd/vibeshield@v${from}`, `cmd/vibeshield@v${to}`);
 // The Action ref `vibeshield init` falls back to for a non-semver build.
 add('scanner/internal/initcmd/init.go', `const defaultActionTag = "v${from}"`, `const defaultActionTag = "v${to}"`);
+// The installers. These were missing from this list until v3, so both defaulted
+// to v1.0.0 and the README's headline one-liner installed a two-major-versions-
+// old release without saying so. A default that drifts silently is the worst
+// kind of bug in an install path, so they are pinned here from now on.
+add('scripts/install.sh', `VIBESHIELD_VERSION:-v${from}}`, `VIBESHIELD_VERSION:-v${to}}`);
+add('scripts/install.ps1', `[string]$Version = "v${from}"`, `[string]$Version = "v${to}"`);
 add('contracts/cli.md', `"version": "${from}",`, `"version": "${to}",`);
 add('action/test/fixtures/scan-sample.json', `"version": "${from}",`, `"version": "${to}",`);
 
@@ -65,9 +71,15 @@ add('site/src/content/docs/github-action.md', `\`v${from}\``, `\`v${to}\``);
 add('site/src/content/docs/pre-commit.md', `rev: v${from}`, `rev: v${to}`);
 add('site/src/content/docs/quickstart.md', `action@v${from}`, `action@v${to}`);
 add('site/src/content/docs/quickstart.md', `rev: v${from}`, `rev: v${to}`);
+add('site/src/content/docs/installation.md', `cmd/vibeshield@v${from}`, `cmd/vibeshield@v${to}`);
+add('site/src/content/docs/installation.md', `vibeshield ${from}`, `vibeshield ${to}`);
+add('site/src/pages/install.astro', `action@v${from}`, `action@v${to}`);
+add('site/src/pages/install.astro', `rev: v${from}`, `rev: v${to}`);
+add('site/src/pages/install.astro', `cmd/vibeshield@v${from}`, `cmd/vibeshield@v${to}`);
 add('README.md', `version-${from}-white`, `version-${to}-white`);
 add('README.md', `action@v${from}`, `action@v${to}`, -1);
 add('README.md', `rev: v${from}`, `rev: v${to}`);
+add('README.md', `cmd/vibeshield@v${from}`, `cmd/vibeshield@v${to}`);
 
 let failures = 0;
 for (const { rel, from: f, to: t, expect } of edits) {

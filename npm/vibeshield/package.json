@@ -1,6 +1,6 @@
 {
   "name": "vibeshield",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Security & dependency auditor for AI-generated code — runs the vibeshield Go scanner (GitHub Action, pre-commit hook, CLI). Free, MIT, offline-first.",
   "license": "MIT",
   "type": "module",
@@ -8,7 +8,7 @@
     "type": "git",
     "url": "git+https://github.com/rajviyash9136freefr-tech/vibeshield.git"
   },
-  "homepage": "https://vibeshield.dev",
+  "homepage": "https://rajviyash9136freefr-tech.github.io/vibeshield/",
   "bugs": "https://github.com/rajviyash9136freefr-tech/vibeshield/issues",
   "keywords": [
     "security", "sast", "ai-code", "ai-agents", "vibe-coding", "pre-commit",

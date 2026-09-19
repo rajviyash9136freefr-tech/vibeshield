@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://vibeshield.dev/contracts/finding.schema.json",
+  "$id": "https://rajviyash9136freefr-tech.github.io/vibeshield/contracts/finding.schema.json",
   "title": "VibeShield Finding",
-  "description": "The atomic unit of VibeShield output. Scanner emits an array of these; every surface (CLI, PR comment, SARIF, dashboard) renders from it.",
+  "description": "The atomic unit of VibeShield output. Scanner emits an array of these; every surface (CLI pretty output, JSON, GitHub annotations, SARIF, the PR comment) renders from it.",
   "type": "object",
   "required": ["schema_version", "rule_id", "severity", "category", "title", "message", "file", "ai_origin"],
   "properties": {
