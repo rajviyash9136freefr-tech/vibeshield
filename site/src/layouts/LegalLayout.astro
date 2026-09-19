@@ -1,0 +1,159 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Nav from '../components/ui/Nav.astro';
+import Footer from '../components/ui/Footer.astro';
+import { siteConfig } from '../config/site';
+import { baseHref } from '../lib/base';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  eyebrow?: string;
+  h1: string;
+  updated?: string;
+  summary?: string;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  eyebrow = 'Legal & Compliance',
+  h1,
+  updated = siteConfig.legalLastUpdated,
+  summary,
+} = Astro.props;
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${siteConfig.siteUrl}${baseHref('/')}` },
+      { '@type': 'ListItem', position: 2, name: title, item: `${siteConfig.siteUrl}${baseHref(canonical)}` },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} schema={schema}>
+  <Nav slot="nav" />
+  <div class="wrap py-12 sm:py-16 lg:py-20">
+    <article class="mx-auto max-w-[720px]">
+      <nav aria-label="Breadcrumbs" class="mb-4 text-xs font-semibold" style="color: var(--ink-soft);">
+        <a href={baseHref('/')} class="hover:underline">Home</a>
+        <span class="mx-1.5" aria-hidden="true">/</span>
+        <span style="color: var(--ink);">{h1}</span>
+      </nav>
+
+      <div class="border-b pb-6" style="border-color: var(--border);">
+        <p class="text-xs font-bold uppercase tracking-wider font-display" style="color: var(--ink);">{eyebrow}</p>
+        <h1 class="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl" style="color: var(--ink-strong);">{h1}</h1>
+        <p class="mt-2 text-xs font-mono" style="color: var(--ink-soft);">
+          Last updated: {updated}
+        </p>
+      </div>
+
+      {summary && (
+        <div
+          class="mt-6 rounded-xl p-5 text-sm leading-relaxed"
+          style="background-color: var(--surface); border: 1px solid var(--border); color: var(--ink);"
+        >
+          <strong class="font-semibold block mb-1" style="color: var(--ink-strong);">Summary in plain English:</strong>
+          <span>{summary}</span>
+        </div>
+      )}
+
+      <div class="legal-content mt-8 space-y-10 text-sm leading-relaxed" style="color: var(--ink);">
+        <slot />
+      </div>
+
+      <div class="mt-12 pt-6 border-t text-xs leading-relaxed" style="border-color: var(--border); color: var(--ink-soft);">
+        <p>
+          Questions regarding this policy? Open an issue on our
+          <a class="underline font-medium hover:text-[var(--ink)]" href={siteConfig.social.issues} target="_blank" rel="noopener noreferrer">GitHub Issue Tracker</a>
+          or contact {siteConfig.contactEmail}.
+        </p>
+      </div>
+    </article>
+  </div>
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style is:global>
+  .legal-content h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-top: 2.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--ink-strong);
+    letter-spacing: -0.015em;
+    scroll-margin-top: 5rem;
+  }
+  .legal-content h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--ink-strong);
+  }
+  .legal-content p {
+    margin-bottom: 1rem;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+  .legal-content ul, .legal-content ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+    color: var(--ink);
+  }
+  .legal-content ul {
+    list-style-type: disc;
+  }
+  .legal-content ol {
+    list-style-type: decimal;
+  }
+  .legal-content li {
+    margin-bottom: 0.5rem;
+    line-height: 1.65;
+  }
+  .legal-content strong {
+    color: var(--ink-strong);
+    font-weight: 600;
+  }
+  .legal-content a {
+    color: var(--ink);
+    text-decoration: underline;
+    font-weight: 500;
+  }
+  .legal-content a:hover {
+    color: var(--ink-strong);
+  }
+  .legal-content pre {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.82rem;
+    overflow-x: auto;
+    color: var(--ink-strong);
+    margin: 1rem 0 1.5rem 0;
+  }
+  .legal-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.85rem;
+  }
+  .legal-content th, .legal-content td {
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  .legal-content th {
+    background-color: var(--surface);
+    color: var(--ink-strong);
+    font-weight: 600;
+  }
+</style>

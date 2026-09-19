@@ -1,78 +1,163 @@
 ---
-// /privacy — rewritten 2026-09-13 as a documentary clause page (LegalDoc
-// layout) to match /terms. Content stays honest to what ships: CLI/hook are
-// fully local, the Action posts findings to your own PR, and there is no
-// server component at all. UIUX §8 / PRD §6.5 — the "code never leaves your
-// machine" promise, itemized instead of asserted.
-import LegalDoc from '../layouts/LegalDoc.astro';
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { siteConfig } from '../config/site';
 
-const clauses = [
-  {
-    id: 'your-code',
-    heading: 'Your code',
-    blocks: [
-      'The CLI, the console and the pre-commit hook perform static analysis entirely on your machine and send nothing anywhere. The rules engine runs from the pack embedded in the binary; there is no "phone home" call to disable because there is no call — the scanner links in no HTTP client at all.',
-      'The --online flag is reserved for a future package-intel lookup and does nothing in this build: it prints a notice and the scan continues fully offline. When it lands, it will send package names from your manifests to public registries to score slopsquatting risk — names out, file contents never — and it will stay opt-in.',
-      'In GitHub Action mode, analysis runs on your GitHub runner. What leaves the runner is the VibeCheck report: findings — file paths, rule IDs, symbol names, severities — posted as a comment on your own pull request using your own GITHUB_TOKEN. Secrets that match a pattern are redacted to four characters on each side before anything is printed or posted. There is no VibeShield server for that report to reach.',
-    ],
-  },
-  {
-    id: 'this-website',
-    heading: 'This website',
-    blocks: [
-      'No advertising cookies, no third-party trackers, no fingerprinting. Fonts are self-hosted, so a page view leaks nothing to Google.',
-      'The site is a GitHub Pages static build. It cannot see your code because your code is never sent to it.',
-    ],
-  },
-  {
-    id: 'accounts',
-    heading: 'Accounts',
-    blocks: [
-      'There is no VibeShield account to have — the tool is MIT-licensed, free, and runs without signup, a key, or a seat. There is no dashboard, no cloud API and no GitHub OAuth flow, because there is no server component. Nothing about you is stored anywhere, because there is nowhere to store it.',
-    ],
-  },
-  {
-    id: 'data-we-never-collect',
-    heading: 'What we never collect',
-    blocks: [
-      'A short list, because it is the point:',
-      {
-        list: [
-          'Your source code or file contents, in any mode.',
-          'Your package names — no lookup is performed in this build.',
-          'Your repository names, branch names, or finding history.',
-          'Keystrokes, editor telemetry, or anything resembling an IDE agent.',
-          'Personal profiles, cross-site identifiers, or contact lists for marketing.',
-        ],
-      },
-    ],
-  },
-  {
-    id: 'changes-to-this',
-    heading: 'Changes to this page',
-    blocks: [
-      'If the promise on this page ever changes, it is a product change worth an announcement, not a legal footnote worth a diff. The honest summary: we would rather tell you than update this quietly — and a security tool that does not keep its privacy promises does not deserve to run on your repos.',
-    ],
-  },
-  {
-    id: 'contact',
-    heading: 'Contact',
-    blocks: [
-      'Privacy questions go to GitHub issues — the scanner is one repo, the whole network surface is one grep away, and the answer is usually "there isn\'t any".',
-    ],
-  },
-];
+const title = "Privacy Policy — VibeShield";
+const description = "Privacy policy for VibeShield: zero code egress, no accounts, no cookies or tracking scripts, and verified local static analysis compliance.";
 ---
 
-<LegalDoc
-  title="Privacy"
-  description="What VibeShield stores and does not: no file contents in any mode, no trackers on this site, findings metadata only in Action mode, opt-in network lookups."
+<LegalLayout
+  title={title}
+  description={description}
   canonical="/privacy"
-  eyebrow="Legal"
-  h1="Privacy"
-  updated="September 13, 2026"
-  plainNote="The scanner is the product, and the scanner runs on your machine. The only network traffic this project generates is one you opt into (--online) or one that posts findings to your own pull request. Everything below is an expansion of that sentence, not an exception to it."
-  clauses={clauses}
-  crossLink="/terms"
-  crossLabel="See also: Terms"
-/>
+  eyebrow="Privacy & Data Protection"
+  h1="Privacy Policy"
+  updated={siteConfig.legalLastUpdated}
+  summary="VibeShield is an open-source static code analysis scanner that runs 100% locally on your machine or CI runner. We do not operate a backend server, we do not collect telemetry, we set no cookies, and we never receive, store, or train on your source code or credentials."
+>
+  <section id="introduction">
+    <h2>1. Introduction & Operator Identity</h2>
+    <p>
+      This Privacy Policy explains how <strong>{siteConfig.legalName}</strong> ("VibeShield", "we", "us", or "our") handles information in connection with the VibeShield static security scanner CLI, GitHub Action, pre-commit hook, and the website located at <code>{siteConfig.siteUrl}</code>.
+    </p>
+    <p>
+      Our fundamental design principle is zero data exfiltration. Unlike cloud-based code review platforms, VibeShield is engineered as an offline-first tool that analyzes code directly inside your local environment without network transmission.
+    </p>
+  </section>
+
+  <section id="code-handling">
+    <h2>2. How Source Code and Data Are Handled</h2>
+    <p>
+      Based strictly on our codebase architecture:
+    </p>
+    <ul>
+      <li>
+        <strong>Local Analysis (CLI, npm launcher, pre-commit hook):</strong> The Go binary compiles rule packs directly into the executable. Scanning consists entirely of in-memory abstract syntax tree (AST) traversal and regular expression pattern matching. The scanner links no HTTP networking client for outbound code transfer.
+      </li>
+      <li>
+        <strong>CI/CD Mode (GitHub Action):</strong> The action executes entirely within your self-hosted or GitHub-hosted runner. Findings are posted directly as a review comment on your own pull request using your repository's native <code>GITHUB_TOKEN</code>. No findings or code snippets are transmitted to VibeShield.
+      </li>
+      <li>
+        <strong>Automatic Secret Redaction:</strong> When a potential credential or API key is detected, VibeShield automatically redacts the secret string, retaining only four characters on each side, prior to printing to console or PR comments.
+      </li>
+      <li>
+        <strong>The <code>--online</code> Flag:</strong> This CLI flag is currently reserved for future package registry lookups. In the current release (v3.0.0), it prints an informational message and performs the scan entirely offline.
+      </li>
+      <li>
+        <strong>No AI Model Training:</strong> Because no code or prompts are transmitted to us, your proprietary source code, secrets, and repository structure are never stored, logged, or used to train AI models.
+      </li>
+    </ul>
+  </section>
+
+  <section id="website-data">
+    <h2>3. Website Information Collection</h2>
+    <p>
+      Our public website is hosted as a static site via GitHub Pages:
+    </p>
+    <ul>
+      <li><strong>Forms & Sign-ups:</strong> The site contains zero forms, newsletter sign-ups, waitlists, account registrations, or payment portals.</li>
+      <li><strong>Analytics & Tracking:</strong> We do not use Google Analytics, PostHog, Plausible, tracking pixels, or cross-site fingerprinting scripts.</li>
+      <li><strong>Local Storage:</strong> Our client scripts do not write to or read from <code>localStorage</code> or <code>sessionStorage</code>.</li>
+      <li><strong>Hosting Server Logs:</strong> As with standard web traffic, our hosting provider, GitHub Inc. (88 Colin P Kelly Jr St, San Francisco, CA 94107, USA), processes standard web server access logs (such as visitor IP addresses, browser types, referring pages, and access timestamps) to deliver the site and maintain infrastructure security in accordance with the GitHub Privacy Statement.</li>
+    </ul>
+  </section>
+
+  <section id="cookies">
+    <h2>4. Cookies & Tracking Technologies</h2>
+    <p>
+      VibeShield sets <strong>zero first-party cookies</strong> and loads no third-party marketing or advertising cookies. Because we do not use non-essential cookies, no cookie consent banner is required or presented.
+    </p>
+  </section>
+
+  <section id="third-parties">
+    <h2>5. Third-Party Services</h2>
+    <p>We minimize external dependencies to the absolute bare minimum:</p>
+    <ul>
+      <li><strong>Google Fonts (CDN):</strong> The site requests web fonts (Outfit and Plus Jakarta Sans) from Google CDN (<code>fonts.googleapis.com</code> and <code>fonts.gstatic.com</code>). Your browser transmits your IP address and standard HTTP request headers to Google to fetch font stylesheets.</li>
+      <li><strong>GitHub:</strong> Used for repository hosting, documentation hosting, issue tracking, and release binary downloads. Interactions on GitHub are governed by GitHub's Terms of Service and Privacy Statement.</li>
+    </ul>
+  </section>
+
+  <section id="legal-basis">
+    <h2>6. Legal Basis for Processing</h2>
+    <p>
+      To the extent any technical data (such as server IP addresses in hosting logs) constitutes personal data under applicable laws:
+    </p>
+    <ul>
+      <li><strong>Legitimate Interests:</strong> Processing is strictly necessary for our legitimate interest in providing reliable open-source software, protecting website security, and maintaining site availability.</li>
+      <li><strong>Contract Performance / Consent:</strong> Where you voluntarily open a GitHub issue or contact us via email, processing of your correspondence is based on your explicit request and communication.</li>
+    </ul>
+  </section>
+
+  <section id="retention">
+    <h2>7. Data Retention</h2>
+    <p>
+      VibeShield maintains no central database or user accounts. We retain zero personal data, source code, or scan telemetry. Any communications sent to our contact email or posted publicly to our GitHub repository remain visible or archived in accordance with standard communication records or until you request deletion.
+    </p>
+  </section>
+
+  <section id="user-rights">
+    <h2>8. Your Privacy Rights</h2>
+    <p>
+      Depending on your jurisdiction, you have specific statutory rights regarding personal data:
+    </p>
+    <h3>A. Republic of India (Digital Personal Data Protection Act, 2023 - DPDP)</h3>
+    <p>
+      Under the DPDP Act 2023, data principals have the right to:
+    </p>
+    <ul>
+      <li>Obtain a summary of personal data processed (noting that VibeShield processes zero personal data through its tools).</li>
+      <li>Seek correction, completion, or erasure of personal data provided in direct communications.</li>
+      <li>Nominate another individual in the event of death or incapacity.</li>
+      <li>Access grievance redressal mechanisms by contacting our Grievance contact at <code>{siteConfig.contactEmail}</code>.</li>
+    </ul>
+
+    <h3>B. European Union & United Kingdom (GDPR / UK GDPR)</h3>
+    <p>
+      Under Articles 15–22 of the GDPR, European residents have the right to request access to, rectification of, or erasure of their personal data; object to processing; and lodge a complaint with their local supervisory authority.
+    </p>
+
+    <h3>C. California & United States Residents (CCPA / CPRA)</h3>
+    <p>
+      Under the California Consumer Privacy Act (CCPA):
+    </p>
+    <ul>
+      <li>We do not "sell" or "share" personal information or sensitive personal information.</li>
+      <li>You have the right to know what personal information is collected, request deletion, and not be discriminated against for exercising privacy rights.</li>
+    </ul>
+  </section>
+
+  <section id="children">
+    <h2>9. Children's Privacy</h2>
+    <p>
+      VibeShield is a developer security utility intended for software engineers and IT professionals. It is not directed at or marketed to children under 18 years of age (under the India DPDP Act) or children under 13/16 years of age under US COPPA and GDPR. We do not knowingly collect personal data from minors.
+    </p>
+  </section>
+
+  <section id="international">
+    <h2>10. International Visitors</h2>
+    <p>
+      The operator of VibeShield is based in India ({siteConfig.governingLaw}). Website hosting infrastructure is provided by GitHub Inc. in the United States. If you access our site from outside these jurisdictions, note that technical connection data is transferred internationally in accordance with standard internet routing.
+    </p>
+  </section>
+
+  <section id="changes">
+    <h2>11. Changes to this Policy</h2>
+    <p>
+      We may update this Privacy Policy from time to time to reflect operational or legal updates. When changes are made, the "Last updated" date at the top of this document will be updated. Continued use of the software or site following an update indicates acceptance of the revised terms.
+    </p>
+  </section>
+
+  <section id="contact">
+    <h2>12. Contact & Grievance Officer</h2>
+    <p>
+      For questions, requests, or privacy inquiries regarding this policy:
+    </p>
+    <ul>
+      <li><strong>Legal / Contact Email:</strong> <code>{siteConfig.contactEmail}</code></li>
+      <li><strong>Operator:</strong> {siteConfig.legalName}</li>
+      <li><strong>Physical Address:</strong> {siteConfig.address}</li>
+      <li><strong>Public Issues:</strong> <a href={siteConfig.social.issues} target="_blank" rel="noopener noreferrer">{siteConfig.social.issues}</a></li>
+    </ul>
+  </section>
+</LegalLayout>

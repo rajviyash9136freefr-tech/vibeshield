@@ -1,86 +1,9 @@
 ---
-// /terms — the project's terms of use, in clause form. Content is honest to
-// what actually ships (MIT OSS, no paid tiers, no hosted obligation — see
-// PRD §8 and CLAUDE.md's distribution model). Legal pages obey UIUX §7 like
-// everything else: blame patterns, numbers over adjectives, no fear-mongering.
-import LegalDoc from '../layouts/LegalDoc.astro';
-import { SITE } from '../data/site';
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { siteConfig } from '../config/site';
 
-const clauses = [
-  {
-    id: 'acceptance',
-    heading: 'Acceptance',
-    blocks: [
-      'VibeShield — the scanner binary, the GitHub Action, the pre-commit hook, the npm launcher, and every rules pack in this repository — is free, open-source software released under the MIT License. There is no contract to sign and no terms to click through to run it. By using the software you are agreeing that this page accurately describes what it does: a static analyzer that reads your files, pattern-matches them against public rules, and prints what it finds.',
-      'The legal license text is the MIT license itself, reproduced at the bottom of this page and in the LICENSE file in the repository. Everything above the license line on this page is a plain-language guide to it — helpful, but not the operative text.',
-    ],
-  },
-  {
-    id: 'the-license',
-    heading: 'What the MIT license gives you',
-    blocks: [
-      'You may use VibeShield on any codebase — personal, commercial, public, or private — at no cost and without attribution obligations. You may modify it, fork it, recompile it with your own rules, and ship the result inside your company. You may quote its output in your own documentation or blog. The only substantive condition is that redistributed copies of the software itself keep the copyright and license notice.',
-      'Your findings are yours. Scan output — JSON, SARIF, PR comments, badge images — carries no license restrictions from us; publish it, delete it, or keep it under NDA as your situation requires.',
-    ],
-  },
-  {
-    id: 'no-warranty',
-    heading: 'No warranty — stated plainly',
-    blocks: [
-      'The software is provided "as is", without warranty of any kind, express or implied, including merchantability and fitness for a particular purpose. In practice this means a few concrete things, none of them hidden:',
-      {
-        list: [
-          'A clean scan is not a guarantee of security. The ruleset covers ~120 known AI-code failure modes across 8 languages; it does not cover the ones nobody has catalogued yet, and it is not a substitute for a human who reads the diff.',
-          'The maintainers are not liable for losses arising from use of the tool — including the costs of a missed finding or a false-positive delay. This is the standard MIT limitation; we are stating it, not burying it.',
-          'Release tags, rule-pack versions, and the Action are provided without an SLA. Support is community-first: GitHub issues, read by the people who write the rules.',
-        ],
-      },
-    ],
-  },
-  {
-    id: 'your-obligations',
-    heading: 'What we ask you to do',
-    blocks: [
-      'The tool is only honest if its users are, so three asks:',
-      {
-        list: [
-          'Treat findings as advice, not verdicts. Every finding carries a why and a suggested fix; a human who understands the code makes the accept/dismiss call. The dismiss flow writes an auditable reason precisely so the judgement is yours and provably yours later.',
-          'Do not use the name, the shield logo, or the badge to imply endorsement by the maintainers or by any vendor VibeShield happens to scan. The badge states a scan result, not a relationship.',
-          'If you redistribute a modified scanner, make clear it is a fork. Security tooling that silently diverges from its upstream helps nobody.',
-        ],
-      },
-    ],
-  },
-  {
-    id: 'trademarks',
-    heading: 'Names and trademarks',
-    blocks: [
-      '“VibeShield” and the shield mark belong to this project and are used here only to describe it. Cursor, Copilot, Claude Code, Windsurf, Aider, Devin, Snyk, Socket, Semgrep, Dependabot, and Gitleaks are trademarks of their respective owners; when they appear on this site it is factual compatibility or comparison, never an endorsement in either direction.',
-    ],
-  },
-  {
-    id: 'the-site',
-    heading: 'This website',
-    blocks: [
-      'This site and its GitHub Pages deployment are informational and also MIT-licensed source. Docs and blog posts describe the behavior of the release they were written against; when code and documentation disagree, the code in the repository wins and we consider the docs buggy — tell us and we fix them.',
-      'Privacy for this site and the product is governed by the privacy page, which we keep as short and honest as this one.',
-    ],
-  },
-  {
-    id: 'changes',
-    heading: 'How this document changes',
-    blocks: [
-      'If the project ever stops being free and open source (the maintainers see no reason it would), this page changes first and the license changes with it. For an MIT-licensed tool, “changes to these terms” is mostly a restatement of the license — so the honest summary is: the license in the repo is the deal, and this page is the human-readable translation of it.',
-    ],
-  },
-  {
-    id: 'contact',
-    heading: 'Contact',
-    blocks: [
-      'Questions about licensing or redistribution: open a GitHub issue. For anything about vulnerabilities in the tool itself, use the private advisory flow instead — the disclosure policy on the security page explains why and how fast you get a reply.',
-    ],
-  },
-];
+const title = "Terms of Service — VibeShield";
+const description = "Terms of service and MIT license terms for VibeShield: open source usage rights, warranty disclaimers, liability limitations, and governing law.";
 
 const mitText = `Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -101,25 +24,133 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.`;
 ---
 
-<LegalDoc
-  title="Terms"
-  description="The terms of use for VibeShield, in clauses a human wrote: what the MIT license gives you, what a clean scan does not guarantee, and what the project asks in return."
+<LegalLayout
+  title={title}
+  description={description}
   canonical="/terms"
-  eyebrow="Legal"
-  h1="Terms"
-  updated="September 13, 2026"
-  plainNote="VibeShield is free, MIT-licensed software. You can use it on anything, including closed commercial code. In exchange, the tool makes no promises it cannot keep — and neither do we. The binding text is the MIT license; this page is that text with the Latin removed."
-  clauses={clauses}
-  crossLink="/privacy"
-  crossLabel="See also: Privacy"
+  eyebrow="Terms of Use & License"
+  h1="Terms of Service"
+  updated={siteConfig.legalLastUpdated}
+  summary="VibeShield is free and open-source software distributed under the permissive MIT License. You can run, fork, and inspect code on any personal or commercial project without cost. The software is provided 'AS IS' with no warranty and no liability for missed findings or false positives."
 >
-  <div slot="tail">
-    <h2 class="mt-4 text-[22px] font-semibold">The license text, verbatim</h2>
-    <pre class="scroll-x fade-x mt-4 rounded-[var(--radius-card)] border border-[var(--color-hairline)] bg-[var(--color-elevated)] p-5 font-mono text-[13px] leading-[1.7] text-[var(--color-muted)]">MIT License
+  <section id="agreement">
+    <h2>1. Agreement to Terms</h2>
+    <p>
+      These Terms of Service ("Terms") constitute a legally binding agreement between you ("User", "you", or "your") and <strong>{siteConfig.legalName}</strong> ("VibeShield", "we", "us", or "our"), governing your access to and use of the VibeShield static analysis CLI, GitHub Action, npm packages, rulesets, and documentation website located at <code>{siteConfig.siteUrl}</code>.
+    </p>
+    <p>
+      By downloading, compiling, installing, running, or accessing VibeShield, you acknowledge that you have read, understood, and agree to be bound by these Terms and the MIT License.
+    </p>
+  </section>
 
-Copyright (c) 2026 VibeShield contributors
+  <section id="service-description">
+    <h2>2. Description of Service</h2>
+    <p>
+      VibeShield is a developer security utility providing offline static code analysis designed to inspect AI-generated code, configuration files, and package manifests for common security risks, including hallucinated dependency names (slopsquatting), hardcoded secrets, and insecure default configurations.
+    </p>
+  </section>
 
-{mitText}</pre>
-    <p class="mt-3 text-sm text-[var(--color-faint)]">Source: <a class="text-[var(--color-accent)] hover:underline" href={`${SITE.repo}/blob/main/LICENSE`}>{SITE.repo}/LICENSE</a>.</p>
-  </div>
-</LegalDoc>
+  <section id="license-rights">
+    <h2>3. Open Source License & Intellectual Property</h2>
+    <p>
+      The core source code, binaries, rulesets, and documentation of VibeShield are released under the terms of the <strong>MIT License</strong>.
+    </p>
+    <ul>
+      <li><strong>Your Code Ownership:</strong> You retain 100% intellectual property ownership of any source code, repositories, commits, and scan output processed by VibeShield. We claim zero ownership or rights over your code.</li>
+      <li><strong>Permitted Uses:</strong> Subject to the MIT License, you are permitted to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software in personal, commercial, educational, or closed-source enterprise projects.</li>
+      <li><strong>Notice Requirement:</strong> The copyright notice and license text reproduced below must be retained in any substantial portions of the software redistribution.</li>
+    </ul>
+  </section>
+
+  <section id="acceptable-use">
+    <h2>4. Acceptable Use</h2>
+    <p>You agree to use VibeShield only for lawful purposes. You shall not:</p>
+    <ul>
+      <li>Use VibeShield to intentionally conduct malicious cyber activities, distribute trojans or malware, or violate applicable local, national, or international laws.</li>
+      <li>Falsely state or imply that the maintainers or contributors of VibeShield endorse, sponsor, or guarantee your software applications or security posture.</li>
+      <li>Misrepresent the findings or certification status of software scanned with VibeShield.</li>
+    </ul>
+  </section>
+
+  <section id="accounts">
+    <h2>5. User Accounts & Payments</h2>
+    <p>
+      VibeShield requires <strong>no user registration, accounts, passwords, or subscriptions</strong>. The tool is free of charge. There are no paid tiers, enterprise subscriptions, or payment processing gateways associated with the project.
+    </p>
+  </section>
+
+  <section id="no-guarantee">
+    <h2>6. Security Disclaimer: No Guarantee of Completeness</h2>
+    <p>
+      <strong>A clean VibeShield scan is NOT a guarantee of complete security or flawless code.</strong>
+    </p>
+    <p>
+      Static analysis is inherently heuristic and pattern-based. VibeShield checks code against a curated set of rules targeting known vulnerability patterns and AI hallucination failure modes. It cannot detect zero-day exploits, novel attack vectors, complex logical flaws outside its rule pack, or runtime vulnerabilities.
+    </p>
+    <p>
+      VibeShield is intended as an automated advisory aid. It is never a substitute for comprehensive manual code audits, penetration testing, architectural review, or human developer diligence.
+    </p>
+  </section>
+
+  <section id="warranty-disclaimer">
+    <h2>7. Disclaimer of Warranties</h2>
+    <p>
+      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+    </p>
+    <p>
+      NEITHER VIBESHIELD NOR ITS CONTRIBUTORS WARRANT THAT THE OPERATION OF THE SCANNER WILL BE UNINTERRUPTED, ERROR-FREE, ACCURATE, OR COMPATIBLE WITH ALL PLATFORMS, COMPILERS, OR CODING AGENTS.
+    </p>
+  </section>
+
+  <section id="limitation-liability">
+    <h2>8. Limitation of Liability</h2>
+    <p>
+      TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL THE AUTHORS, MAINTAINERS, OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE, OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    </p>
+    <p>
+      THIS INCLUDES, WITHOUT LIMITATION, DAMAGES FOR LOST PROFITS, DATA LOSS, COMPROMISED SYSTEMS, CI/CD DELAYS, MISSED SECURITY VULNERABILITIES, OR FALSE-POSITIVE BLOCKERS.
+    </p>
+  </section>
+
+  <section id="termination">
+    <h2>9. Termination</h2>
+    <p>
+      You may terminate this agreement at any time simply by discontinuing all use of VibeShield and removing the software from your systems. As an offline open-source tool, your rights under the MIT License remain in effect in accordance with the license conditions.
+    </p>
+  </section>
+
+  <section id="governing-law">
+    <h2>10. Governing Law & Dispute Resolution</h2>
+    <p>
+      These Terms and any disputes arising out of or related to your use of the website or software shall be governed by and construed in accordance with the <strong>{siteConfig.governingLaw}</strong>, without giving effect to any principles of conflicts of law.
+    </p>
+  </section>
+
+  <section id="modifications">
+    <h2>11. Modifications to Terms</h2>
+    <p>
+      We reserve the right to revise these Terms at any time by updating this webpage. The "Last updated" date at the top reflects the most recent revision. Your continued use of the website or tools following the posting of changes constitutes your acceptance of such changes.
+    </p>
+  </section>
+
+  <section id="mit-license-text">
+    <h2>12. Full MIT License Text</h2>
+    <pre><code>MIT License
+
+Copyright (c) 2026 {siteConfig.legalName}
+
+{mitText}</code></pre>
+  </section>
+
+  <section id="contact">
+    <h2>13. Contact Information</h2>
+    <p>
+      If you have questions regarding these Terms or licensing, please reach out via:
+    </p>
+    <ul>
+      <li><strong>Email:</strong> <code>{siteConfig.contactEmail}</code></li>
+      <li><strong>Repository Issues:</strong> <a href={siteConfig.social.issues} target="_blank" rel="noopener noreferrer">{siteConfig.social.issues}</a></li>
+      <li><strong>Address:</strong> {siteConfig.address}</li>
+    </ul>
+  </section>
+</LegalLayout>
