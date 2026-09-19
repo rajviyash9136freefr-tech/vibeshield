@@ -169,7 +169,7 @@ const schema = [
 
       <!-- Useful Performance & Architecture Guarantee Card -->
       <div data-reveal>
-        <div class="card relative overflow-hidden p-8" data-tilt="4">
+        <div class="card relative overflow-hidden p-8">
           <div class="flex items-center gap-2 mb-4">
             <span class="h-2 w-2 rounded-full bg-white animate-pulse"></span>
             <span class="font-mono text-xs uppercase tracking-widest text-white/50">Performance & Security Law</span>
@@ -216,7 +216,7 @@ const schema = [
       <div class="mt-12 space-y-6">
         {DOORS.map((d, i) => (
           <div data-reveal style={`--reveal-delay: ${Math.min(i, 4) * 40}ms`}>
-            <div class="card grid gap-6 p-6 lg:grid-cols-[minmax(0,34%)_minmax(0,66%)] lg:p-8" data-tilt="2">
+            <div class="card grid gap-6 p-6 lg:grid-cols-[minmax(0,34%)_minmax(0,66%)] lg:p-8">
               <div>
                 <p class="eyebrow">{String(i + 1).padStart(2, '0')} · {d.kicker}</p>
                 <h3 class="mt-2 text-[20px] font-semibold leading-snug">{d.h3}</h3>
@@ -250,7 +250,7 @@ const schema = [
         </ul>
       </div>
       <div data-reveal>
-        <div class="card relative overflow-hidden" data-tilt="3">
+        <div class="card relative overflow-hidden">
           <div class="flex items-center justify-between gap-2 border-b border-[var(--color-hairline)] px-4 py-3">
             <span class="font-mono text-[13px] text-[var(--color-muted)]">terminal — your-project</span>
           </div>
