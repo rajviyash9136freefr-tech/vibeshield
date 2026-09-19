@@ -1,5 +1,5 @@
 ---
-import { SITE } from '../data/site';
+import { siteConfig } from '../config/site';
 import { baseHref } from '../lib/base';
 import '@fontsource-variable/geist';
 import '@fontsource-variable/inter';
@@ -11,24 +11,47 @@ interface Props {
   description?: string;
   /** Absolute or root-relative canonical override. */
   canonical?: string;
-  /** JSON-LD graph objects to embed (UIUX §9.3). */
+  /** JSON-LD graph objects to embed. */
   schema?: object[];
-  /** OG image path, default /og.png (UIUX §8: one per key page). */
+  /** OG image path, default /og.png. */
   ogImage?: string;
   bodyClass?: string;
+  /** Whether to exclude this page from search engine index. */
+  noindex?: boolean;
 }
 
 const {
-  title = SITE.title,
-  description = SITE.description,
+  title = siteConfig.defaultTitle,
+  description = siteConfig.defaultDescription,
   canonical,
   schema = [],
   ogImage = '/og.png',
   bodyClass = '',
+  noindex = false,
 } = Astro.props;
 
-const canonicalURL = new URL(baseHref(canonical ?? Astro.url.pathname), SITE.url).href;
-const ogURL = new URL(baseHref(ogImage), SITE.url).href;
+const canonicalURL = new URL(baseHref(canonical ?? Astro.url.pathname), siteConfig.siteUrl).href;
+const ogURL = new URL(baseHref(ogImage), siteConfig.siteUrl).href;
+
+const defaultSchemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: siteConfig.siteName,
+    url: `${siteConfig.siteUrl}${baseHref('/')}`,
+    logo: `${siteConfig.siteUrl}${baseHref('/shield.svg')}`,
+    sameAs: [siteConfig.social.github],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: siteConfig.siteName,
+    url: `${siteConfig.siteUrl}${baseHref('/')}`,
+    description: siteConfig.defaultDescription,
+  },
+];
+
+const combinedSchema = [...defaultSchemas, ...schema];
 ---
 
 <!doctype html>
@@ -37,10 +60,24 @@ const ogURL = new URL(baseHref(ogImage), SITE.url).href;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow'} />
     <meta name="theme-color" content="#f8f7e2" />
+
+    <!-- Resource Hints & Font Preload -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Canonical & Feeds -->
     <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href={baseHref('/shield.svg')} />
     <link rel="sitemap" href={baseHref('/sitemap-index.xml')} />
@@ -51,21 +88,25 @@ const ogURL = new URL(baseHref(ogImage), SITE.url).href;
       href={baseHref('/rss.xml')}
     />
 
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="VibeShield" />
+    <meta property="og:site_name" content={siteConfig.siteName} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:image" content={ogURL} />
+
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogURL} />
 
-    {schema.length > 0 && (
-      <script
-        type="application/ld+json"
-        set:html={JSON.stringify(schema.length === 1 ? schema[0] : schema)}
-      />
-    )}
+    <!-- Structured Data -->
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(combinedSchema.length === 1 ? combinedSchema[0] : combinedSchema)}
+    />
   </head>
   <body class={bodyClass}>
     <a class="skip-link" href="#main">Skip to content</a>

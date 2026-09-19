@@ -53,14 +53,6 @@ const DOC_GROUPS: { label: string; items: [string, string][] }[] = [
 const schema = [
   {
     '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: 'VibeShield',
-    url: SITE.url,
-    logo: `${SITE.url}${baseHref('/shield.svg')}`,
-    sameAs: [SITE.repo],
-  },
-  {
-    '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Docs', item: `${SITE.url}${baseHref('/docs')}` },

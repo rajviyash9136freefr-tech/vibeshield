@@ -5,7 +5,12 @@ import Footer from '../components/ui/Footer.astro';
 import { baseHref } from '../lib/base';
 ---
 
-<BaseLayout title="404 — Route Not Found | VibeShield" canonical="/404">
+<BaseLayout
+  title="404 — Page Not Found | VibeShield"
+  description="The requested page could not be found. Return to VibeShield home or browse documentation."
+  canonical="/404"
+  noindex={true}
+>
   <Nav slot="nav" />
 
   <main id="main" class="relative min-h-[75vh] flex items-center justify-center py-20" style="background: var(--bg); color: var(--ink);">
