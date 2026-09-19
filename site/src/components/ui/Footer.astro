@@ -77,6 +77,31 @@ import { baseHref } from '../../lib/base';
       style="border-top: 1px solid var(--border-on-ink); color: var(--on-ink-soft);"
     >
       <span>{FOOTER.bottom}</span>
+      <div class="flex items-center gap-3">
+        <a
+          href={baseHref('/privacy')}
+          class="hover:underline transition-colors"
+          style="color: var(--on-ink-soft);"
+          onmouseover="this.style.color='var(--on-ink)'"
+          onmouseout="this.style.color='var(--on-ink-soft)'"
+        >Privacy</a>
+        <span aria-hidden="true" style="color: var(--border-on-ink)">·</span>
+        <a
+          href={baseHref('/terms')}
+          class="hover:underline transition-colors"
+          style="color: var(--on-ink-soft);"
+          onmouseover="this.style.color='var(--on-ink)'"
+          onmouseout="this.style.color='var(--on-ink-soft)'"
+        >Terms</a>
+        <span aria-hidden="true" style="color: var(--border-on-ink)">·</span>
+        <a
+          href={baseHref('/security')}
+          class="hover:underline transition-colors"
+          style="color: var(--on-ink-soft);"
+          onmouseover="this.style.color='var(--on-ink)'"
+          onmouseout="this.style.color='var(--on-ink-soft)'"
+        >Security</a>
+      </div>
       <span class="flex items-center gap-2">
         <span class="h-1.5 w-1.5 rounded-full" style="background: var(--ok-on-ink)"></span>
         <span>100% Local &amp; Offline · Zero Network Egress</span>

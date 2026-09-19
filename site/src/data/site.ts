@@ -1,15 +1,11 @@
-// Ship-ready copy from PRD.md §7.2 / §8 and UIUX.md §3. The specs are the
-// source of truth — keep FAQ text identical here and in the rendered HTML
-// (UIUX §9.4: Google cross-checks JSON-LD against visible text).
+import { siteConfig } from '../config/site';
 
 export const SITE = {
-  name: 'VibeShield',
-  // GitHub Pages origin — see site/astro.config.mjs (base = /vibeshield/).
-  url: 'https://rajviyash9136freefr-tech.github.io',
-  title: 'VibeShield — Bug Hunter & Tester for AI Vibe Coding | Cursor, Claude, Copilot',
-  description:
-    'Test your vibe-coded apps, hunt down hallucinated packages, logic bugs, and secret leaks, and fix them in seconds. Works inside Cursor, Claude Code, GitHub Copilot, and Windsurf.',
-  repo: 'https://github.com/rajviyash9136freefr-tech/vibeshield',
+  name: siteConfig.siteName,
+  url: siteConfig.siteUrl,
+  title: siteConfig.defaultTitle,
+  description: siteConfig.defaultDescription,
+  repo: siteConfig.social.repo,
 };
 
 export const NAV = [
@@ -215,7 +211,7 @@ export const FAQ: { q: string; a: string; link?: [string, string] }[] = [
   {
     q: 'Is VibeShield free, and can I use it for private repositories?',
     a: 'Yes. VibeShield is 100% free and open-source under the MIT license. There are no paid tiers, no seat limits, no tokens, and no account required. You can freely use it on unlimited personal, public, and private commercial repositories forever.',
-    link: ['View GitHub Repository', SITE.repo],
+    link: ['View GitHub Repository', siteConfig.social.repo],
   },
 ];
 
@@ -243,25 +239,24 @@ export const FOOTER = {
       ] as [string, string][],
     },
     {
-      title: 'Agents Supported',
+      title: 'Trust & Legal',
       links: [
-        ['Cursor (.cursorrules)', '/#agents'],
-        ['Claude Code (/plugin)', '/#agents'],
-        ['Windsurf (.windsurfrules)', '/#agents'],
-        ['GitHub Copilot Gate', '/#agents'],
-        ['Terminal / Aider', '/#how-to-scan'],
+        ['Privacy Policy', '/privacy'],
+        ['Terms of Use', '/terms'],
+        ['Security & Threat Model', '/security'],
+        ['Vulnerability Disclosure', '/security#disclosure'],
       ] as [string, string][],
     },
     {
       title: 'Open Source',
       links: [
-        ['GitHub Repository', 'https://github.com/rajviyash9136freefr-tech/vibeshield'],
-        ['Issue Tracker', 'https://github.com/rajviyash9136freefr-tech/vibeshield/issues'],
-        ['Discussions', 'https://github.com/rajviyash9136freefr-tech/vibeshield/discussions'],
-        ['Releases & Binaries', 'https://github.com/rajviyash9136freefr-tech/vibeshield/releases'],
-        ['MIT License', 'https://github.com/rajviyash9136freefr-tech/vibeshield/blob/main/LICENSE'],
+        ['GitHub Repository', siteConfig.social.github],
+        ['Issue Tracker', siteConfig.social.issues],
+        ['Security Advisories', siteConfig.social.securityAdvisories],
+        ['MIT License', siteConfig.social.license],
       ] as [string, string][],
     },
   ],
   bottom: '© 2026 VibeShield · Bug Hunter & Tester for AI Vibe Coding · Free & Open Source under MIT License',
 };
+
