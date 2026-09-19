@@ -37,7 +37,7 @@ const ogURL = new URL(baseHref(ogImage), SITE.url).href;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
-    <meta name="theme-color" content="#181b30" />
+    <meta name="theme-color" content="#f8f7e2" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
@@ -66,35 +66,14 @@ const ogURL = new URL(baseHref(ogImage), SITE.url).href;
         set:html={JSON.stringify(schema.length === 1 ? schema[0] : schema)}
       />
     )}
-
-    <script is:inline>
-      // Pre-paint: mark reduced-motion so entrances and the hero loop stay off.
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        document.documentElement.dataset.reducedMotion = '1';
-      }
-    </script>
-    {/* Without JS, [data-reveal] would sit at opacity 0 forever — show everything. */}
-    <noscript>
-      <style>
-        [data-reveal] { opacity: 1 !important; transform: none !important; }
-      </style>
-    </noscript>
   </head>
   <body class={bodyClass}>
-    <div class="scroll-progress" aria-hidden="true"></div>
-    <div class="ambient-flashlight" aria-hidden="true"></div>
-    <!-- Bespoke Aero Reticle Cursor (Fine-Pointer Desktop Only) -->
-    <div id="cursor-dot" class="pointer-events-none fixed top-0 left-0 z-[9999] h-1.5 w-1.5 -ml-[3px] -mt-[3px] rounded-full bg-white opacity-0 transition-opacity duration-150" aria-hidden="true"></div>
-    <div id="cursor-aura" class="pointer-events-none fixed top-0 left-0 z-[9998] h-8 w-8 -ml-4 -mt-4 rounded-full opacity-0 transition-opacity duration-150" aria-hidden="true"></div>
     <a class="skip-link" href="#main">Skip to content</a>
     <slot name="nav" />
     <main id="main" class="pt-16 sm:pt-20">
       <slot />
     </main>
     <slot name="footer" />
-    <script src="../scripts/reveal.ts"></script>
     <script src="../scripts/copy.ts"></script>
-    <script src="../scripts/motion.ts"></script>
-    <script src="../scripts/scroll-cinematic.ts"></script>
   </body>
 </html>

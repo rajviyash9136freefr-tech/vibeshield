@@ -1,119 +1,68 @@
 ---
 /**
- * Hero demo (UIUX §3.2): a monospace terminal card that "types" a VibeCheck
- * run. Signature motion = the only looping animation.
- * Recreated with Apple Pro obsidian glass & stark titanium monochrome syntax.
+ * Professional Light Terminal — East Bay & Rum Swizzle
+ * Static, high-contrast, zero-delay terminal display showing VibeShield
+ * detecting hallucinated packages and leaked secrets with instant atomic fixes.
  */
-import { DEMO_LINES } from '../../data/site';
-
-function lineClass(cls: string): string {
-  switch (cls) {
-    case 'accent': return 'text-[#f8f7e2] font-bold';
-    case 'muted': return 'text-[#f8f7e2]/70';
-    case 'faint': return 'text-[#f8f7e2]/45';
-    case 'critical': return 'font-bold text-[#474c80] bg-[#f8f7e2] px-1.5 py-0.5 rounded';
-    case 'high': return 'font-bold text-[#f8f7e2] bg-[#474c80] border border-[rgba(248,247,226,0.3)] px-1.5 py-0.5 rounded';
-    case 'ok': return 'text-[#f8f7e2] font-semibold';
-    case 'fg': return 'text-[#f8f7e2]/90';
-    default: return 'text-[#f8f7e2]/80';
-  }
-}
-const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-const initialHtml = DEMO_LINES.map(
-  (l) => `<span class="${lineClass(l.cls)}">${esc(l.text) || '&nbsp;'}</span>`,
-).join('\n');
 ---
 
 <div
-  class="card overflow-hidden rounded-2xl border border-[rgba(248,247,226,0.18)] bg-gradient-to-b from-[#25294a] to-[#16182c] shadow-[0_20px_50px_-15px_rgba(19,22,39,0.95)]"
-  data-tilt="5"
-  data-tilt-hero
-  role="img"
-  aria-label="Terminal showing a VibeShield scan: one critical hallucinated-package finding and one high hardcoded-secret finding, 11 files clean"
+  class="overflow-hidden rounded-2xl border border-[rgba(71,76,128,0.22)] bg-white shadow-[0_8px_30px_rgba(71,76,128,0.08)]"
+  role="region"
+  aria-label="VibeShield Terminal Audit Preview"
 >
   <!-- Window Control Bar -->
-  <div class="flex items-center justify-between border-b border-[rgba(248,247,226,0.12)] px-4 py-3 bg-[rgba(248,247,226,0.03)]">
+  <div class="flex items-center justify-between border-b border-[rgba(71,76,128,0.12)] px-4 py-3 bg-[#faf9f0]">
     <div class="flex items-center gap-2">
-      <span class="h-2.5 w-2.5 rounded-full bg-[rgba(248,247,226,0.35)]" aria-hidden="true"></span>
-      <span class="h-2.5 w-2.5 rounded-full bg-[rgba(248,247,226,0.22)]" aria-hidden="true"></span>
-      <span class="h-2.5 w-2.5 rounded-full bg-[rgba(248,247,226,0.12)]" aria-hidden="true"></span>
-      <span class="ml-2 font-mono text-xs text-[#f8f7e2]/60">bash — vibeshield scan</span>
+      <span class="h-3 w-3 rounded-full border border-[rgba(71,76,128,0.25)] bg-[rgba(71,76,128,0.15)]" aria-hidden="true"></span>
+      <span class="h-3 w-3 rounded-full border border-[rgba(71,76,128,0.25)] bg-[rgba(71,76,128,0.15)]" aria-hidden="true"></span>
+      <span class="h-3 w-3 rounded-full border border-[rgba(71,76,128,0.25)] bg-[rgba(71,76,128,0.15)]" aria-hidden="true"></span>
+      <span class="ml-2 font-mono text-xs font-semibold text-[#474c80]">terminal — vibeshield scan</span>
     </div>
-    <div class="flex items-center gap-1.5 font-mono text-xs text-[#f8f7e2]/70">
-      <span class="h-1.5 w-1.5 rounded-full bg-[#f8f7e2] animate-pulse"></span>
-      <span>READY</span>
+    <div class="flex items-center gap-1.5 font-mono text-[11px] font-bold text-[#474c80] bg-white border border-[rgba(71,76,128,0.18)] px-2 py-0.5 rounded-full">
+      <span>LOCAL AUDIT</span>
     </div>
   </div>
 
-  <pre
-    id="demo-body"
-    class="min-h-[330px] overflow-hidden p-5 font-mono text-xs sm:text-sm leading-[1.7] text-[#f8f7e2]/90 whitespace-pre-wrap break-words sm:min-h-[340px]"
-    data-lines={JSON.stringify(DEMO_LINES.map((l) => ({ t: l.text, c: l.cls })))}
-  ><code set:html={initialHtml} /></pre>
+  <!-- Terminal Body: Clean Static Text -->
+  <div class="p-5 font-mono text-xs sm:text-[13px] leading-[1.75] text-[#474c80]">
+    <div class="flex items-center gap-2 font-bold text-[#474c80]">
+      <span class="text-[#474c80]/60">$</span>
+      <span>vibeshield scan .</span>
+    </div>
+    <div class="mt-1 text-[#474c80]/70">
+      Scanning 18 files (staged diff mode)… done in 0.38s
+    </div>
+
+    <div class="mt-4 rounded-lg border border-[rgba(185,28,28,0.2)] bg-[#fff5f5] p-3 text-[#b91c1c]">
+      <div class="font-bold flex items-center justify-between">
+        <span>CRITICAL · VS-PKG-001</span>
+        <span class="text-[11px] uppercase tracking-wide">Hallucinated Package</span>
+      </div>
+      <div class="mt-1 text-xs text-[#474c80]">
+        package.json:14 — <span class="font-bold text-[#b91c1c]">fast-parse-utils-v3</span> (package does not exist)
+      </div>
+      <div class="mt-1 font-semibold text-xs text-[#15803d]">
+        → Fix: replace with native node:util (zero extra dependencies).
+      </div>
+    </div>
+
+    <div class="mt-3 rounded-lg border border-[rgba(194,65,12,0.2)] bg-[#fffaf0] p-3 text-[#c2410c]">
+      <div class="font-bold flex items-center justify-between">
+        <span>HIGH · VS-SEC-017</span>
+        <span class="text-[11px] uppercase tracking-wide">Hardcoded Secret</span>
+      </div>
+      <div class="mt-1 text-xs text-[#474c80]">
+        src/agent.ts:42 — <span class="font-bold text-[#c2410c]">OPENAI_API_KEY</span> pasted directly from chat context
+      </div>
+      <div class="mt-1 font-semibold text-xs text-[#15803d]">
+        → Fix: read from process.env.OPENAI_API_KEY and rotate key.
+      </div>
+    </div>
+
+    <div class="mt-4 pt-3 border-t border-[rgba(71,76,128,0.12)] flex items-center justify-between text-xs font-semibold text-[#15803d]">
+      <span>✓ 16 files clean · 2 atomic fixes generated</span>
+      <span class="text-[#474c80]/60 font-normal">0 leaks merged</span>
+    </div>
+  </div>
 </div>
-
-<script>
-  const body = document.getElementById('demo-body');
-  const reduced = document.documentElement.dataset.reducedMotion === '1';
-  const wide = window.matchMedia('(min-width: 1024px)');
-
-  if (body && !reduced && wide.matches) {
-    const raw = body.getAttribute('data-lines') || '[]';
-    const lines: { t: string; c: string }[] = JSON.parse(raw);
-    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-    const cursor = document.createElement('span');
-    cursor.className = 'inline-block w-2 h-4 bg-[#f8f7e2] ml-0.5 align-middle animate-pulse';
-
-    let stopped = false;
-
-    async function play() {
-      while (!stopped) {
-        const code = body.querySelector('code');
-        if (!code) break;
-        code.innerHTML = '';
-        for (const line of lines) {
-          if (stopped) return;
-          const span = document.createElement('span');
-          span.className = classFor(line.c);
-          code.appendChild(span);
-          code.appendChild(document.createTextNode('\n'));
-          if (line.t === '') {
-            span.innerHTML = '&nbsp;';
-            continue;
-          }
-          for (let i = 0; i <= line.t.length; i++) {
-            if (stopped) return;
-            span.innerHTML = esc(line.t.slice(0, i));
-            code.appendChild(cursor);
-            await sleep(9);
-          }
-          await sleep(120);
-        }
-        await sleep(2600);
-      }
-    }
-
-    function classFor(cls: string): string {
-      switch (cls) {
-        case 'accent': return 'text-[#f8f7e2] font-bold';
-        case 'muted': return 'text-[#f8f7e2]/70';
-        case 'faint': return 'text-[#f8f7e2]/45';
-        case 'critical': return 'font-bold text-[#474c80] bg-[#f8f7e2] px-1.5 py-0.5 rounded';
-        case 'high': return 'font-bold text-[#f8f7e2] bg-[#474c80] border border-[rgba(248,247,226,0.3)] px-1.5 py-0.5 rounded';
-        case 'ok': return 'text-[#f8f7e2] font-semibold';
-        default: return 'text-[#f8f7e2]/85';
-      }
-    }
-
-    play();
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        stopped = true;
-      } else {
-        stopped = false;
-        play();
-      }
-    });
-  }
-</script>

@@ -13,10 +13,10 @@ export const SITE = {
 };
 
 export const NAV = [
-  { label: 'How to Setup', href: '/#agents' },
-  { label: 'How to Install', href: '/#install' },
-  { label: 'How to Scan', href: '/#how-to-scan' },
-  { label: 'Live Demo', href: '/#scanner' },
+  { label: 'Features', href: '/#features' },
+  { label: 'Audit Demo', href: '/#scanner' },
+  { label: 'Agent Setup', href: '/#agents' },
+  { label: 'Install', href: '/#install' },
   { label: 'Docs', href: '/docs' },
   { label: 'FAQ', href: '/#faq' },
 ];

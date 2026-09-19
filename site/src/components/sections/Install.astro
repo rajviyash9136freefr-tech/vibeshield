@@ -4,23 +4,23 @@ import { INSTALL_TABS } from '../../data/site';
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 ---
 
-<section id="install" class="section border-t border-[rgba(248,247,226,0.12)] relative">
-  <div class="wrap-narrow" data-reveal>
-    <div class="inline-flex items-center gap-2 rounded-full border border-[rgba(248,247,226,0.18)] bg-[rgba(248,247,226,0.06)] px-3.5 py-1.5 backdrop-blur-md mb-4">
-      <span class="font-display text-xs font-bold tracking-wider text-[#f8f7e2] uppercase">
+<section id="install" class="section border-t border-[rgba(71,76,128,0.15)] relative bg-[#faf9f0]">
+  <div class="wrap-narrow">
+    <div class="inline-flex items-center gap-2 rounded-full border border-[rgba(71,76,128,0.22)] bg-white px-3.5 py-1.5 shadow-sm mb-4">
+      <span class="font-display text-xs font-bold tracking-wider text-[#474c80] uppercase">
         Deployment
       </span>
     </div>
-    <h2 class="scroll-tell text-3xl font-extrabold tracking-[-0.03em] text-apple-headline sm:text-4xl lg:text-5xl font-display">
-      How to Install VibeShield
+    <h2 class="text-3xl font-extrabold tracking-[-0.03em] text-[#474c80] sm:text-4xl lg:text-5xl font-display">
+      Install VibeShield in Under 60 Seconds
     </h2>
-    <p class="mt-4 text-base leading-relaxed text-[#f8f7e2]/70 sm:text-lg font-sans">
-      Install VibeShield as an AI agent skill, run the automated one-line terminal installer for macOS/Windows/Linux, test instantly via npx, or enforce it in CI with our GitHub Action.
+    <p class="mt-4 text-base leading-relaxed text-[#474c80]/80 sm:text-lg font-sans">
+      Install the offline binary for Windows, macOS, or Linux, add it as a git pre-commit hook, or enforce it in CI via our official GitHub Action.
     </p>
 
     <div class="mt-10" data-tabs>
-      <!-- Dual-tone Segmented Control Container -->
-      <div class="inline-flex flex-wrap rounded-full border border-[rgba(248,247,226,0.18)] bg-[rgba(248,247,226,0.06)] p-1 backdrop-blur-xl" role="tablist" aria-label="Install method">
+      <!-- Segmented Control Container -->
+      <div class="inline-flex flex-wrap rounded-full border border-[rgba(71,76,128,0.2)] bg-white p-1 shadow-sm" role="tablist" aria-label="Install method">
         {INSTALL_TABS.map((t, i) => (
           <button
             type="button"
@@ -29,7 +29,7 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
             aria-selected={i === 0 ? 'true' : 'false'}
             aria-controls={`panel-${t.id}`}
             tabindex={i === 0 ? '0' : '-1'}
-            class={`rounded-full px-5 py-2 text-xs font-bold tracking-tight transition-all duration-200 font-display ${i === 0 ? 'bg-[#f8f7e2] text-[#474c80] shadow-[0_2px_12px_rgba(248,247,226,0.25)]' : 'text-[#f8f7e2]/60 hover:text-[#f8f7e2]'}`}
+            class={`rounded-full px-5 py-2 text-xs font-bold tracking-tight transition-colors duration-150 font-display ${i === 0 ? 'bg-[#474c80] text-[#f8f7e2]' : 'text-[#474c80]/70 hover:text-[#474c80]'}`}
           >{t.label}</button>
         ))}
       </div>
@@ -43,13 +43,13 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
           class="relative mt-6"
         >
           <pre
-            class="scroll-x fade-x rounded-2xl border border-[rgba(248,247,226,0.15)] bg-[#131627]/95 p-6 font-mono text-xs sm:text-sm leading-[1.75] text-[#f8f7e2]/90 shadow-2xl"
+            class="scroll-x rounded-2xl border border-[rgba(71,76,128,0.2)] bg-white p-6 font-mono text-xs sm:text-sm leading-[1.75] text-[#474c80] shadow-sm font-semibold"
             tabindex="0"
             data-code
           ><code set:html={esc(t.code)} /></pre>
           <button
             type="button"
-            class="absolute top-4 right-4 rounded-full border border-[rgba(248,247,226,0.2)] bg-[rgba(248,247,226,0.08)] px-3 py-1.5 font-display text-xs font-semibold text-[#f8f7e2]/80 transition-all duration-200 hover:border-[#f8f7e2] hover:bg-[#f8f7e2] hover:text-[#474c80] active:scale-95"
+            class="absolute top-4 right-4 rounded-full border border-[rgba(71,76,128,0.25)] bg-[#faf9f0] px-3.5 py-1.5 font-display text-xs font-bold text-[#474c80] transition-colors hover:bg-[#474c80] hover:text-[#f8f7e2]"
             data-copy
             aria-label={`Copy ${t.label} snippet`}
           >Copy</button>
@@ -57,9 +57,9 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
       ))}
     </div>
 
-    <div class="mt-4 flex items-center gap-2 font-mono text-xs text-[#f8f7e2]/50">
-      <span class="h-1.5 w-1.5 rounded-full bg-[#f8f7e2]"></span>
-      <span>Takes ~3 minutes · Zero account or API key needed</span>
+    <div class="mt-4 flex items-center gap-2 font-mono text-xs text-[#474c80]/70">
+      <span class="h-1.5 w-1.5 rounded-full bg-[#15803d]"></span>
+      <span class="font-sans font-semibold">Zero accounts, zero external API keys, 100% free and open-source</span>
     </div>
   </div>
 </section>
@@ -67,17 +67,17 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 <script>
   const root = document.querySelector('[data-tabs]');
   if (root) {
-    const tabs = [...root.querySelectorAll('[role=tab]')];
-    const panels = [...root.querySelectorAll('[role=tabpanel]')];
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role=tab]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[role=tabpanel]')];
     const select = (i: number) => {
       tabs.forEach((t, j) => {
         t.setAttribute('aria-selected', String(i === j));
         t.tabIndex = i === j ? 0 : -1;
         t.className =
-          'rounded-full px-5 py-2 text-xs font-bold font-display tracking-tight transition-all duration-200 ' +
+          'rounded-full px-5 py-2 text-xs font-bold font-display tracking-tight transition-colors duration-150 ' +
           (i === j
-            ? 'bg-[#f8f7e2] text-[#474c80] shadow-[0_2px_12px_rgba(248,247,226,0.25)]'
-            : 'text-[#f8f7e2]/60 hover:text-[#f8f7e2]');
+            ? 'bg-[#474c80] text-[#f8f7e2]'
+            : 'text-[#474c80]/70 hover:text-[#474c80]');
       });
       panels.forEach((p, j) => (p.hidden = i !== j));
     };

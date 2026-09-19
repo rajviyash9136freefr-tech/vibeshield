@@ -10,6 +10,7 @@ import Install from '../components/sections/Install.astro';
 import HowToScan from '../components/sections/HowToScan.astro';
 import Faq from '../components/sections/Faq.astro';
 import FinalCta from '../components/sections/FinalCta.astro';
+import SecurityPillars from '../components/sections/SecurityPillars.astro';
 import { SITE, FAQ } from '../data/site';
 
 const agentTicker = [
@@ -77,9 +78,12 @@ const schema = [
   <Hero />
 
   <!-- 2. Ambient Ticker: High-impact agent compatibility list -->
-  <CinematicCrawl items={agentTicker} direction="left" />
+  <CinematicCrawl items={agentTicker} />
 
-  <!-- 3. How It Works: Interactive Bug Hunter Demo / Simulator -->
+  <!-- 3. Core Capabilities / Security Pillars -->
+  <SecurityPillars />
+
+  <!-- 4. How It Works: Interactive Bug Hunter Demo / Simulator -->
   <div id="scanner">
     <QuickScanner />
   </div>

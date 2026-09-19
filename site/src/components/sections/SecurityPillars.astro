@@ -1,0 +1,72 @@
+---
+/**
+ * Security Pillars — 4 Core Guardrails of VibeShield
+ * Crisp, clean light cards in East Bay (#474C80) and Rum Swizzle (#F8F7E2).
+ */
+const pillars = [
+  {
+    icon: '📦',
+    tag: 'SLOPSQUATTING DEFENSE',
+    title: 'Hallucinated Package Blocker',
+    desc: 'LLMs routinely invent plausible package names. Attackers register these hallucinated names on npm and PyPI within hours. VibeShield checks package age, maintainer count, and registry existence before installation.',
+  },
+  {
+    icon: '🔑',
+    tag: 'ENTROPY SCANNER',
+    title: 'Zero-Leak Secret Quarantine',
+    desc: 'Catches OpenAI, Anthropic, AWS, GitHub, and database credentials echoed by coding agents into source files or test fixtures. Generates immediate rotation warnings before git commit.',
+  },
+  {
+    icon: '🛡️',
+    tag: 'SCAFFOLD SANITIZER',
+    title: 'Insecure Boilerplate Blocker',
+    desc: 'Refuses unsafe AI scaffolding defaults: wildcard CORS (*), unhashed passwords, disabled TLS verification, JWT alg "none", and eval() executed directly on model outputs.',
+  },
+  {
+    icon: '⚡',
+    tag: 'AIR-GAPPED PERFORMANCE',
+    title: 'Sub-Second Local Execution',
+    desc: 'Written in high-performance native code. Runs in under 400ms across your local git diff. 100% offline, zero cloud calls, zero telemetry — your intellectual property never leaves your laptop.',
+  },
+];
+---
+
+<section id="features" class="section border-t border-[rgba(71,76,128,0.15)] bg-[#f8f7e2]">
+  <div class="wrap">
+    <div class="text-center max-w-2xl mx-auto">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[rgba(71,76,128,0.22)] bg-white px-3.5 py-1.5 shadow-sm mb-3">
+        <span class="h-2 w-2 rounded-full bg-[#474c80]"></span>
+        <span class="font-display text-xs font-bold tracking-wider text-[#474c80] uppercase">
+          Core Capabilities
+        </span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold tracking-[-0.03em] text-[#474c80] font-display">
+        Built Specifically for AI-Generated Code
+      </h2>
+      <p class="mt-3 text-sm sm:text-base text-[#474c80]/80 font-sans">
+        Traditional SAST and SCA tools look for yesterday's CVEs. VibeShield hunts the new class of bugs unique to AI coding agents and LLMs.
+      </p>
+    </div>
+
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {pillars.map((p) => (
+        <div class="card rounded-2xl border border-[rgba(71,76,128,0.2)] bg-white p-6 shadow-sm hover:border-[#474c80] transition-colors flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-2xl" role="img" aria-hidden="true">{p.icon}</span>
+              <span class="rounded-md border border-[rgba(71,76,128,0.2)] bg-[#faf9f0] px-2 py-0.5 font-mono text-[10px] font-bold text-[#474c80]">
+                {p.tag}
+              </span>
+            </div>
+            <h3 class="mt-4 text-lg font-bold text-[#474c80] font-display">
+              {p.title}
+            </h3>
+            <p class="mt-2.5 text-xs sm:text-sm leading-relaxed text-[#474c80]/75 font-sans">
+              {p.desc}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

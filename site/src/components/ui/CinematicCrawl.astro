@@ -1,85 +1,25 @@
 ---
 interface Props {
   items: string[];
-  direction?: 'left' | 'right';
-  speed?: 'normal' | 'fast';
   class?: string;
 }
 
 const {
   items,
-  direction = 'left',
-  speed = 'normal',
   class: cls = '',
 } = Astro.props;
-
-// Duplicate array for guaranteed content density across ultra-wide monitors
-const trackItems = [...items, ...items];
 ---
 
-<div
-  class={`relative overflow-hidden border-y border-[rgba(248,247,226,0.12)] bg-[#181b30] py-3.5 font-display text-xs tracking-wider text-[#f8f7e2]/75 select-none ${cls}`}
-  data-cinematic-crawl
-  data-direction={direction}
->
-  <!-- Edge gradient masks for smooth cinematic fade -->
-  <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-[#181b30] to-transparent" aria-hidden="true"></div>
-  <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-[#181b30] to-transparent" aria-hidden="true"></div>
-
-  <div class="crawl-wrapper flex w-max overflow-hidden">
-    <!-- First track group -->
-    <div class={`crawl-track flex shrink-0 items-center gap-8 pr-8 ${direction === 'left' ? 'animate-crawl-left' : 'animate-crawl-right'}`}>
-      {trackItems.map((item) => (
-        <div class="flex items-center gap-6 whitespace-nowrap">
-          <span class="text-[#f8f7e2]/80 hover:text-[#f8f7e2] font-bold uppercase tracking-widest text-[11px] transition-colors duration-200">{item}</span>
-          <span class="text-[rgba(248,247,226,0.3)] text-[10px]">◆</span>
-        </div>
-      ))}
-    </div>
-    <!-- Identical clone track group for 100% seamless infinite loop without stutter -->
-    <div class={`crawl-track flex shrink-0 items-center gap-8 pr-8 ${direction === 'left' ? 'animate-crawl-left' : 'animate-crawl-right'}`} aria-hidden="true">
-      {trackItems.map((item) => (
-        <div class="flex items-center gap-6 whitespace-nowrap">
-          <span class="text-[#f8f7e2]/80 hover:text-[#f8f7e2] font-bold uppercase tracking-widest text-[11px] transition-colors duration-200">{item}</span>
-          <span class="text-[rgba(248,247,226,0.3)] text-[10px]">◆</span>
-        </div>
-      ))}
-    </div>
+<div class={`border-y border-[rgba(71,76,128,0.15)] bg-[#faf9f0] py-4 select-none ${cls}`}>
+  <div class="wrap flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs font-display">
+    <span class="font-extrabold uppercase tracking-widest text-[#474c80] text-[11px] mr-2">
+      Engine Compatibility:
+    </span>
+    {items.slice(0, 7).map((item) => (
+      <span class="inline-flex items-center gap-1.5 rounded-full border border-[rgba(71,76,128,0.18)] bg-white px-3 py-1 font-bold text-[#474c80] text-[11px] uppercase tracking-wider shadow-sm">
+        <span class="h-1.5 w-1.5 rounded-full bg-[#474c80]"></span>
+        {item}
+      </span>
+    ))}
   </div>
 </div>
-
-<style>
-  @keyframes crawlLeft {
-    0% {
-      transform: translate3d(0, 0, 0);
-    }
-    100% {
-      transform: translate3d(-100%, 0, 0);
-    }
-  }
-
-  @keyframes crawlRight {
-    0% {
-      transform: translate3d(-100%, 0, 0);
-    }
-    100% {
-      transform: translate3d(0, 0, 0);
-    }
-  }
-
-  .animate-crawl-left {
-    animation: crawlLeft 48s linear infinite;
-    will-change: transform;
-  }
-
-  .animate-crawl-right {
-    animation: crawlRight 48s linear infinite;
-    will-change: transform;
-  }
-
-  /* Keep running continuously at smooth medium pace without jarring effects */
-  [data-cinematic-crawl]:hover .crawl-track {
-    animation-play-state: running;
-  }
-</style>
-

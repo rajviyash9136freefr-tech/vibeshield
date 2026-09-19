@@ -3,19 +3,19 @@ import { FOOTER } from '../../data/site';
 import { baseHref } from '../../lib/base';
 ---
 
-<footer class="border-t border-[rgba(248,247,226,0.12)] bg-[#131627] relative">
-  <div class="wrap section !py-16">
+<footer class="border-t border-[rgba(71,76,128,0.15)] bg-[#faf9f0] relative">
+  <div class="wrap py-14 lg:py-16">
     <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
-      <!-- Col 1: Brand & Motive -->
+      <!-- Col 1: Brand & Purpose -->
       <div>
-        <div class="flex items-center gap-2.5 font-bold tracking-tight text-sm text-[#f8f7e2] font-display">
-          <div class="flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(248,247,226,0.1)] border border-[rgba(248,247,226,0.2)]">
+        <div class="flex items-center gap-2.5 font-bold tracking-tight text-sm text-[#474c80] font-display">
+          <div class="flex h-7 w-7 items-center justify-center rounded-full bg-[#474c80] text-[#f8f7e2]">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M12 2 4 5.5V11c0 5 3.2 8.9 8 10.5 4.8-1.6 8-5.5 8-10.5V5.5L12 2Z"
                 stroke="#f8f7e2"
                 stroke-width="2"
-                fill="rgba(248, 247, 226, 0.15)"
+                fill="none"
               />
               <path
                 d="m8.5 11.8 2.4 2.4 4.6-4.9"
@@ -26,21 +26,21 @@ import { baseHref } from '../../lib/base';
               />
             </svg>
           </div>
-          <span class="tracking-wide uppercase font-extrabold text-[13px]">VibeShield</span>
+          <span class="tracking-wider uppercase font-extrabold text-[14px]">VibeShield</span>
         </div>
-        <p class="mt-3.5 max-w-64 text-xs text-[#f8f7e2]/70 leading-relaxed font-sans">
-          The bug hunter & tester for AI vibe coding. Hunt hallucinated packages, leaked keys, and component bugs with instant fixes.
+        <p class="mt-3.5 max-w-64 text-xs text-[#474c80]/80 leading-relaxed font-sans">
+          The open-source adversarial security scanner for AI vibe coding. Protect against hallucinated packages, leaked keys, and insecure scaffold patterns.
         </p>
-        <div class="mt-4 inline-flex items-center gap-2 rounded-full border border-[rgba(248,247,226,0.18)] bg-[rgba(248,247,226,0.06)] px-3 py-1 font-mono text-[11px] text-[#f8f7e2]/80">
-          <span class="h-1.5 w-1.5 rounded-full bg-[#f8f7e2] animate-pulse"></span>
-          <span>MIT Free & Open Source</span>
+        <div class="mt-4 inline-flex items-center gap-2 rounded-full border border-[rgba(71,76,128,0.22)] bg-white px-3 py-1 font-mono text-[11px] font-bold text-[#474c80] shadow-sm">
+          <span class="h-1.5 w-1.5 rounded-full bg-[#15803d]"></span>
+          <span>MIT Open Source</span>
         </div>
       </div>
 
-      <!-- Cols 2-4: Clean genuine navigation -->
+      <!-- Cols 2-4: Navigation Links -->
       {FOOTER.cols.map((col) => (
         <nav aria-label={col.title}>
-          <h2 class="text-xs font-display font-bold uppercase tracking-wider text-[#f8f7e2]/60">{col.title}</h2>
+          <h2 class="text-xs font-display font-bold uppercase tracking-wider text-[#474c80]">{col.title}</h2>
           <ul class="mt-4 space-y-2.5">
             {col.links.map(([label, href]) => (
               <li>
@@ -48,7 +48,7 @@ import { baseHref } from '../../lib/base';
                   href={href.startsWith('http') ? href : baseHref(href)}
                   target={href.startsWith('http') ? '_blank' : undefined}
                   rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  class="text-xs text-[#f8f7e2]/65 transition-colors duration-150 hover:text-[#f8f7e2] font-sans"
+                  class="text-xs text-[#474c80]/75 transition-colors duration-150 hover:text-[#474c80] hover:underline font-sans font-medium"
                 >
                   {label}
                 </a>
@@ -60,11 +60,11 @@ import { baseHref } from '../../lib/base';
     </div>
 
     <!-- Bottom Bar -->
-    <div class="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs font-mono text-white/40">
+    <div class="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-[rgba(71,76,128,0.15)] pt-6 text-xs text-[#474c80]/70 font-semibold">
       <span>{FOOTER.bottom}</span>
       <span class="flex items-center gap-2">
-        <span class="h-1.5 w-1.5 rounded-full bg-white/60"></span>
-        <span class="text-white/60">100% Local & Offline · Zero Telemetry</span>
+        <span class="h-1.5 w-1.5 rounded-full bg-[#15803d]"></span>
+        <span>100% Local & Offline · Zero Cloud Telemetry</span>
       </span>
     </div>
   </div>

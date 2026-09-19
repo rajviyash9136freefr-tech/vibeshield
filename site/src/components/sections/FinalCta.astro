@@ -1,30 +1,24 @@
 ---
 import { baseHref } from '../../lib/base';
+import { SITE } from '../../data/site';
 ---
 
-<section class="border-t border-[rgba(248,247,226,0.12)] relative overflow-hidden bg-gradient-to-b from-[#181b30] via-[#242848] to-[#181b30]">
-  <!-- East Bay ambient specular glow -->
-  <div
-    class="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 h-[500px] opacity-75"
-    style="background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(71, 76, 128, 0.45) 0%, rgba(24, 27, 48, 0) 100%);"
-    aria-hidden="true"
-  ></div>
-
-  <div class="wrap section !py-28 text-center relative" data-reveal>
-    <!-- 3D shield rotates into plane as the section scrolls into view -->
-    <div class="flex justify-center mb-7">
-      <div class="flex h-16 w-16 items-center justify-center rounded-2xl border border-[rgba(248,247,226,0.2)] bg-[rgba(248,247,226,0.06)] shadow-[0_0_30px_rgba(71,76,128,0.3)] backdrop-blur-md">
-        <svg class="shield-3d" width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+<section class="border-t border-[rgba(71,76,128,0.15)] relative bg-[#f8f7e2] py-20 lg:py-28">
+  <div class="wrap text-center relative max-w-3xl mx-auto">
+    <!-- Brand Shield Icon -->
+    <div class="flex justify-center mb-6">
+      <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#474c80] text-[#f8f7e2] shadow-sm">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path
             d="M12 2 4 5.5V11c0 5 3.2 8.9 8 10.5 4.8-1.6 8-5.5 8-10.5V5.5L12 2Z"
             stroke="#f8f7e2"
-            stroke-width="1.8"
-            fill="rgba(248, 247, 226, 0.15)"
+            stroke-width="2"
+            fill="none"
           />
           <path
             d="m8.5 11.8 2.4 2.4 4.6-4.9"
             stroke="#f8f7e2"
-            stroke-width="1.8"
+            stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
           />
@@ -32,39 +26,38 @@ import { baseHref } from '../../lib/base';
       </div>
     </div>
 
-    <h2 class="mx-auto max-w-[24ch] text-3xl font-extrabold leading-tight tracking-[-0.03em] text-apple-headline sm:text-4xl lg:text-5xl font-display">
-      Stop AI Bugs & Hallucinations Before They Merge.
+    <h2 class="text-3xl font-extrabold leading-tight tracking-[-0.03em] text-[#474c80] sm:text-4xl lg:text-5xl font-display">
+      Stop Insecure AI Code Before It Ever Merges to Main.
     </h2>
-    <p class="mt-4 text-base text-[#f8f7e2]/70 sm:text-lg font-sans">
-      Test your vibe-coded apps in under 1.2s. 100% offline, local static analysis, and zero data leaves your machine.
+    <p class="mt-4 text-base text-[#474c80]/80 sm:text-lg font-sans">
+      Audit your vibe-coded apps in under 1 second. 100% offline, local static binary analysis, with zero code or tokens sent to external servers.
     </p>
 
-    <div class="mt-9 flex flex-wrap items-center justify-center gap-4">
-      <a
-        href={baseHref('/#agents')}
-        class="btn-primary flex items-center gap-2"
-      >
-        <span>Get Agent Prompts</span>
-        <span>↓</span>
-      </a>
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3.5">
       <a
         href={baseHref('/#install')}
-        class="btn-secondary"
+        class="btn-primary"
       >
-        How to Install
+        Install VibeShield Free
       </a>
       <a
-        href="https://github.com/rajviyash9136freefr-tech/vibeshield"
+        href={baseHref('/#agents')}
+        class="btn-secondary"
+      >
+        Copy Agent Guardrails
+      </a>
+      <a
+        href={SITE.repo}
         target="_blank"
         rel="noopener noreferrer"
-        class="rounded-full border border-[rgba(248,247,226,0.18)] bg-[rgba(248,247,226,0.06)] px-5 py-2 text-xs font-semibold text-[#f8f7e2]/80 hover:border-[#f8f7e2] hover:bg-[rgba(248,247,226,0.12)] hover:text-[#f8f7e2] transition-all flex items-center gap-1.5 font-display"
+        class="inline-flex items-center gap-1.5 rounded-full border border-[rgba(71,76,128,0.25)] bg-white px-5 py-3 text-xs font-bold text-[#474c80] hover:border-[#474c80] transition-colors shadow-sm font-display"
       >
         <span>★ Star on GitHub</span>
       </a>
     </div>
 
-    <p class="mt-6 text-xs font-mono text-[#f8f7e2]/45">
-      MIT Licensed · 100% Free · No credit card · No user data stored
+    <p class="mt-6 text-xs font-semibold text-[#474c80]/60">
+      MIT Licensed · 100% Free · No account required · Open Source
     </p>
   </div>
 </section>
