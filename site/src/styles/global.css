@@ -1,56 +1,59 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap');
 @import "tailwindcss";
 
-/* Design tokens — East Bay & Rum Swizzle Professional Light System
-   Color 1: East Bay (#474C80 / Deep Slate Purple-Indigo for text, brand, borders, buttons)
-   Color 2: Rum Swizzle (#F8F7E2 / Light Vanilla Silk canvas & accent surfaces)
-   Surface: Crisp White (#FFFFFF) for high-legibility enterprise card surfaces
-   100% Clean, Professional, Static — Zero Black Color, Zero Distracting 3D Animations */
-@theme {
-  /* Surfaces */
-  --color-bg: #f8f7e2;
-  --color-card: #ffffff;
-  --color-elevated: #faf9f0;
-  --color-hovered: #f1efdb;
-  --color-east-bay: #474c80;
-  --color-east-bay-light: #5d64a4;
-  --color-east-bay-soft: rgba(71, 76, 128, 0.08);
-  --color-hairline: rgba(71, 76, 128, 0.18);
-  --color-hairline-bright: rgba(71, 76, 128, 0.35);
+/* Strict 2-Color Design System: East Bay (#474C80) & Rum Swizzle (#F8F7E2)
+   All colors derived via CSS variables in :root.
+   No pure black and no pure white.
+   Full-bleed indigo blocks alternate with cream canvas sections. */
+:root {
+  /* Core Surface & Text */
+  --bg:          #F8F7E2;   /* Main page background (light cream) */
+  --surface:     #EFEDD2;   /* Cards and alternate sections, slightly darker than bg */
+  --ink:         #474C80;   /* Primary text, headings, buttons, key accents (East Bay) */
+  --ink-strong:  #2F3359;   /* Darker shade for hover, emphasis, and footer */
+  --ink-soft:    #5D6295;   /* Secondary text, subtle borders (5.3:1 contrast on cream) */
+  --on-ink:      #F8F7E2;   /* Text on East Bay sections */
+  --on-ink-soft: #C8CAE0;   /* Muted secondary text on East Bay sections (5.0:1 contrast) */
 
-  /* Typography Hierarchy (East Bay #474C80) */
-  --color-fg: #474c80;
-  --color-muted: rgba(71, 76, 128, 0.76);
-  --color-faint: rgba(71, 76, 128, 0.48);
-  --color-rum-swizzle: #f8f7e2;
+  /* Borders & Focus */
+  --border:         color-mix(in srgb, var(--ink) 22%, transparent);
+  --border-strong:  color-mix(in srgb, var(--ink) 45%, transparent);
+  --border-on-ink:  color-mix(in srgb, var(--on-ink) 22%, transparent);
+  --focus:          var(--ink-strong);
 
-  /* Primary Brand / Button */
-  --color-accent: #474c80;
-  --color-accent-strong: #363a66;
-  --color-accent-dim: rgba(71, 76, 128, 0.12);
-  --color-on-accent: #f8f7e2;
+  /* Severity Tokens for Cream / Surface Backgrounds (All >= 4.5:1 WCAG AA) */
+  --danger: #A63D2F;  /* 5.8:1 on --bg */
+  --warn:   #8A5A00;  /* 5.5:1 on --bg */
+  --ok:     #2F6B4F;  /* 5.8:1 on --bg */
 
-  /* Severity / Status Colors (Tuned for light background) */
-  --color-critical: #b91c1c;
-  --color-high: #c2410c;
-  --color-medium: #b45309;
-  --color-low: #474c80;
-  --color-info: #474c80;
-  --color-ok: #15803d;
+  /* Severity Tokens for Indigo (--ink) Backgrounds (All >= 4.5:1 WCAG AA) */
+  --danger-on-ink: #FFB3A7;  /* 4.7:1 on --ink */
+  --warn-on-ink:   #FFD580;  /* 5.8:1 on --ink */
+  --ok-on-ink:     #96E6B8;  /* 5.5:1 on --ink */
 
   /* Typography */
-  --font-display: "Outfit", "Plus Jakarta Sans", system-ui, sans-serif;
-  --font-sans: "Plus Jakarta Sans", "Inter Variable", "Geist Variable", system-ui, sans-serif;
-  --font-mono: "Geist Mono Variable", "SF Mono", ui-monospace, "JetBrains Mono", monospace;
+  --font-display: "Outfit", system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", "SF Mono", ui-monospace, monospace;
 
-  /* Shape & elevation */
-  --radius-card: 16px;
+  /* Layout & Geometry */
+  --radius-card: 12px;
   --radius-btn: 9999px;
-  --shadow-pop: 0 10px 30px -8px rgba(71, 76, 128, 0.12);
-  --shadow-glow: 0 4px 20px rgba(71, 76, 128, 0.08);
+}
 
-  /* Motion */
-  --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
+@theme {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-strong: var(--ink-strong);
+  --color-ink-soft: var(--ink-soft);
+  --color-on-ink: var(--on-ink);
+  --color-on-ink-soft: var(--on-ink-soft);
+  --color-border: var(--border);
+
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
 @layer base {
@@ -59,99 +62,110 @@
   }
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 88px;
-    background-color: var(--color-bg);
+    scroll-padding-top: 84px;
+    background-color: var(--bg);
   }
   body {
-    background: var(--color-bg);
-    color: var(--color-fg);
+    background: var(--bg);
+    color: var(--ink);
     font-family: var(--font-sans);
     font-size: 16px;
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    letter-spacing: -0.012em;
     overflow-x: clip;
   }
+
+  /* Typography Scale */
   h1 {
     font-family: var(--font-display);
+    font-size: clamp(2.25rem, 5.5vw, 4.25rem);
+    line-height: 1.08;
     letter-spacing: -0.03em;
     font-weight: 800;
-    line-height: 1.12;
-    color: var(--color-fg);
   }
   h2 {
     font-family: var(--font-display);
+    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+    line-height: 1.15;
     letter-spacing: -0.025em;
     font-weight: 800;
-    line-height: 1.18;
-    color: var(--color-fg);
   }
   h3 {
     font-family: var(--font-display);
+    font-size: clamp(1.25rem, 2vw, 1.65rem);
+    line-height: 1.25;
     letter-spacing: -0.02em;
     font-weight: 700;
-    line-height: 1.28;
-    color: var(--color-fg);
   }
   h4 {
     font-family: var(--font-display);
+    font-size: 1.125rem;
+    line-height: 1.35;
     letter-spacing: -0.015em;
     font-weight: 700;
-    color: var(--color-fg);
   }
+
   code, pre, kbd, samp {
     font-family: var(--font-mono);
     font-feature-settings: "liga" 1, "calt" 1;
     letter-spacing: -0.015em;
   }
+
   ::selection {
-    background: #474c80;
-    color: #f8f7e2;
+    background: var(--ink);
+    color: var(--on-ink);
+  }
+
+  /* Native Browser Cursor & Interactive Elements */
+  a, button, [role="button"], summary {
+    cursor: pointer;
   }
   :focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--focus);
     outline-offset: 2px;
     border-radius: 4px;
   }
+
   details > summary {
-    cursor: pointer;
     list-style: none;
   }
   details > summary::-webkit-details-marker {
     display: none;
   }
+
   a {
     color: inherit;
   }
-  /* Shiki / code blocks — Clean Light Architecture */
+
+  /* Shiki / Code Blocks */
   .astro-code {
-    background: #ffffff !important;
-    color: #474c80 !important;
+    background: var(--surface) !important;
+    color: var(--ink) !important;
     font-size: 13.5px;
     line-height: 1.7;
     padding: 20px 24px;
     border-radius: var(--radius-card);
-    border: 1px solid var(--color-hairline);
-    box-shadow: 0 4px 16px rgba(71, 76, 128, 0.05);
+    border: 1px solid var(--border);
     overflow-x: auto;
   }
-  /* Long-form prose (docs + blog) */
-  .prose-docs h1 { font-size: 34px; letter-spacing: -0.03em; margin-bottom: 12px; font-family: var(--font-display); color: #474c80; }
-  .prose-docs h2 { font-size: 24px; margin-top: 40px; margin-bottom: 12px; font-family: var(--font-display); color: #474c80; }
-  .prose-docs h3 { font-size: 18px; margin-top: 28px; margin-bottom: 10px; font-family: var(--font-display); color: #474c80; }
-  .prose-docs p, .prose-docs li { color: var(--color-muted); line-height: 1.75; }
-  .prose-docs a { color: #474c80; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
-  .prose-docs a:hover { opacity: 0.8; }
-  .prose-docs code { font-family: var(--font-mono); font-size: 0.9em; background: #faf9f0; border: 1px solid var(--color-hairline); border-radius: 6px; padding: 2px 6px; color: #474c80; }
+
+  /* Documentation & Blog Prose */
+  .prose-docs h1 { font-size: 34px; letter-spacing: -0.03em; margin-bottom: 12px; font-family: var(--font-display); color: var(--ink); }
+  .prose-docs h2 { font-size: 24px; margin-top: 40px; margin-bottom: 12px; font-family: var(--font-display); color: var(--ink); }
+  .prose-docs h3 { font-size: 18px; margin-top: 28px; margin-bottom: 10px; font-family: var(--font-display); color: var(--ink); }
+  .prose-docs p, .prose-docs li { color: var(--ink-soft); line-height: 1.75; }
+  .prose-docs a { color: var(--ink); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+  .prose-docs a:hover { color: var(--ink-strong); }
+  .prose-docs code { font-family: var(--font-mono); font-size: 0.9em; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 2px 6px; color: var(--ink); }
   .prose-docs pre code { background: none; border: 0; padding: 0; font-size: 13.5px; }
   .prose-docs table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 20px 0; display: block; overflow-x: auto; }
-  .prose-docs th, .prose-docs td { border: 1px solid var(--color-hairline); padding: 10px 14px; text-align: left; }
-  .prose-docs th { color: var(--color-fg); background: #faf9f0; font-weight: 700; }
+  .prose-docs th, .prose-docs td { border: 1px solid var(--border); padding: 10px 14px; text-align: left; }
+  .prose-docs th { color: var(--ink); background: var(--surface); font-weight: 700; }
   .prose-docs ul, .prose-docs ol { padding-left: 22px; margin: 16px 0; }
   .prose-docs li { margin: 6px 0; }
-  .prose-docs strong { color: var(--color-fg); }
+  .prose-docs strong { color: var(--ink); font-weight: 700; }
 }
 
 @layer components {
@@ -167,135 +181,131 @@
     margin-inline: auto;
     padding-inline: 24px;
   }
-  /* Section rhythm */
+
+  /* Section Spacing */
   .section {
-    padding-block: 72px;
+    padding-block: 64px;
   }
   @media (min-width: 1024px) {
     .section {
-      padding-block: 108px;
+      padding-block: 96px;
     }
   }
-  .hairline {
-    border: 1px solid var(--color-hairline);
-  }
+
+  /* Cards — Solid & Confident */
   .card {
-    background: var(--color-card);
-    border: 1px solid var(--color-hairline);
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: var(--radius-card);
-    box-shadow: var(--shadow-glow);
-    transition: border-color 200ms ease, box-shadow 200ms ease;
   }
   .card:hover {
-    border-color: var(--color-hairline-bright);
-    box-shadow: var(--shadow-pop);
+    border-color: var(--border-strong);
   }
-  .glass-panel {
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--color-hairline);
-    box-shadow: 0 8px 24px rgba(71, 76, 128, 0.06);
-  }
+
+  /* Accessible Skip Link */
   .skip-link {
     position: absolute;
     left: -9999px;
     top: 0;
     z-index: 100;
     padding: 8px 18px;
-    background: #474c80;
-    color: #f8f7e2;
-    border-radius: 0 0 12px 0;
+    background: var(--ink);
+    color: var(--on-ink);
+    border-radius: 0 0 8px 0;
     font-weight: 700;
   }
   .skip-link:focus {
     left: 0;
   }
+
   .eyebrow {
     font-family: var(--font-display);
-    font-size: 12px;
-    letter-spacing: 0.12em;
+    font-size: 11px;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--color-muted);
-    font-weight: 700;
+    font-weight: 800;
   }
-  /* Standardized Professional Buttons — East Bay & Rum Swizzle */
+
+  /* Buttons */
   .btn-primary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 9999px;
-    background-color: #474c80;
-    padding: 13px 26px;
+    border-radius: var(--radius-btn);
+    background-color: var(--ink);
+    color: var(--on-ink);
+    padding: 12px 24px;
     font-size: 14px;
     font-family: var(--font-display);
     font-weight: 700;
-    color: #f8f7e2;
-    border: 1px solid #474c80;
-    transition: opacity 150ms ease, background-color 150ms ease;
+    border: 1px solid var(--ink);
+    transition: background-color 150ms ease, border-color 150ms ease;
   }
   .btn-primary:hover {
-    background-color: #363a66;
-    color: #f8f7e2;
+    background-color: var(--ink-strong);
+    border-color: var(--ink-strong);
   }
-  .btn-primary:active {
-    opacity: 0.92;
+
+  /* Button on Indigo Section */
+  .btn-on-ink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-btn);
+    background-color: var(--on-ink);
+    color: var(--ink);
+    padding: 12px 24px;
+    font-size: 14px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    border: 1px solid var(--on-ink);
+    transition: background-color 150ms ease, opacity 150ms ease;
   }
+  .btn-on-ink:hover {
+    background-color: #f1efdb;
+  }
+
   .btn-secondary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 9999px;
-    border: 1px solid var(--color-hairline-bright);
-    background-color: #ffffff;
-    padding: 13px 26px;
+    border-radius: var(--radius-btn);
+    border: 1px solid var(--border-strong);
+    background-color: var(--surface);
+    color: var(--ink);
+    padding: 12px 24px;
     font-size: 14px;
     font-family: var(--font-display);
     font-weight: 700;
-    color: #474c80;
     transition: border-color 150ms ease, background-color 150ms ease;
   }
   .btn-secondary:hover {
-    border-color: #474c80;
-    background-color: #faf9f0;
+    border-color: var(--ink);
   }
-  .btn-pill {
+
+  .btn-secondary-on-ink {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    border-radius: 9999px;
-    border: 1px solid var(--color-hairline);
-    background-color: #ffffff;
-    padding: 6px 14px;
-    font-size: 12px;
-    font-family: var(--font-mono);
-    color: #474c80;
-    transition: border-color 150ms ease;
+    justify-content: center;
+    border-radius: var(--radius-btn);
+    border: 1px solid var(--border-on-ink);
+    background-color: transparent;
+    color: var(--on-ink);
+    padding: 12px 24px;
+    font-size: 14px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    transition: border-color 150ms ease, background-color 150ms ease;
   }
-  .btn-pill:hover {
-    border-color: #474c80;
-  }
-}
-
-@layer utilities {
-  /* Headline text styling */
-  .text-apple-headline {
-    color: #474c80;
-  }
-  
-  /* Dynamic Island styling — Crisp Light Frosted Navigation Bar */
-  .dynamic-island {
-    background: rgba(248, 247, 226, 0.94);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(71, 76, 128, 0.22);
-    box-shadow: 0 6px 24px -4px rgba(71, 76, 128, 0.12);
+  .btn-secondary-on-ink:hover {
+    border-color: var(--on-ink);
+    background-color: color-mix(in srgb, var(--on-ink) 10%, transparent);
   }
 
-  /* Horizontal-scroll tables with clean scrollbars */
+  /* Clean Horizontal Scroll */
   .scroll-x {
     overflow-x: auto;
     scrollbar-width: thin;
-    scrollbar-color: rgba(71, 76, 128, 0.2) transparent;
+    scrollbar-color: var(--border) transparent;
   }
 }
