@@ -257,22 +257,27 @@ jobs:
 `, actionRef(version), mode)
 }
 
+// defaultActionTag is the Action ref used when the running binary's version is
+// not a plain semver (a local `go build` reports "dev"). It is a release
+// constant, so scripts/bump-version.mjs keeps it current.
+const defaultActionTag = "v2.0.1"
+
 // actionRef turns a binary version into a usable Action ref. Anything that is
-// not a plain semver is replaced by the major tag, so a locally built binary
-// still generates a workflow that resolves.
+// not a plain semver is replaced by defaultActionTag, so a locally built
+// binary still generates a workflow that resolves.
 func actionRef(version string) string {
 	v := strings.TrimPrefix(strings.TrimSpace(version), "v")
 	parts := strings.Split(v, ".")
 	if len(parts) != 3 {
-		return "v2.0.0"
+		return defaultActionTag
 	}
 	for _, p := range parts {
 		if p == "" {
-			return "v2.0.0"
+			return defaultActionTag
 		}
 		for _, r := range p {
 			if r < '0' || r > '9' {
-				return "v2.0.0"
+				return defaultActionTag
 			}
 		}
 	}

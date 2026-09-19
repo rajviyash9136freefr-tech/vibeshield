@@ -125,5 +125,25 @@ for (const f of [...formats].sort()) {
   console.log(`  ${(missing ? 'MISSING' : 'ok').padEnd(8)} --format ${f}`);
 }
 
+// A pack larger than the engine is intentional (rules load so packs stay
+// portable), but the gap has to be visible: five inert rules including the
+// flagship hallucinated-package rule is not something a "122 rules" headline
+// should hide.
+console.log('\nRULE COVERAGE');
+const ver = run(['version']);
+const m = (ver.stdout || '').match(/engine:\s+(\d+) active(?: · (\d+) reserved)?/);
+if (m) {
+  const active = Number(m[1]);
+  const reserved = Number(m[2] || 0);
+  console.log(`  ${active} active · ${reserved} reserved`);
+  if (reserved > 0) {
+    console.log('  reserved rules load and validate but the engine skips them');
+    console.log('  (pattern.kind: structural — pending the package-intel model)');
+  }
+} else {
+  gaps++;
+  console.log('  MISSING  could not read the engine line from `vibeshield version`');
+}
+
 console.log(`\n${gaps} documented-but-missing surface(s)`);
 process.exit(gaps ? 1 : 0);

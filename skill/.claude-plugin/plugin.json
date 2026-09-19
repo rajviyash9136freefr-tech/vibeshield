@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "vibeshield",
   "displayName": "VibeShield",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Bug-hunting security audit for AI-generated code. One skill, parallel bug-hunter subagents, findings in the VibeShield contract format.",
   "author": { "name": "VibeShield", "url": "https://vibeshield.dev" },
   "homepage": "https://vibeshield.dev",

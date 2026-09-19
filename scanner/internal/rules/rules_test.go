@@ -112,6 +112,66 @@ func TestLoadCore(t *testing.T) {
 	}
 }
 
+// The pack is deliberately larger than the engine: `structural` rules load and
+// validate so packs stay portable, but the matcher skips them. Reporting
+// len(Rules) as the rule count overstates what a scan can find, so the split
+// has to be reportable.
+func TestActiveAndReservedRuleCounts(t *testing.T) {
+	structural := `  - id: VS-PKG-001
+    category: hallucinated-package
+    severity: critical
+    title: "Hallucinated package"
+    message: "m"
+    fix: "f"
+    languages: [javascript]
+    pattern:
+      kind: structural
+      match: namescore >= 0.7`
+	pack, errs := ParsePackBytes([]byte(packYAML(ruleGood, structural)), "t.yaml", LoadOptions{})
+	if len(errs) > 0 {
+		t.Fatalf("a structural rule must load so packs validate everywhere: %v", errs[0])
+	}
+	if len(pack.Rules) != 2 {
+		t.Fatalf("expected 2 rules loaded, got %d", len(pack.Rules))
+	}
+	if got := pack.ActiveRules(); got != 1 {
+		t.Errorf("ActiveRules = %d, want 1", got)
+	}
+	if got := pack.ReservedRules(); got != 1 {
+		t.Errorf("ReservedRules = %d, want 1", got)
+	}
+	for _, r := range pack.Rules {
+		want := r.ID == "VS-SEC-001"
+		if r.Evaluable() != want {
+			t.Errorf("%s.Evaluable() = %v, want %v", r.ID, r.Evaluable(), want)
+		}
+	}
+}
+
+// Every reserved rule in the shipped core pack must be structural — if a
+// regex rule ever loses its matcher, that is a bug, not a reservation.
+func TestCorePackReservedRulesAreStructural(t *testing.T) {
+	pack, err := LoadCore()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := range pack.Rules {
+		r := &pack.Rules[i]
+		if r.Evaluable() {
+			continue
+		}
+		if r.Pattern.Kind != "structural" {
+			t.Errorf("%s is not evaluable but its kind is %q, not structural — "+
+				"a regex rule that failed to compile should have been rejected at load",
+				r.ID, r.Pattern.Kind)
+		}
+	}
+	if pack.ReservedRules() > 20 {
+		t.Errorf("ReservedRules = %d — that is too much of the pack to be inert",
+			pack.ReservedRules())
+	}
+}
+
 func packWithAutofix(t *testing.T, autofixYAML string) (*Pack, []error) {
 	t.Helper()
 	doc := "schema: vibeshield.rules/v1\nid: core\nversion: 1.0.0\nlicense: MIT\nrules:\n" +

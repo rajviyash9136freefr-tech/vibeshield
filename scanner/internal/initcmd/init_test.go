@@ -3,6 +3,7 @@ package initcmd
 import (
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 	"testing"
@@ -199,16 +200,27 @@ func TestRenderedWorkflowPinsTheActionTag(t *testing.T) {
 	}
 }
 
+// The fallback tag is a release constant, not a literal sprinkled through the
+// function — a stale one generates a workflow that 404s.
+func TestDefaultActionTagIsSemver(t *testing.T) {
+	if !regexp.MustCompile(`^v\d+\.\d+\.\d+$`).MatchString(defaultActionTag) {
+		t.Errorf("defaultActionTag = %q, want a vX.Y.Z tag", defaultActionTag)
+	}
+	if got := actionRef("dev"); got != defaultActionTag {
+		t.Errorf("a non-semver version should fall back to %q, got %q", defaultActionTag, got)
+	}
+}
+
 func TestActionRefRejectsNonSemver(t *testing.T) {
 	cases := map[string]string{
-		"2.0.0":     "v2.0.0",
-		"v2.0.0":    "v2.0.0",
+		"2.0.1":     "v2.0.1",
+		"v2.0.1":    "v2.0.1",
 		"2.1.10":    "v2.1.10",
-		"dev":       "v2.0.0",
-		"":          "v2.0.0",
-		"2.0":       "v2.0.0",
-		"2.0.0-rc1": "v2.0.0",
-		"main":      "v2.0.0",
+		"dev":       "v2.0.1",
+		"":          "v2.0.1",
+		"2.0":       "v2.0.1",
+		"2.0.0-rc1": "v2.0.1",
+		"main":      "v2.0.1",
 	}
 	for in, want := range cases {
 		if got := actionRef(in); got != want {

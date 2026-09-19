@@ -596,6 +596,29 @@ func (r *Rule) AppliesToLanguage(lang string) bool {
 }
 
 // PackInfo is pack metadata for `vibeshield version`.
+// Evaluable reports whether the engine can actually match this rule. The test
+// is the compiled matcher, not the kind string: `structural` rules are
+// accepted at load so packs validate everywhere, but compilePattern leaves
+// Re() nil and the scanner skips them (see the structural case there).
+func (r *Rule) Evaluable() bool { return r.Pattern.Re() != nil }
+
+// ActiveRules counts the rules a scan can actually report.
+func (p *Pack) ActiveRules() int {
+	n := 0
+	for i := range p.Rules {
+		if p.Rules[i].Evaluable() {
+			n++
+		}
+	}
+	return n
+}
+
+// ReservedRules counts loaded rules the engine cannot evaluate yet. Reporting
+// len(Rules) alone would overstate what a scan can find — the pack is larger
+// than the engine, on purpose, so packs stay portable across versions.
+func (p *Pack) ReservedRules() int { return len(p.Rules) - p.ActiveRules() }
+
+// PackInfo is a compact description of a loaded pack.
 type PackInfo struct {
 	ID      string `json:"id"`
 	Version string `json:"version"`

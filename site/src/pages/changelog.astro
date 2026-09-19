@@ -7,6 +7,17 @@ import Footer from '../components/ui/Footer.astro';
 
 const ENTRIES = [
   {
+    version: 'v2.0.1',
+    date: '2026-09-19',
+    title: 'Config correctness',
+    items: [
+      '`notifications.slack` now enforces what these docs already claimed: a literal webhook URL is a config error (exit 2), because a webhook path *is* the credential. `${SLACK_WEBHOOK}` and `$SLACK_WEBHOOK` are accepted; anything else, including the malformed `${A`, is rejected.',
+      '`scan <path>` now reads `<path>/vibeshield.yml`. It resolved the config from the working directory, so scanning another project silently used the wrong configuration — or none. An explicit `--config` still wins.',
+      '`vibeshield version` no longer overstates the rule count: it reports `117 active · 5 reserved` rather than a flat 122. Five `structural` rules load and validate so packs stay portable, but the matcher skips them; the console now marks them reserved.',
+      'No new features and no rule changes — the core pack stays at 2.0.0.',
+    ],
+  },
+  {
     version: 'v2.0.0',
     date: '2026-09-18',
     title: 'The terminal workspace',

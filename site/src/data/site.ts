@@ -92,7 +92,7 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - uses: rajviyash9136freefr-tech/vibeshield/action@v2.0.0`,
+      - uses: rajviyash9136freefr-tech/vibeshield/action@v2.0.1`,
     lang: 'yaml',
   },
 ];

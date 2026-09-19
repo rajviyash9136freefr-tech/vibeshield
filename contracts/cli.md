@@ -92,13 +92,30 @@ notifications:
   slack: ${SLACK_WEBHOOK}   # env interpolation only; never literal secrets
 ```
 
+### Config resolution
+
+An explicit `--config <file>` always wins. Otherwise the scanner looks for
+`vibeshield.yml` in the **scanned directory** first, then falls back to the
+working directory, then to defaults. Scanning another project therefore honours
+that project's configuration instead of silently ignoring it — the bug this
+rule exists to prevent.
+
+### notifications.slack
+
+Must be an environment reference (`${SLACK_WEBHOOK}` or `$SLACK_WEBHOOK`).
+Anything else — including a webhook URL, or a malformed reference like `${A` —
+is a config error (exit 2). A webhook URL committed to a config file is a
+leaked credential: the path *is* the whole secret, so the mistake must not be
+mergeable quietly. Delivery itself is not wired up in this build; the block is
+validated so a config can be written once and stay correct.
+
 ## JSON output (stdout, `--format json`)
 
 ```json
 {
   "schema_version": 1,
   "tool": "vibeshield",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "scan": { "mode": "diff", "ref": "HEAD~1", "files_scanned": 14, "duration_ms": 1234 },
   "summary": { "critical": 1, "high": 1, "medium": 0, "low": 0, "info": 0, "clean_files": 11 },
   "dependencies": [

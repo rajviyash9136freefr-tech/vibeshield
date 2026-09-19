@@ -1,58 +1,95 @@
 #!/usr/bin/env node
-// One-shot v1.0.0 → v2.0.0 version bump. Explicit per-file replacements so
-// fixture project versions (which are also "1.0.0") are never touched.
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+// Version bump with explicit, auditable per-file replacements.
+//
+//   node scripts/bump-version.mjs 2.0.0 2.0.1
+//   node scripts/bump-version.mjs 2.0.0 2.1.0 --pack 2.1.0
+//
+// The rule-pack version is deliberately separate: rules/core/*.yaml carries
+// the PACK version, not the tool version, so a CLI-only release must leave it
+// alone. Pass --pack only when the rules themselves changed.
+//
+// Replacements are listed per file rather than applied with a blanket regex,
+// because fixture project manifests also contain "version": "1.0.0" and must
+// never be touched.
+import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const repoRoot = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+const [from, to, ...rest] = process.argv.slice(2);
+const packIdx = rest.indexOf('--pack');
+const packTo = packIdx === -1 ? null : rest[packIdx + 1];
+
+if (!from || !to) {
+  console.error('usage: node scripts/bump-version.mjs <from> <to> [--pack <packVersion>]');
+  process.exit(2);
+}
+for (const v of [from, to, ...(packTo ? [packTo] : [])]) {
+  if (!/^\d+\.\d+\.\d+$/.test(v)) {
+    console.error(`not a plain semver: ${v}`);
+    process.exit(2);
+  }
+}
+
+const repoRoot = fileURLToPath(new URL('..', import.meta.url));
 
 const edits = [];
-const add = (rel, from, to, expect = 1) => edits.push({ rel, from, to, expect });
+const add = (rel, f, t, expect = 1) => edits.push({ rel, from: f, to: t, expect });
 
-// Rule packs: the pack schema version, both copies of the source of truth.
-for (const dir of ['rules/core', 'scanner/internal/rules/packs/core']) {
-  for (const f of readdirSync(join(repoRoot, dir)).filter((f) => f.endsWith('.yaml'))) {
-    add(`${dir}/${f}`, '\nversion: 1.0.0\n', '\nversion: 2.0.0\n');
+// Rule packs — only when the rules themselves changed.
+if (packTo) {
+  for (const dir of ['rules/core', 'scanner/internal/rules/packs/core']) {
+    for (const f of readdirSync(join(repoRoot, dir)).filter((n) => n.endsWith('.yaml'))) {
+      add(`${dir}/${f}`, `\nversion: ${from}\n`, `\nversion: ${packTo}\n`);
+    }
   }
 }
 
-add('npm/vibeshield/package.json', '"version": "1.0.0"', '"version": "2.0.0"');
-add('npm/vibeshield/lib/run.js', "|| 'v1.0.0'", "|| 'v2.0.0'");
-add('skill/.claude-plugin/plugin.json', '"version": "1.0.0"', '"version": "2.0.0"');
-add('action/action.yml', "default: 'v1.0.0'", "default: 'v2.0.0'");
-add('.pre-commit-hooks.yaml', 'cmd/vibeshield@v1.0.0', 'cmd/vibeshield@v2.0.0');
-add('contracts/cli.md', '"version": "1.0.0",', '"version": "2.0.0",');
-add('contracts/rulepack.md', '\nversion: 1.0.0\n', '\nversion: 2.0.0\n');
-add('action/test/fixtures/scan-sample.json', '"version": "1.0.0",', '"version": "2.0.0",');
+// Tool version.
+add('scanner/cmd/vibeshield/main.go', `var Version = "${from}"`, `var Version = "${to}"`);
+add('npm/vibeshield/package.json', `"version": "${from}"`, `"version": "${to}"`);
+add('npm/vibeshield/lib/run.js', `|| 'v${from}'`, `|| 'v${to}'`);
+add('skill/.claude-plugin/plugin.json', `"version": "${from}"`, `"version": "${to}"`);
+add('action/action.yml', `default: 'v${from}'`, `default: 'v${to}'`);
+add('action/entrypoint.sh', `:-v${from}}`, `:-v${to}}`);
+add('.pre-commit-hooks.yaml', `cmd/vibeshield@v${from}`, `cmd/vibeshield@v${to}`);
+// The Action ref `vibeshield init` falls back to for a non-semver build.
+add('scanner/internal/initcmd/init.go', `const defaultActionTag = "v${from}"`, `const defaultActionTag = "v${to}"`);
+add('contracts/cli.md', `"version": "${from}",`, `"version": "${to}",`);
+add('action/test/fixtures/scan-sample.json', `"version": "${from}",`, `"version": "${to}",`);
 
 // Site copy + docs.
-add('site/src/data/site.ts', 'vibeshield/action@v1', 'vibeshield/action@v2');
-add('site/src/content/docs/cli.md', '"version": "1.0.0",', '"version": "2.0.0",');
-add('site/src/content/docs/github-action.md', 'action@v1', 'action@v2', 4);
-add('site/src/content/docs/github-action.md', '`v1.0.0`', '`v2.0.0`');
-add('site/src/content/docs/pre-commit.md', 'rev: v1.0.0', 'rev: v2.0.0');
-add('site/src/content/docs/quickstart.md', 'action@v1', 'action@v2');
-add('site/src/content/docs/quickstart.md', 'rev: v1.0.0', 'rev: v2.0.0');
+add('site/src/data/site.ts', `vibeshield/action@v${from}`, `vibeshield/action@v${to}`);
+add('site/src/content/docs/cli.md', `"version": "${from}",`, `"version": "${to}",`);
+add('site/src/content/docs/github-action.md', `action@v${from}`, `action@v${to}`, -1);
+add('site/src/content/docs/github-action.md', `\`v${from}\``, `\`v${to}\``);
+add('site/src/content/docs/pre-commit.md', `rev: v${from}`, `rev: v${to}`);
+add('site/src/content/docs/quickstart.md', `action@v${from}`, `action@v${to}`);
+add('site/src/content/docs/quickstart.md', `rev: v${from}`, `rev: v${to}`);
+add('README.md', `version-${from}-white`, `version-${to}-white`);
+add('README.md', `action@v${from}`, `action@v${to}`, -1);
+add('README.md', `rev: v${from}`, `rev: v${to}`);
 
 let failures = 0;
-for (const { rel, from, to, expect } of edits) {
+for (const { rel, from: f, to: t, expect } of edits) {
   const path = join(repoRoot, rel);
-  let text;
-  try {
-    text = readFileSync(path, 'utf8');
-  } catch (err) {
-    console.error(`MISSING ${rel}: ${err.message}`);
+  if (!existsSync(path)) {
+    console.error(`MISSING ${rel}`);
     failures++;
     continue;
   }
-  const count = text.split(from).length - 1;
-  if (count !== expect) {
-    console.error(`SKIP ${rel}: found ${count} of ${JSON.stringify(from)}, expected ${expect}`);
+  const text = readFileSync(path, 'utf8');
+  const count = text.split(f).length - 1;
+  // expect = -1 means "one or more".
+  if (expect === -1 ? count < 1 : count !== expect) {
+    console.error(`SKIP ${rel}: found ${count} of ${JSON.stringify(f)}, expected ${expect === -1 ? '>=1' : expect}`);
     failures++;
     continue;
   }
-  writeFileSync(path, text.split(from).join(to));
+  writeFileSync(path, text.split(f).join(t));
   console.log(`ok   ${rel}  (${count}×)`);
 }
-console.log(failures ? `\n${failures} file(s) need attention` : '\nall version bumps applied');
+
+console.log(failures
+  ? `\n${failures} file(s) need attention`
+  : `\n${from} -> ${to} applied${packTo ? ` (pack -> ${packTo})` : ' (pack untouched)'}`);
 process.exit(failures ? 1 : 0);

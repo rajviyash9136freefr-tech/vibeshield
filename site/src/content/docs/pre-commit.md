@@ -14,7 +14,7 @@ anything reaches a remote. Typical runtime: under 1.5 seconds.
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/rajviyash9136freefr-tech/vibeshield
-    rev: v2.0.0
+    rev: v2.0.1
     hooks:
       - id: vibeshield
 ```

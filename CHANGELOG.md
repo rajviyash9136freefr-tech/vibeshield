@@ -3,6 +3,41 @@
 All notable changes to VibeShield. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versioning is [SemVer](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] — 2026-09-19
+
+Patch release: three documentation-vs-reality gaps found by auditing the docs
+against the binary. No new features, no rule changes — the core pack stays at
+`2.0.0`.
+
+### Fixed
+
+- **`notifications.slack` now enforces the rule the docs already claimed.**
+  `contracts/cli.md` and the site config page both say a literal webhook URL is
+  a config error (exit 2), because a webhook path *is* the credential. The
+  field was not in the config struct at all, so `Load` silently ignored it and
+  a committed webhook scanned clean. Now validated: `${SLACK_WEBHOOK}` and
+  `$SLACK_WEBHOOK` are accepted; anything else — including the malformed
+  `${A` — exits 2. Delivery is still not wired up; the block is validated so a
+  config can be written once and stay correct.
+- **`scan <path>` reads `<path>/vibeshield.yml`.** The config was resolved
+  relative to the working directory, so `vibeshield scan ../other-project`
+  silently used the wrong project's configuration, or none. An explicit
+  `--config` still wins, and when the scan path is `.` nothing changes.
+- **`vibeshield version` no longer overstates the rule count.** It reported
+  "122 rules" when the engine can evaluate 117: five `structural` rules load
+  and validate so packs stay portable, but the matcher skips them. It now
+  reports `117 active · 5 reserved`, and the console marks a reserved rule as
+  reserved in its detail pane instead of letting you search for a rule that
+  cannot fire.
+
+### Added
+
+- `scripts/audit-contract.mjs` now reports rule coverage, so an inert-rule
+  count is visible in CI rather than buried in the pack.
+- `scripts/bump-version.mjs` takes `<from> <to>` and an optional
+  `--pack <version>`, so a tool-only release can no longer accidentally bump
+  the rule-pack version.
+
 ## [2.0.0] — 2026-09-18
 
 The release that turns the scanner into a **terminal workspace**. `vibeshield`

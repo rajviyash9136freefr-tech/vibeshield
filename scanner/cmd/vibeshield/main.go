@@ -23,7 +23,7 @@ import (
 )
 
 // Version is stamped by -ldflags "-X main.Version=v1.2.3" at release build.
-var Version = "2.0.0"
+var Version = "2.0.1"
 
 const usage = `vibeshield %s — security scanner for AI-generated code
 
@@ -161,8 +161,40 @@ func cmdVersion(w io.Writer) int {
 	}
 	fmt.Fprintf(w, "vibeshield %s\n", Version)
 	fmt.Fprintf(w, "rule packs: %s %s (%s, %d rules)\n", pack.ID, pack.Version, pack.License, len(pack.Rules))
+	// A pack is deliberately larger than the engine: rules the matcher cannot
+	// evaluate yet still load so packs stay portable. Saying only "122 rules"
+	// would overstate what a scan can find, so the split is reported.
+	if reserved := pack.ReservedRules(); reserved > 0 {
+		fmt.Fprintf(w, "engine:     %d active · %d reserved (structural — pending the package-intel model)\n",
+			pack.ActiveRules(), reserved)
+	} else {
+		fmt.Fprintf(w, "engine:     %d active\n", pack.ActiveRules())
+	}
 	fmt.Fprintf(w, "no code leaves this machine: static analysis only\n")
 	return 0
+}
+
+// resolveConfigPath picks the config file for a scan. An explicit --config
+// always wins. Otherwise the scanned project's own vibeshield.yml is preferred
+// over the working directory's: `vibeshield scan ../other-project` must honour
+// that project's configuration, not silently ignore it because the shell
+// happened to be somewhere else. When the scan path is "." both candidates are
+// the same file, so nothing changes for the common case.
+func resolveConfigPath(fl *flag.FlagSet, configured, scanPath string) string {
+	explicit := false
+	fl.Visit(func(f *flag.Flag) {
+		if f.Name == "config" {
+			explicit = true
+		}
+	})
+	if explicit {
+		return configured
+	}
+	candidate := filepath.Join(scanPath, "vibeshield.yml")
+	if fi, err := os.Stat(candidate); err == nil && !fi.IsDir() {
+		return candidate
+	}
+	return configured
 }
 
 // cmdInit is the setup path documented in contracts/cli.md: detect the stack,
@@ -560,7 +592,8 @@ func cmdFix(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return 2
 	}
 
-	cfg, err := config.Load(*cfgPath)
+	cfgFile := resolveConfigPath(fl, *cfgPath, path)
+	cfg, err := config.Load(cfgFile)
 	if err != nil {
 		fmt.Fprintf(stderr, "vibeshield: %v\n", err)
 		return 2
@@ -580,7 +613,7 @@ func cmdFix(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	}
 	if *verbose {
 		fmt.Fprintf(stderr, "vibeshield: config %s · pack %s %s · %d rules\n",
-			*cfgPath, pack.ID, pack.Version, len(pack.Rules))
+			cfgFile, pack.ID, pack.Version, len(pack.Rules))
 	}
 
 	var rep *scan.Report
@@ -699,7 +732,8 @@ func cmdScan(args []string, stdout, stderr io.Writer) int {
 	}
 
 	// Config
-	cfg, err := config.Load(*cfgPath)
+	cfgFile := resolveConfigPath(fl, *cfgPath, path)
+	cfg, err := config.Load(cfgFile)
 	if err != nil {
 		fmt.Fprintf(stderr, "vibeshield: %v\n", err)
 		return 2
@@ -751,7 +785,7 @@ func cmdScan(args []string, stdout, stderr io.Writer) int {
 		opts.Languages = cfg.Languages
 	}
 	if *verbose {
-		fmt.Fprintf(stderr, "vibeshield: config %s · mode %s\n", *cfgPath, effMode)
+		fmt.Fprintf(stderr, "vibeshield: config %s · mode %s\n", cfgFile, effMode)
 		if len(cfg.Languages) > 0 {
 			fmt.Fprintf(stderr, "vibeshield: languages %s\n", strings.Join(cfg.Languages, ", "))
 		} else {

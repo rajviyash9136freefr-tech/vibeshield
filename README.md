@@ -6,7 +6,7 @@
 
 **Scan your vibe-coded app for hallucinated packages, leaked API keys and insecure AI defaults — then browse, search and fix every finding without leaving the terminal.**
 
-[![Version](https://img.shields.io/badge/version-2.0.0-white?style=for-the-badge&logo=git&logoColor=black)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.0.1-white?style=for-the-badge&logo=git&logoColor=black)](CHANGELOG.md)
 [![Website](https://img.shields.io/badge/🌐_Website-Live_Simulator-white?style=for-the-badge&logo=googlechrome&logoColor=black)](https://rajviyash9136freefr-tech.github.io/vibeshield/)
 [![GitHub Stars](https://img.shields.io/github/stars/rajviyash9136freefr-tech/vibeshield?style=for-the-badge&logo=github&color=white&labelColor=black)](https://github.com/rajviyash9136freefr-tech/vibeshield/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-white?style=for-the-badge)](LICENSE)
@@ -41,7 +41,7 @@
 
 ---
 
-## 🆕 What's new in v2.0.0
+## 🆕 What's new in v2
 
 v1 was a scanner you piped into CI. **v2 is a workspace you sit in.**
 
@@ -64,7 +64,7 @@ Full details in [CHANGELOG.md](CHANGELOG.md).
 Run `vibeshield` in any project and you get one search box over **every action, every rule, and every agent setup recipe**:
 
 ```text
-  VibeShield 2.0.0                                    140 entries · fully offline
+  VibeShield 2.0.1                                    140 entries · fully offline
   ────────────────────────────────────────────────────────────────────────────────
   ❯ scan▏
   ────────────────────────────────────────────────────────────────────────────────
@@ -184,7 +184,7 @@ npx vibeshield scan .
 ### 🐹 Go developers
 
 ```bash
-go install github.com/rajviyash9136freefr-tech/vibeshield/scanner/cmd/vibeshield@v2.0.0
+go install github.com/rajviyash9136freefr-tech/vibeshield/scanner/cmd/vibeshield@v2.0.1
 ```
 
 ### 🧰 Build from source
@@ -230,7 +230,7 @@ never touched:
 
 ```text
   $ vibeshield init --dry-run
-  VibeShield 2.0.0 — project setup
+  VibeShield 2.0.1 — project setup
   Detected   javascript, typescript
   Ecosystem  npm
   Framework  Next.js, React
@@ -286,7 +286,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: rajviyash9136freefr-tech/vibeshield/action@v2.0.0
+      - uses: rajviyash9136freefr-tech/vibeshield/action@v2.0.1
         with:
           mode: block-on-critical
 ```
@@ -299,7 +299,7 @@ Posts one consolidated **VibeCheck report** per PR — severity chips, `file:lin
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/rajviyash9136freefr-tech/vibeshield
-    rev: v2.0.0
+    rev: v2.0.1
     hooks:
       - id: vibeshield
 ```

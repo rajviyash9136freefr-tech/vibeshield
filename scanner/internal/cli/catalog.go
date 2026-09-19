@@ -328,6 +328,14 @@ func ruleBody(r rules.Rule) string {
 	if r.Confidence > 0 {
 		fmt.Fprintf(&b, "Confidence  %.2f\n", r.Confidence)
 	}
+	if !r.Evaluable() {
+		// A reserved rule loads and validates but the matcher skips it, so a
+		// scan will never report it. Saying so here beats letting someone
+		// search for a rule that cannot fire.
+		fmt.Fprintf(&b, "\n%s\n", "Status      RESERVED — this build cannot evaluate it yet.\n"+
+			"            The pack ships it so packs stay portable across versions;\n"+
+			"            see contracts/rulepack.md (pattern.kind: structural).")
+	}
 	fmt.Fprintf(&b, "\nWhy it matters\n\n%s\n", r.Message)
 	fmt.Fprintf(&b, "\nFix\n\n%s\n", r.Fix)
 	if r.Autofix != nil {
