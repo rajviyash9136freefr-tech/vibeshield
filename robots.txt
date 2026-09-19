@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
-Disallow: /app
+Disallow: /vibeshield/404.html
+Disallow: /404
 
 Sitemap: https://rajviyash9136freefr-tech.github.io/vibeshield/sitemap-index.xml
