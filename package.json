@@ -1,0 +1,11 @@
+{
+  "name": "vibeshield-workspace",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:all": "node test/run-all.mjs",
+    "audit:contract": "node scripts/audit-contract.mjs scanner/vibeshield.exe",
+    "sync:rules": "node scripts/sync-rules.mjs --check",
+    "sync:agents": "node scripts/sync-agent-rules.mjs --check"
+  }
+}

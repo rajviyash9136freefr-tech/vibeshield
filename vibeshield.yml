@@ -46,8 +46,9 @@ ignore:
   # mean the tests assert nothing.
   - paths:
       - "fixtures/**"
+      - "test/**"
       - "scanner/internal/**/*_test.go"
-    reason: "Golden corpus and test fixtures are vulnerable by design; that is what the tests assert against."
+    reason: "Golden corpus, test fixtures, and test docs are vulnerable by design; that is what the tests assert against."
 
   # ---------------------------------------------------------------------------
   # Generated, not authored

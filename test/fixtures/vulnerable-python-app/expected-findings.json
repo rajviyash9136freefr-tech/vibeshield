@@ -1,0 +1,10 @@
+{
+  "min_findings": 5,
+  "required_rules": [
+    "VS-SEC-014",
+    "VS-SEC-030",
+    "VS-SEC-036",
+    "VS-SEC-057",
+    "VS-SEC-017"
+  ]
+}
