@@ -80,18 +80,55 @@ go install github.com/rajviyash9136freefr-tech/vibeshield/scanner/cmd/vibeshield
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start & CLI Usage
 
-Once installed, open any project in your terminal:
+### 🖥️ 1. Interactive Terminal Mode (Claude Code Experience)
+
+Just type `vibeshield` in any project folder to enter the full interactive terminal application:
 
 ```bash
-# 1. Scan your current project
+vibeshield
+```
+
+Get a live project detection banner, real-time scanning progress, interactive findings explorer, and atomic diff patch confirmation without leaving your terminal:
+
+```text
+╭──────────────────────────────────────────────────────────────────────────────╮
+│  🛡️  VIBESHIELD v3.1.0 — AI Code Security Scanner                           │
+│  The Bug Hunter for AI-Generated & Vibe-Coded Software                       │
+╰──────────────────────────────────────────────────────────────────────────────╯
+   Project  › my-vibe-app (git: main)
+   Stack    › TypeScript 5.4 • React 18 • Supabase JS
+   Engine   › 117 active rules loaded • 100% Local & Offline
+
+ Quick Keys:  [Enter / s] Full Scan    [d] Diff Scan    [f] Fix Wizard    [q] Quit
+
+ > /scan .
+```
+
+---
+
+### ⚡ 2. Command Line (Headless / CI Mode)
+
+Use subcommands directly for fast audits, git hooks, and CI/CD pipelines:
+
+```bash
+# Audit the whole repository
 vibeshield scan .
 
-# 2. Check health and installation setup
+# Audit only uncommitted/staged changes (used in pre-commit hook)
+vibeshield scan --staged
+
+# Machine-readable JSON output
+vibeshield scan . --format json
+
+# Preview and apply mechanical fixes (VibePatch)
+vibeshield fix .
+
+# Check environment, git hooks, and rule engine health
 vibeshield doctor
 
-# 3. Automatically set up git pre-commit hook
+# One-command project onboarding (writes config, git hook & CI workflow)
 vibeshield init
 ```
 

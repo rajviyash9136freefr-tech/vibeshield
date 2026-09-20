@@ -26,6 +26,7 @@ import (
 	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/rules"
 	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/scan"
 	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/scandiff"
+	"github.com/rajviyash9136freefr-tech/vibeshield/scanner/internal/tui"
 )
 
 // Version is stamped by -ldflags "-X main.Version=v1.2.3" at release build.
@@ -104,24 +105,26 @@ func cmdHelp(args []string, stdout, stderr io.Writer) int {
 	return 0
 }
 
-// cmdConsole opens the interactive console: one search box over every action,
-// rule and agent recipe. Actions are replayed through run(), so the menu can
-// never drift from the documented flags.
+// cmdConsole opens the interactive terminal UI.
 func cmdConsole(stdout, stderr io.Writer) int {
 	pack, err := rules.LoadCore()
 	if err != nil {
 		fmt.Fprintf(stderr, "vibeshield: core rules failed to load: %v\n", err)
 		return 2
 	}
-	c := &cli.Console{
-		In:      os.Stdin,
-		Out:     stdout,
-		Items:   cli.Catalog(pack, Version),
-		Version: Version,
-		Color:   output.IsTTY(stdout),
-		Exec:    func(a []string) int { return run(a, stdout, stderr) },
+	if err := tui.Run(".", pack, Version); err != nil {
+		// Fallback to classic catalog menu if terminal cannot initialize alt-screen
+		c := &cli.Console{
+			In:      os.Stdin,
+			Out:     stdout,
+			Items:   cli.Catalog(pack, Version),
+			Version: Version,
+			Color:   output.IsTTY(stdout),
+			Exec:    func(a []string) int { return run(a, stdout, stderr) },
+		}
+		return c.Run()
 	}
-	return c.Run()
+	return 0
 }
 
 func cmdVersion(w io.Writer) int {
