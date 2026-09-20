@@ -32,7 +32,7 @@ instant aha.</p>
 <span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v4</span></span>
 <span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
 <span class="line"><span style="color:#85E89D">          fetch-depth</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#6A737D">   # diff mode needs the base branch</span></span>
-<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">rajviyash9136freefr-tech/vibeshield/action@v3.0.0</span></span></code></pre>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">rajviyash9136freefr-tech/vibeshield/action@v3.0.1</span></span></code></pre>
 <p>Push the branch and open a PR. Within seconds VibeShield posts a <strong>VibeCheck
 report</strong> on the PR: findings with severity, AI-origin tags, the dependency
 delta, and accept/dismiss commands. The default mode is <code>warn</code> — it comments
@@ -42,7 +42,7 @@ but never blocks your merge until you ask it to.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#6A737D"># .pre-commit-config.yaml</span></span>
 <span class="line"><span style="color:#85E89D">repos</span><span style="color:#E1E4E8">:</span></span>
 <span class="line"><span style="color:#E1E4E8">  - </span><span style="color:#85E89D">repo</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">https://github.com/rajviyash9136freefr-tech/vibeshield</span></span>
-<span class="line"><span style="color:#85E89D">    rev</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">v3.0.0</span></span>
+<span class="line"><span style="color:#85E89D">    rev</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">v3.0.1</span></span>
 <span class="line"><span style="color:#85E89D">    hooks</span><span style="color:#E1E4E8">:</span></span>
 <span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">id</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">vibeshield</span></span></code></pre>
 <p>Then <code>pre-commit install</code>. Every <code>git commit</code> scans staged files locally in
