@@ -20,7 +20,7 @@ REPO="rajviyash9136freefr-tech/vibeshield"
 # Kept current by scripts/bump-version.mjs. If this drifts, the one-line install
 # in the README quietly installs an old release — which is exactly what it did
 # for two major versions, because this file was missing from the bump list.
-VERSION="${VIBESHIELD_VERSION:-v3.0.0}"
+VERSION="${VIBESHIELD_VERSION:-v3.0.1}"
 AGENT="auto"
 WANT_SKILL=1
 INSTALL_DIR="${VIBESHIELD_INSTALL_DIR:-$HOME/.local/bin}"

@@ -37,7 +37,7 @@ use a binary you already have.
 ## Go developers
 
 ```bash
-go install github.com/rajviyash9136freefr-tech/vibeshield/scanner/cmd/vibeshield@v3.0.0
+go install github.com/rajviyash9136freefr-tech/vibeshield/scanner/cmd/vibeshield@v3.0.1
 ```
 
 ## Build from source
@@ -71,7 +71,7 @@ vibeshield version
 ```
 
 ```console
-vibeshield 3.0.0
+vibeshield 3.0.1
 rule packs: core 2.0.0 (MIT, 122 rules)
 engine:     117 active · 5 reserved (structural — pending the package-intel model)
 no code leaves this machine: static analysis only

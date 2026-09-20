@@ -6,7 +6,7 @@
 
 **Instantly catch hallucinated packages, leaked API keys, and insecure defaults before they reach production.**
 
-[![Version](https://img.shields.io/badge/version-v3.0.0-blue?style=for-the-badge&logo=git&logoColor=white)](https://github.com/rajviyash9136freefr-tech/vibeshield/releases)
+[![Version](https://img.shields.io/badge/version-v3.0.1-blue?style=for-the-badge&logo=git&logoColor=white)](https://github.com/rajviyash9136freefr-tech/vibeshield/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
 [![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=for-the-badge)](https://github.com/rajviyash9136freefr-tech/vibeshield/releases)
 [![Website](https://img.shields.io/badge/🌐_Website-Live_Demo-purple?style=for-the-badge)](https://rajviyash9136freefr-tech.github.io/vibeshield/)
@@ -33,8 +33,8 @@ irm https://raw.githubusercontent.com/rajviyash9136freefr-tech/vibeshield/main/s
 ```
 
 **Option 2: Direct Binary Download (.zip)**
-- ⬇️ **[Download for Windows 64-bit (x86_64)](https://github.com/rajviyash9136freefr-tech/vibeshield/releases/download/v3.0.0/vibeshield-windows-x86_64.zip)**
-- ⬇️ **[Download for Windows ARM64](https://github.com/rajviyash9136freefr-tech/vibeshield/releases/download/v3.0.0/vibeshield-windows-aarch64.zip)**
+- ⬇️ **[Download for Windows 64-bit (x86_64)](https://github.com/rajviyash9136freefr-tech/vibeshield/releases/download/v3.0.1/vibeshield-windows-x86_64.zip)**
+- ⬇️ **[Download for Windows ARM64](https://github.com/rajviyash9136freefr-tech/vibeshield/releases/download/v3.0.1/vibeshield-windows-aarch64.zip)**
 
 *(Extract `vibeshield.exe` and add it to your PATH or copy to your project folder).*
 
@@ -48,8 +48,8 @@ curl -fsSL https://raw.githubusercontent.com/rajviyash9136freefr-tech/vibeshield
 ```
 
 **Option 2: Direct Binary Download (.tar.gz)**
-- ⬇️ **[Download for Apple Silicon (M1/M2/M3/M4 - ARM64)](https://github.com/rajviyash9136freefr-tech/vibeshield/releases/download/v3.0.0/vibeshield-darwin-aarch64.tar.gz)**
-- ⬇️ **[Download for Intel Mac (x86_64)](https://github.com/rajviyash9136freefr-tech/vibeshield/releases/download/v3.0.0/vibeshield-darwin-x86_64.tar.gz)**
+- ⬇️ **[Download for Apple Silicon (M1/M2/M3/M4 - ARM64)](https://github.com/rajviyash9136freefr-tech/vibeshield/releases/download/v3.0.1/vibeshield-darwin-aarch64.tar.gz)**
+- ⬇️ **[Download for Intel Mac (x86_64)](https://github.com/rajviyash9136freefr-tech/vibeshield/releases/download/v3.0.1/vibeshield-darwin-x86_64.tar.gz)**
 
 ---
 
@@ -61,8 +61,8 @@ curl -fsSL https://raw.githubusercontent.com/rajviyash9136freefr-tech/vibeshield
 ```
 
 **Option 2: Direct Binary Download (.tar.gz)**
-- ⬇️ **[Download for Linux 64-bit (x86_64)](https://github.com/rajviyash9136freefr-tech/vibeshield/releases/download/v3.0.0/vibeshield-linux-x86_64.tar.gz)**
-- ⬇️ **[Download for Linux ARM64](https://github.com/rajviyash9136freefr-tech/vibeshield/releases/download/v3.0.0/vibeshield-linux-aarch64.tar.gz)**
+- ⬇️ **[Download for Linux 64-bit (x86_64)](https://github.com/rajviyash9136freefr-tech/vibeshield/releases/download/v3.0.1/vibeshield-linux-x86_64.tar.gz)**
+- ⬇️ **[Download for Linux ARM64](https://github.com/rajviyash9136freefr-tech/vibeshield/releases/download/v3.0.1/vibeshield-linux-aarch64.tar.gz)**
 
 ---
 
@@ -75,7 +75,7 @@ npx vibeshield scan .
 
 #### Install from source with Go
 ```bash
-go install github.com/rajviyash9136freefr-tech/vibeshield/scanner/cmd/vibeshield@v3.0.0
+go install github.com/rajviyash9136freefr-tech/vibeshield/scanner/cmd/vibeshield@v3.0.1
 ```
 
 ---

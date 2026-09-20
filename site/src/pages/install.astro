@@ -53,7 +53,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: ${SITE.repo.replace('https://github.com/', '')}/action@v3.0.0`,
+      - uses: ${SITE.repo.replace('https://github.com/', '')}/action@v3.0.1`,
     meta: 'runs on your runner · code never leaves it',
   },
   {
@@ -64,7 +64,7 @@ jobs:
     filename: '.pre-commit-config.yaml',
     code: `repos:
   - repo: ${SITE.repo}
-    rev: v3.0.0
+    rev: v3.0.1
     hooks:
       - id: vibeshield`,
     meta: 'pre-commit run --all-files to backfill',
@@ -75,7 +75,7 @@ jobs:
     h3: 'If you read Go, read the source before you run it',
     body: 'One module, no CGO, plain go install. Every rule pack is versioned YAML in the same repo — nothing ships compiled that you cannot diff.',
     filename: 'terminal',
-    code: 'go install github.com/rajviyash9136freefr-tech/vibeshield/scanner/cmd/vibeshield@v3.0.0',
+    code: 'go install github.com/rajviyash9136freefr-tech/vibeshield/scanner/cmd/vibeshield@v3.0.1',
     meta: 'go test ./... passes before every release tag',
   },
 ];

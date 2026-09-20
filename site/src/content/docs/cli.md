@@ -227,7 +227,7 @@ health check is for. Asking for help — `-h` on any command — exits `0`.
 {
   "schema_version": 1,
   "tool": "vibeshield",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "scan": { "mode": "diff", "ref": "HEAD~1", "files_scanned": 14, "duration_ms": 1234 },
   "summary": { "critical": 1, "high": 1, "medium": 0, "low": 0, "info": 0, "clean_files": 11 },
   "dependencies": [

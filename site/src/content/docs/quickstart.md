@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0   # diff mode needs the base branch
-      - uses: rajviyash9136freefr-tech/vibeshield/action@v3.0.0
+      - uses: rajviyash9136freefr-tech/vibeshield/action@v3.0.1
 ```
 
 Push the branch and open a PR. Within seconds VibeShield posts a **VibeCheck
@@ -65,7 +65,7 @@ Full options: [GitHub Action](/docs/github-action).
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/rajviyash9136freefr-tech/vibeshield
-    rev: v3.0.0
+    rev: v3.0.1
     hooks:
       - id: vibeshield
 ```

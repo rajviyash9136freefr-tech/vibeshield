@@ -99,7 +99,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: rajviyash9136freefr-tech/vibeshield/action@v3.0.0`,
+      - uses: rajviyash9136freefr-tech/vibeshield/action@v3.0.1`,
     lang: 'yaml',
   },
 ];

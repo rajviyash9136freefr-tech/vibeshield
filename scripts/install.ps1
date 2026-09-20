@@ -5,7 +5,7 @@
 param(
     # Kept current by scripts/bump-version.mjs. A stale default here means the
     # PowerShell one-liner installs an old release without saying so.
-    [string]$Version = "v3.0.0",
+    [string]$Version = "v3.0.1",
     [string]$InstallDir = "$HOME\.local\bin",
     [switch]$NoSkill = $false,
     [string]$Agent = "auto"

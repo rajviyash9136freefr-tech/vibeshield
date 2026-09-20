@@ -3,6 +3,19 @@
 All notable changes to VibeShield. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versioning is [SemVer](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.1] — 2026-09-20
+
+### Added
+- **Interactive Terminal UI:** Bubble Tea interactive terminal application (`vibeshield`) featuring live stack detection, slash commands (`/scan`, `/diff`, `/fix`, `/help`, `/quit`), streaming scanner progress, navigable findings table, code context viewer, and mechanical VibePatch preview.
+- **Asynchronous Streaming Scan Engine:** `scan.Stream` for non-blocking real-time event updates across files and discovered findings.
+- **Comprehensive QA Test Suite:** Added `test/` suite with multi-stack vulnerable fixtures (`vulnerable-node-app`, `vulnerable-react-app`, `vulnerable-supabase-app`, `vulnerable-python-app`, `clean-app`) and edge-case suites (unicode paths, binary files, monorepos).
+- Added `test/COMMANDS.md` full inventory checklist and `test/BUGS.md` QA bug tracker.
+
+### Fixed
+- Fixed `scandiff.Diff` line membership method invocation in interactive diff mode.
+- Synchronized local install binary path resolution in PowerShell scripts.
+- Tidied indirect Go module checksums for Charm Bubbles.
+
 ## [3.0.0] — 2026-09-19
 
 The release that makes VibeShield **usable by someone who has never seen it**.

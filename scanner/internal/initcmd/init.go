@@ -264,7 +264,7 @@ jobs:
 // defaultActionTag is the Action ref used when the running binary's version is
 // not a plain semver (a local `go build` reports "dev"). It is a release
 // constant, so scripts/bump-version.mjs keeps it current.
-const defaultActionTag = "v3.0.0"
+const defaultActionTag = "v3.0.1"
 
 // actionRef turns a binary version into a usable Action ref. Anything that is
 // not a plain semver is replaced by defaultActionTag, so a locally built

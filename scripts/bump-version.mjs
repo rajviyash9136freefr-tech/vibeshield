@@ -76,10 +76,9 @@ add('site/src/content/docs/installation.md', `vibeshield ${from}`, `vibeshield $
 add('site/src/pages/install.astro', `action@v${from}`, `action@v${to}`);
 add('site/src/pages/install.astro', `rev: v${from}`, `rev: v${to}`);
 add('site/src/pages/install.astro', `cmd/vibeshield@v${from}`, `cmd/vibeshield@v${to}`);
-add('README.md', `version-${from}-white`, `version-${to}-white`);
-add('README.md', `action@v${from}`, `action@v${to}`, -1);
-add('README.md', `rev: v${from}`, `rev: v${to}`);
-add('README.md', `cmd/vibeshield@v${from}`, `cmd/vibeshield@v${to}`);
+add('README.md', `version-v${from}-blue`, `version-v${to}-blue`);
+add('README.md', `/download/v${from}/`, `/download/v${to}/`, -1);
+add('README.md', `cmd/vibeshield@v${from}`, `cmd/vibeshield@v${to}`, -1);
 
 let failures = 0;
 for (const { rel, from: f, to: t, expect } of edits) {

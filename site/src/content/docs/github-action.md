@@ -1,10 +1,10 @@
 ---
 title: GitHub Action
-description: "vibeshield/action@v3.0.0 — inputs, outputs, gate modes, PR comments, and the badge. The security gate for AI-generated pull requests."
+description: "vibeshield/action@v3.0.1 — inputs, outputs, gate modes, PR comments, and the badge. The security gate for AI-generated pull requests."
 order: 2
 ---
 
-`rajviyash9136freefr-tech/vibeshield/action@v3.0.0` is a composite GitHub Action that
+`rajviyash9136freefr-tech/vibeshield/action@v3.0.1` is a composite GitHub Action that
 scans your PR diff and posts a consolidated VibeCheck report comment. It runs the
 same Go scanner binary used by the [pre-commit hook](/docs/pre-commit) and the
 [CLI](/docs/cli) — static analysis on the runner, in seconds.
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0   # needed for diff mode against the base branch
-      - uses: rajviyash9136freefr-tech/vibeshield/action@v3.0.0
+      - uses: rajviyash9136freefr-tech/vibeshield/action@v3.0.1
 ```
 
 ## Inputs
@@ -36,7 +36,7 @@ jobs:
 | `config` | `vibeshield.yml` | Path to the config file. Missing default = scanner defaults; missing explicit path = config error (exit 2). |
 | `online` | `false` | Allow network calls for package-intel lookups (`--online`). Degrades gracefully offline. |
 | `scanner_bin` | — | Path to a prebuilt binary; skips the release download. |
-| `version` | `v3.0.0` | Pinned scanner release tag to download. |
+| `version` | `v3.0.1` | Pinned scanner release tag to download. |
 
 ## Outputs
 
@@ -48,7 +48,7 @@ markdown comment on the runner; `report_json` — the raw scan JSON
 Example — fail the build on criticals and echo the count:
 
 ```yaml
-- uses: vibeshield/action@v3.0.0
+- uses: vibeshield/action@v3.0.1
   id: vs
   with:
     mode: block-on-critical
