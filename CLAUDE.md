@@ -1,4 +1,7 @@
-# VibeShield — repo conventions (READ FIRST)
+# VibeShield — repo conventions (READ CODEBASE.md FIRST)
+
+> **MANDATORY**: Read [`CODEBASE.md`](CODEBASE.md) first before proposing or executing changes.
+> Follow the architecture, folder layout, CLI commands, and AI agent guardrails defined in `CODEBASE.md`.
 
 You are working on VibeShield: a security & dependency auditor for AI-generated code.
 The repository is the source of truth for behaviour. When a doc and the binary

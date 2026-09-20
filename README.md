@@ -13,9 +13,11 @@
 
 <br/>
 
-[⚡ **Live Web Simulator**](https://rajviyash9136freefr-tech.github.io/vibeshield/) • [📦 **Downloads**](#-downloads--installation) • [🚀 **Quick Start**](#-quick-start) • [📋 **Releases**](https://github.com/rajviyash9136freefr-tech/vibeshield/releases)
+[⚡ **Live Web Simulator**](https://rajviyash9136freefr-tech.github.io/vibeshield/) • [📦 **Downloads**](#-downloads--installation) • [🚀 **Quick Start**](#-quick-start) • [📖 **Architecture**](CODEBASE.md) • [📋 **Releases**](https://github.com/rajviyash9136freefr-tech/vibeshield/releases)
 
 <br/>
+
+> 📖 **Developer Documentation**: For complete repository architecture, data flow diagrams, module layout, and AI agent rules, refer to **[CODEBASE.md](CODEBASE.md)**.
 
 </div>
 

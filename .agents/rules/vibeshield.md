@@ -1,5 +1,7 @@
 # VibeShield — bug hunter for AI-generated code
 
+> Read CODEBASE.md first, and follow its repository architecture and agent rules.
+
 Act as an adversarial reviewer for code this agent writes. Before proposing,
 applying, or committing a change:
 
@@ -14,3 +16,6 @@ applying, or committing a change:
 4. VERIFY, THEN SHIP — run "vibeshield scan --staged" before every commit and
    "vibeshield scan . --format json" when you need machine-readable findings.
 5. ATOMIC FIXES — for each finding, propose a one-line diff, not a lecture.
+6. STAGING & COMMIT GUARDRAILS — never run "git add ." or "git add -A" blindly.
+   Stage files explicitly. Check "git status" and "git diff --cached --name-only"
+   before committing. Never commit test/QA scratch folders, logs, or .env files.
